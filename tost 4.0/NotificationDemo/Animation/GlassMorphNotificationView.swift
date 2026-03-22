@@ -74,22 +74,14 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     var body: some View {
         ZStack {
             GlassEffectContainer(spacing: style.glassContainerSpacing) {
-                ZStack {
-                    notificationSurface
-                        .position(seedCenter)
-                        .offset(y: surfaceVerticalOffset)
-                        .opacity(notificationSurfaceOpacity)
-
-                    if !showsDetachedBellBubble {
-                        bellBubble
-                            .position(style.buttonCenter)
-                            .opacity(bellBubbleOpacity)
-                    }
-                }
-                .frame(width: style.containerSize.width, height: style.containerSize.height)
+                notificationSurface
+                    .position(seedCenter)
+                    .offset(y: surfaceVerticalOffset)
+                    .opacity(notificationSurfaceOpacity)
+                    .frame(width: style.containerSize.width, height: style.containerSize.height)
             }
 
-            if showsDetachedBellBubble {
+            if showsOverlayBellBubble {
                 bellBubble
                     .position(style.buttonCenter)
                     .opacity(bellBubbleOpacity)
@@ -268,6 +260,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             showsSourceBell &&
             showsContent &&
             progress >= 0.999
+    }
+
+    private var showsOverlayBellBubble: Bool {
+        showsSourceBell || isBellHandedOff || showsDetachedBellBubble
     }
 
     private var contentOpacity: CGFloat {
