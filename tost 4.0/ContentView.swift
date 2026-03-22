@@ -19,11 +19,10 @@ struct ContentView: View {
     @State private var isOperationsVisible = false
     @State private var isAccountsVisible = false
     @State private var isAccountingVisible = false
-    @State private var isToastVisible = false
-    @State private var showsHeaderBell = true
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
     @State private var didStartInitialLoad = false
+    @StateObject private var notificationController = NotificationAnimationController()
     private let toastHeight: CGFloat = 134
     private let toastCardHeight: CGFloat = 114
     private let toastWidth: CGFloat = 351
@@ -75,7 +74,7 @@ struct ContentView: View {
         .onAppear {
             startInitialLoadIfNeeded()
         }
-        .onChange(of: isToastVisible) { _, newValue in
+        .onChange(of: notificationController.isPresented) { _, newValue in
             scheduleToastLayoutSync(with: newValue)
         }
         .onDisappear {
@@ -92,7 +91,7 @@ struct ContentView: View {
         ZStack(alignment: .topLeading) {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
-                showsBellButton: showsHeaderBell,
+                showsBellButton: notificationController.showsSourceBell,
                 onBellTap: restoreToast
             )
                 .opacity(isHeaderVisible ? 1 : 0)
@@ -166,34 +165,27 @@ struct ContentView: View {
         .allowsHitTesting(false)
     }
 
-    @available(iOS 26.0, *)
-    private var glassNotificationView: some View {
-        GlassMorphNotificationView(
-            isPresented: $isToastVisible,
-            showsSourceBell: $showsHeaderBell,
-            style: notificationMorphStyle,
+    private var notificationMorphView: some View {
+        NotificationPresenter(
+            isPresented: $notificationController.isPresented,
+            showsSourceBell: $notificationController.showsSourceBell,
+            glassStyle: notificationMorphStyle,
+            liquidConfig: liquidNotificationConfig,
+            liquidNotificationText: "Новое уведомление",
+            liquidOffset: CGSize(width: liquidNotificationOffsetX, height: liquidNotificationOffsetY),
             onDismissMorphStart: scheduleToastCollapseFromDismissMorphStart
         ) {
-            InlineSVGWebView(svg: toastForegroundSVG)
-                .frame(width: toastWidth, height: toastCardHeight)
+            currentNotificationContentView
         }
-        .allowsHitTesting(isToastVisible)
     }
 
-    private var notificationMorphView: some View {
-        Group {
-            if #available(iOS 26.0, *) {
-                glassNotificationView
-            } else {
-                LiquidNotificationButton(
-                    isExpanded: $isToastVisible,
-                    config: liquidNotificationConfig,
-                    notificationText: "Новое уведомление"
-                )
-                .offset(x: liquidNotificationOffsetX, y: liquidNotificationOffsetY)
-                .allowsHitTesting(isToastVisible)
-            }
-        }
+    @ViewBuilder
+    private var currentNotificationContentView: some View {
+        NotificationContentFactory.makeView(for: currentNotificationScenario)
+    }
+
+    private var currentNotificationScenario: NotificationScenario {
+        NotificationScenarioCatalog.currentInApp
     }
 
     private var placeholderTopOffset: CGFloat {
@@ -205,7 +197,7 @@ struct ContentView: View {
             return false
         }
 
-        return showsHeaderBell
+        return notificationController.showsSourceBell
     }
 
     private var currentNotificationBellCenter: CGPoint {
@@ -331,7 +323,7 @@ struct ContentView: View {
             isOperationsVisible = false
             isAccountsVisible = false
             isAccountingVisible = false
-            showsHeaderBell = true
+            notificationController.reset()
             loadingOpacity = 0
 
             withAnimation(.easeOut(duration: 0.24)) {
@@ -387,8 +379,7 @@ struct ContentView: View {
     }
 
     private func restoreToast() {
-        guard !isToastVisible else { return }
-        isToastVisible = true
+        notificationController.present()
     }
 
     private func scheduleToastLayoutSync(with isVisible: Bool) {
@@ -408,7 +399,7 @@ struct ContentView: View {
                 nanoseconds: UInt64((toastAnimationDuration + 0.04) * 1_000_000_000)
             )
 
-            guard !Task.isCancelled, !isToastVisible else { return }
+            guard !Task.isCancelled, !notificationController.isPresented else { return }
             syncToastLayout(with: false)
         }
     }
@@ -421,7 +412,7 @@ struct ContentView: View {
                 nanoseconds: UInt64(toastDismissLiftLag * 1_000_000_000)
             )
 
-            guard !Task.isCancelled, !isToastVisible else { return }
+            guard !Task.isCancelled, !notificationController.isPresented else { return }
             syncToastLayout(with: false)
         }
     }
@@ -863,7 +854,7 @@ private let toastSVG = #"""
 </svg>
 """#
 
-private let toastForegroundSVG = #"""
+let toastForegroundSVG = #"""
 <svg width="351" height="114" viewBox="12 0 351 114" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_2231_120931)">
 <g clip-path="url(#clip1_2231_120931)">
@@ -893,64 +884,29 @@ private let toastForegroundSVG = #"""
 </svg>
 """#
 
-private let placeholderMultipleSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/placeholder-multiple.svg",
-    encoding: .utf8
-)) ?? ""
+private let placeholderMultipleSVG = loadHomeSVG(named: "placeholder-multiple")
 
-private let totalSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/total.svg",
-    encoding: .utf8
-)) ?? ""
+private let totalSVG = loadHomeSVG(named: "total")
 
-private let containerSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/container.svg",
-    encoding: .utf8
-)) ?? ""
+private let containerSVG = loadHomeSVG(named: "container")
 
-private let container1SVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/container-1.svg",
-    encoding: .utf8
-)) ?? ""
+private let container1SVG = loadHomeSVG(named: "container-1")
 
-private let container2SVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/container-2.svg",
-    encoding: .utf8
-)) ?? ""
+private let container2SVG = loadHomeSVG(named: "container-2")
 
-private let badgeSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/tui-badge.svg",
-    encoding: .utf8
-)) ?? ""
+private let badgeSVG = loadHomeSVG(named: "tui-badge")
 
-private let badge1SVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/tui-badge-1.svg",
-    encoding: .utf8
-)) ?? ""
+private let badge1SVG = loadHomeSVG(named: "tui-badge-1")
 
-private let badge2SVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/tui-badge-2.svg",
-    encoding: .utf8
-)) ?? ""
+private let badge2SVG = loadHomeSVG(named: "tui-badge-2")
 
-private let badge3SVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/tui-badge-3.svg",
-    encoding: .utf8
-)) ?? ""
+private let badge3SVG = loadHomeSVG(named: "tui-badge-3")
 
-private let allActionsBackgroundImage = UIImage(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/background.png"
-)
+private let allActionsBackgroundImage = loadHomeImage(named: "background")
 
-private let operationsSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/Operations.svg",
-    encoding: .utf8
-)) ?? ""
+private let operationsSVG = loadHomeSVG(named: "operations")
 
-private let accountsSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/Accounts.svg",
-    encoding: .utf8
-)) ?? ""
+private let accountsSVG = loadHomeSVG(named: "accounts")
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

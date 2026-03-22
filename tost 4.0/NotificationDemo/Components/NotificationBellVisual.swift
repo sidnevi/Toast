@@ -18,10 +18,7 @@ struct NotificationBellGlyphVisual: View {
     }
 }
 
-private let notificationBellSVG = (try? String(
-    contentsOfFile: "/Users/i.s.sidnev/Downloads/колокол.svg",
-    encoding: .utf8
-)) ?? ""
+private let notificationBellSVG = loadHomeSVG(named: "bell")
 
 private let notificationBellGlyphSVG = #"""
 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">

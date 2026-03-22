@@ -11,7 +11,7 @@ import SwiftUI
 struct tost_4_0App: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRootView()
         }
     }
 }
