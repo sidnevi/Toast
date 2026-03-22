@@ -10,6 +10,7 @@ import UIKit
 import WebKit
 
 struct ContentView: View {
+    @ObservedObject var notificationSelectionStore: NotificationSelectionStore
     @State private var isLoading = true
     @State private var loadingOpacity = 0.0
     @State private var companyHeaderDisplayMode: CompanyHeaderDisplayMode = .regular
@@ -23,9 +24,7 @@ struct ContentView: View {
     @State private var toastLayoutTask: Task<Void, Never>?
     @State private var didStartInitialLoad = false
     @StateObject private var notificationController = NotificationAnimationController()
-    private let toastHeight: CGFloat = 134
-    private let toastCardHeight: CGFloat = 114
-    private let toastWidth: CGFloat = 351
+    @State private var initialContentLoadTracker = InitialHomeContentLoadTracker()
     private let placeholderHeight: CGFloat = 72
     private let placeholderLiftOffset: CGFloat = 8
     private let totalHeight: CGFloat = 141
@@ -57,14 +56,17 @@ struct ContentView: View {
             BackgroundGlowView()
 
             ScrollView(showsIndicators: false) {
-                Group {
+                ZStack(alignment: .top) {
+                    loadedContent(includeNotificationMorph: !isLoading)
+                        .opacity(isLoading ? 0.001 : 1)
+                        .allowsHitTesting(!isLoading)
+
                     if isLoading {
                         loadingContent
-                    } else {
-                        loadedContent
                     }
                 }
             }
+            .scrollDisabled(notificationController.isPresented)
             .onPreferenceChange(CompanyHeaderMinYPreferenceKey.self) { minY in
                 updateCompanyHeaderMode(with: minY)
             }
@@ -87,12 +89,14 @@ struct ContentView: View {
         }
     }
 
-    private var loadedContent: some View {
+    @ViewBuilder
+    private func loadedContent(includeNotificationMorph: Bool) -> some View {
         ZStack(alignment: .topLeading) {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
                 showsBellButton: notificationController.showsSourceBell,
-                onBellTap: restoreToast
+                onBellTap: restoreToast,
+                onSVGReady: initialContentLoadTracker.markLoaded
             )
                 .opacity(isHeaderVisible ? 1 : 0)
                 .offset(y: placeholderTopOffset + revealOffset(for: isHeaderVisible))
@@ -105,19 +109,19 @@ struct ContentView: View {
                     }
                 }
 
-            TotalView()
+            TotalView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isTotalVisible ? 1 : 0)
                 .offset(y: totalTopOffset + revealOffset(for: isTotalVisible))
 
-            ActionsView()
+            ActionsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isActionsVisible ? 1 : 0)
                 .offset(y: actionsTopOffset + revealOffset(for: isActionsVisible))
 
-            OperationsView()
+            OperationsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isOperationsVisible ? 1 : 0)
                 .offset(y: operationsTopOffset + revealOffset(for: isOperationsVisible))
 
-            AccountsView()
+            AccountsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isAccountsVisible ? 1 : 0)
                 .offset(y: accountsTopOffset + revealOffset(for: isAccountsVisible))
 
@@ -125,8 +129,10 @@ struct ContentView: View {
                 .opacity(isAccountingVisible ? 1 : 0)
                 .offset(y: accountingTopOffset + revealOffset(for: isAccountingVisible))
 
-            notificationMorphView
-                .zIndex(1)
+            if includeNotificationMorph {
+                notificationMorphView
+                    .zIndex(1)
+            }
         }
         .frame(maxWidth: .infinity, minHeight: contentHeight, alignment: .top)
     }
@@ -182,10 +188,27 @@ struct ContentView: View {
     @ViewBuilder
     private var currentNotificationContentView: some View {
         NotificationContentFactory.makeView(for: currentNotificationScenario)
+            .id(currentNotificationScenario.id)
     }
 
     private var currentNotificationScenario: NotificationScenario {
-        NotificationScenarioCatalog.currentInApp
+        notificationSelectionStore.selectedScenario
+    }
+
+    private var currentNotificationMetrics: NotificationPresentationMetrics {
+        NotificationContentFactory.presentationMetrics(for: currentNotificationScenario)
+    }
+
+    private var toastHeight: CGFloat {
+        currentNotificationMetrics.containerHeight
+    }
+
+    private var toastCardHeight: CGFloat {
+        currentNotificationMetrics.contentHeight
+    }
+
+    private var toastWidth: CGFloat {
+        currentNotificationMetrics.contentWidth
     }
 
     private var placeholderTopOffset: CGFloat {
@@ -330,7 +353,13 @@ struct ContentView: View {
                 loadingOpacity = 1
             }
 
-            try? await Task.sleep(nanoseconds: loadingDuration)
+            let minimumDelayTask = Task {
+                try? await Task.sleep(nanoseconds: loadingDuration)
+            }
+            let initialContentReadyTask = Task {
+                await initialContentLoadTracker.waitUntilReady(timeoutNanoseconds: 5_000_000_000)
+            }
+            _ = await (minimumDelayTask.value, initialContentReadyTask.value)
 
             isLoading = false
 
@@ -489,9 +518,14 @@ private struct PlaceholderMultipleView: View {
     let showsBellVisual: Bool
     let showsBellButton: Bool
     let onBellTap: () -> Void
+    let onSVGReady: (String) -> Void
 
     var body: some View {
-        InlineSVGWebView(svg: placeholderMultipleSVG)
+        InlineSVGWebView(
+            svg: placeholderMultipleSVG,
+            loadID: InitialHomeContentLoadTracker.LoadID.placeholder.rawValue,
+            onLoad: onSVGReady
+        )
             .frame(width: Layout.width, height: Layout.height)
             .overlay(alignment: .topLeading) {
                 Circle()
@@ -528,9 +562,15 @@ private struct NotificationBellButton: View {
 }
 
 private struct TotalView: View {
+    let onSVGReady: (String) -> Void
+
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
-            InlineSVGWebView(svg: totalSVG)
+            InlineSVGWebView(
+                svg: totalSVG,
+                loadID: InitialHomeContentLoadTracker.LoadID.total.rawValue,
+                onLoad: onSVGReady
+            )
                 .frame(width: 323, height: 125)
         }
         .padding(.horizontal, 0)
@@ -542,12 +582,18 @@ private struct TotalView: View {
 }
 
 private struct ActionsView: View {
+    let onSVGReady: (String) -> Void
+
     var body: some View {
         HStack(alignment: .top) {
             ActionItemView(
                 label: "Создать платеж",
                 icon: {
-                    InlineSVGWebView(svg: containerSVG)
+                    InlineSVGWebView(
+                        svg: containerSVG,
+                        loadID: InitialHomeContentLoadTracker.LoadID.actionCreate.rawValue,
+                        onLoad: onSVGReady
+                    )
                         .frame(width: 72, height: 56)
                 }
             )
@@ -557,7 +603,11 @@ private struct ActionsView: View {
             ActionItemView(
                 label: "Выставить счет",
                 icon: {
-                    InlineSVGWebView(svg: container1SVG)
+                    InlineSVGWebView(
+                        svg: container1SVG,
+                        loadID: InitialHomeContentLoadTracker.LoadID.actionInvoice.rawValue,
+                        onLoad: onSVGReady
+                    )
                         .frame(width: 72, height: 56)
                 }
             )
@@ -567,7 +617,11 @@ private struct ActionsView: View {
             ActionItemView(
                 label: "Загрузить счет",
                 icon: {
-                    InlineSVGWebView(svg: container2SVG)
+                    InlineSVGWebView(
+                        svg: container2SVG,
+                        loadID: InitialHomeContentLoadTracker.LoadID.actionUpload.rawValue,
+                        onLoad: onSVGReady
+                    )
                         .frame(width: 72, height: 56)
                 }
             )
@@ -577,7 +631,7 @@ private struct ActionsView: View {
             ActionItemView(
                 label: "Все действия",
                 icon: {
-                    AllActionsIconView()
+                    AllActionsIconView(onSVGReady: onSVGReady)
                         .frame(width: 72, height: 56, alignment: .center)
                 }
             )
@@ -652,46 +706,40 @@ private struct CompanyHeaderMinYPreferenceKey: PreferenceKey {
 private struct ShimmerBlockView: View {
     let height: CGFloat
 
-    @State private var shimmerOffset: CGFloat = -1.1
+    @State private var shimmerOffset: CGFloat = -180
+    private let blockWidth: CGFloat = 343
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(Color.white.opacity(0.15))
-            .frame(width: 343, height: height)
-            .frame(width: 375, height: height, alignment: .center)
-            .overlay {
-                GeometryReader { geometry in
-                    let blockWidth: CGFloat = 343
+        let shape = RoundedRectangle(cornerRadius: 24, style: .continuous)
 
-                    LinearGradient(
-                        colors: [
-                            .clear,
-                            Color.white.opacity(0.18),
-                            .clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(width: blockWidth * 0.34, height: geometry.size.height * 1.6)
-                    .rotationEffect(.degrees(18))
-                    .offset(
-                        x: ((geometry.size.width - blockWidth) / 2) + (shimmerOffset * blockWidth),
-                        y: -geometry.size.height * 0.12
-                    )
-                    .blendMode(.screen)
-                    .mask {
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .frame(width: blockWidth, height: height)
-                            .frame(width: geometry.size.width, height: height, alignment: .center)
-                    }
+        shape
+            .fill(Color.white.opacity(0.15))
+            .frame(width: blockWidth, height: height)
+            .overlay {
+                LinearGradient(
+                    colors: [
+                        .clear,
+                        Color.white.opacity(0.16),
+                        .clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(width: 120, height: height * 1.6)
+                .rotationEffect(.degrees(18))
+                .offset(x: shimmerOffset, y: -height * 0.1)
+                .blendMode(.screen)
+                .mask {
+                    shape
+                        .frame(width: blockWidth, height: height)
                 }
-                .clipped()
             }
+            .frame(width: 375, height: height, alignment: .center)
             .onAppear {
-                shimmerOffset = -1.1
+                shimmerOffset = -180
 
                 withAnimation(.linear(duration: 1.15).repeatForever(autoreverses: false)) {
-                    shimmerOffset = 1.15
+                    shimmerOffset = 180
                 }
             }
     }
@@ -718,6 +766,8 @@ private struct ActionItemView<Icon: View>: View {
 }
 
 private struct AllActionsIconView: View {
+    let onSVGReady: (String) -> Void
+
     var body: some View {
         Group {
             if let backgroundImage = allActionsBackgroundImage {
@@ -746,22 +796,51 @@ private struct AllActionsIconView: View {
     }
 
     private func badgeView(svg: String) -> some View {
-        InlineSVGWebView(svg: svg)
+        InlineSVGWebView(
+            svg: svg,
+            loadID: badgeLoadID(for: svg),
+            onLoad: onSVGReady
+        )
             .frame(width: 16, height: 16)
+    }
+
+    private func badgeLoadID(for svg: String) -> String {
+        switch svg {
+        case badgeSVG:
+            return InitialHomeContentLoadTracker.LoadID.badge0.rawValue
+        case badge1SVG:
+            return InitialHomeContentLoadTracker.LoadID.badge1.rawValue
+        case badge2SVG:
+            return InitialHomeContentLoadTracker.LoadID.badge2.rawValue
+        default:
+            return InitialHomeContentLoadTracker.LoadID.badge3.rawValue
+        }
     }
 }
 
 private struct OperationsView: View {
+    let onSVGReady: (String) -> Void
+
     var body: some View {
-        InlineSVGWebView(svg: operationsSVG)
+        InlineSVGWebView(
+            svg: operationsSVG,
+            loadID: InitialHomeContentLoadTracker.LoadID.operations.rawValue,
+            onLoad: onSVGReady
+        )
             .frame(width: 411, height: 176)
             .frame(width: 375, alignment: .center)
     }
 }
 
 private struct AccountsView: View {
+    let onSVGReady: (String) -> Void
+
     var body: some View {
-        InlineSVGWebView(svg: accountsSVG)
+        InlineSVGWebView(
+            svg: accountsSVG,
+            loadID: InitialHomeContentLoadTracker.LoadID.accounts.rawValue,
+            onLoad: onSVGReady
+        )
             .frame(width: 411, height: 372)
             .frame(width: 375, alignment: .center)
     }
@@ -769,6 +848,12 @@ private struct AccountsView: View {
 
 struct InlineSVGWebView: UIViewRepresentable {
     let svg: String
+    var loadID: String? = nil
+    var onLoad: ((String) -> Void)? = nil
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
@@ -778,6 +863,7 @@ struct InlineSVGWebView: UIViewRepresentable {
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.backgroundColor = .clear
         webView.isUserInteractionEnabled = false
+        webView.navigationDelegate = context.coordinator
         return webView
     }
 
@@ -816,7 +902,69 @@ struct InlineSVGWebView: UIViewRepresentable {
         </html>
         """
 
+        context.coordinator.loadID = loadID
+        context.coordinator.onLoad = onLoad
+
+        guard context.coordinator.lastHTML != html else {
+            if let loadID, context.coordinator.hasCompletedInitialLoad {
+                onLoad?(loadID)
+            }
+            return
+        }
+
+        context.coordinator.lastHTML = html
+        context.coordinator.hasCompletedInitialLoad = false
         webView.loadHTMLString(html, baseURL: nil)
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate {
+        var lastHTML: String?
+        var loadID: String?
+        var onLoad: ((String) -> Void)?
+        var hasCompletedInitialLoad = false
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            guard !hasCompletedInitialLoad else { return }
+            hasCompletedInitialLoad = true
+            guard let loadID else { return }
+            onLoad?(loadID)
+        }
+    }
+}
+
+@MainActor
+private final class InitialHomeContentLoadTracker {
+    enum LoadID: String, CaseIterable {
+        case placeholder
+        case total
+        case actionCreate
+        case actionInvoice
+        case actionUpload
+        case badge0
+        case badge1
+        case badge2
+        case badge3
+        case operations
+        case accounts
+    }
+
+    private let expectedIDs = Set(LoadID.allCases.map(\.rawValue))
+    private var loadedIDs = Set<String>()
+
+    func markLoaded(_ id: String) {
+        loadedIDs.insert(id)
+    }
+
+    func waitUntilReady(timeoutNanoseconds: UInt64) async {
+        let deadline = Date().timeIntervalSince1970 + (Double(timeoutNanoseconds) / 1_000_000_000)
+
+        while loadedIDs != expectedIDs {
+            if Date().timeIntervalSince1970 >= deadline {
+                break
+            }
+
+            try? await Task.sleep(nanoseconds: 25_000_000)
+        }
     }
 }
 
@@ -910,6 +1058,6 @@ private let accountsSVG = loadHomeSVG(named: "accounts")
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(notificationSelectionStore: NotificationSelectionStore())
     }
 }

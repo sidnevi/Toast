@@ -1,7 +1,15 @@
 import SwiftUI
 
 struct NotificationDemoView: View {
-    @StateObject private var viewModel = NotificationDemoViewModel()
+    @ObservedObject var notificationSelectionStore: NotificationSelectionStore
+    @StateObject private var viewModel: NotificationDemoViewModel
+
+    init(notificationSelectionStore: NotificationSelectionStore) {
+        self.notificationSelectionStore = notificationSelectionStore
+        _viewModel = StateObject(
+            wrappedValue: NotificationDemoViewModel(selectionStore: notificationSelectionStore)
+        )
+    }
 
     var body: some View {
         NavigationStack {
@@ -25,7 +33,7 @@ struct NotificationDemoView: View {
             controlSectionTitle("Тип уведомления")
 
             Picker("Type", selection: Binding(
-                get: { viewModel.state.selectedKind },
+                get: { notificationSelectionStore.selectedKind },
                 set: { viewModel.selectKind($0) }
             )) {
                 ForEach(NotificationKind.allCases) { kind in
@@ -37,10 +45,10 @@ struct NotificationDemoView: View {
             controlSectionTitle("Сценарий")
 
             Picker("Scenario", selection: Binding(
-                get: { viewModel.selectedScenario.id },
+                get: { notificationSelectionStore.selectedScenarioID },
                 set: { viewModel.selectScenario(id: $0) }
             )) {
-                ForEach(viewModel.scenariosForSelectedKind) { scenario in
+                ForEach(notificationSelectionStore.scenariosForSelectedKind) { scenario in
                     Text(scenario.title).tag(scenario.id)
                 }
             }
@@ -115,12 +123,12 @@ struct NotificationDemoView: View {
     }
 
     private var isolatedPreview: some View {
-        NotificationDemoIsolatedPreview(scenario: viewModel.selectedScenario)
+        NotificationDemoIsolatedPreview(scenario: notificationSelectionStore.selectedScenario)
     }
 
     private var homeContextPreview: some View {
         NotificationDemoHomeContextPreviewRepresentable(
-            scenario: viewModel.selectedScenario,
+            scenario: notificationSelectionStore.selectedScenario,
             controller: viewModel.animationController,
             preferredColorScheme: viewModel.state.preferredColorScheme,
             dynamicTypeSize: viewModel.state.dynamicTypeSize

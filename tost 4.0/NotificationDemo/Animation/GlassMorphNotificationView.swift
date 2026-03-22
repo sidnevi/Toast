@@ -94,7 +94,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         }
         .frame(width: style.containerSize.width, height: style.containerSize.height)
         .contentShape(Rectangle())
-        .gesture(swipeUpToDismissGesture)
+        .highPriorityGesture(swipeUpToDismissGesture, including: .gesture)
         .onAppear {
             syncImmediately(with: isPresented)
         }

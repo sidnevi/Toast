@@ -5,59 +5,44 @@ import SwiftUI
 final class NotificationDemoViewModel: ObservableObject {
     @Published var state: NotificationDemoState
 
+    let selectionStore: NotificationSelectionStore
     let animationController: NotificationAnimationController
-    let scenarios: [NotificationScenario]
     private var hasAutoPresentedOnOpen = false
 
     init(
-        scenarios: [NotificationScenario],
-        initialKind: NotificationKind,
+        selectionStore: NotificationSelectionStore,
         animationController: NotificationAnimationController
     ) {
-        self.scenarios = scenarios
+        self.selectionStore = selectionStore
         self.animationController = animationController
-
-        let initialScenario = NotificationScenarioCatalog.defaultScenario(for: initialKind)
-        self.state = NotificationDemoState(
-            selectedKind: initialKind,
-            selectedScenarioID: initialScenario.id
-        )
+        self.state = NotificationDemoState()
         self.animationController.setShowsSourceBell(state.showsSourceBell)
     }
 
-    convenience init(initialKind: NotificationKind = .inApp) {
+    convenience init(selectionStore: NotificationSelectionStore) {
         self.init(
-            scenarios: NotificationScenarioCatalog.all,
-            initialKind: initialKind,
+            selectionStore: selectionStore,
             animationController: NotificationAnimationController()
         )
     }
 
     var scenariosForSelectedKind: [NotificationScenario] {
-        scenarios.filter { $0.kind == state.selectedKind }
+        selectionStore.scenariosForSelectedKind
     }
 
     var selectedScenario: NotificationScenario {
-        if let selectedScenarioID = state.selectedScenarioID,
-           let selectedScenario = scenarios.first(where: { $0.id == selectedScenarioID }) {
-            return selectedScenario
-        }
-
-        return NotificationScenarioCatalog.defaultScenario(for: state.selectedKind)
+        selectionStore.selectedScenario
     }
 
     func selectKind(_ kind: NotificationKind) {
-        guard state.selectedKind != kind else { return }
-
-        state.selectedKind = kind
-        state.selectedScenarioID = NotificationScenarioCatalog.defaultScenario(for: kind).id
+        guard selectionStore.selectedKind != kind else { return }
+        selectionStore.selectKind(kind)
         handleScenarioMutation()
     }
 
     func selectScenario(id: String) {
-        guard state.selectedScenarioID != id else { return }
-
-        state.selectedScenarioID = id
+        guard selectionStore.selectedScenarioID != id else { return }
+        selectionStore.selectScenario(id: id)
         handleScenarioMutation()
     }
 

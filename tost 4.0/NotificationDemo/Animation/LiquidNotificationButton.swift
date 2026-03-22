@@ -77,7 +77,7 @@ struct LiquidNotificationButton: View {
             )
         }
         .frame(width: config.containerSize, height: config.containerSize)
-        .gesture(swipeUpDismissGesture)
+        .highPriorityGesture(swipeUpDismissGesture, including: .gesture)
         .onAppear {
             syncImmediately(with: isExpanded)
         }
