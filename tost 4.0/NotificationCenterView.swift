@@ -89,76 +89,83 @@ struct NotificationCenterView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            ZStack(alignment: .top) {
+            ZStack {
                 Color.black
                     .ignoresSafeArea()
 
                 ScrollViewReader { scrollProxy in
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            topBar
-                                .padding(.top, proxy.safeAreaInsets.top + 10)
-                                .padding(.horizontal, 16)
-
-                            summaryStack
-                                .padding(.top, 14)
-
+                    ZStack(alignment: .bottom) {
+                        ScrollView(showsIndicators: false) {
                             VStack(spacing: 0) {
-                                sectionTitle("Важное")
-                                    .padding(.top, 36)
-                                    .padding(.bottom, 24)
-                                    .id(importantSectionID)
+                                topBar
+                                    .padding(.top, proxy.safeAreaInsets.top + 10)
+                                    .padding(.horizontal, 16)
 
-                                VStack(spacing: 16) {
-                                    ForEach(importantCards) { card in
-                                        NotificationCenterCard(model: card)
-                                    }
-                                }
+                                summaryStack
+                                    .padding(.top, 14)
 
-                                sectionTitle("Полезное")
-                                    .padding(.top, 36)
-                                    .padding(.bottom, 24)
-                                    .id(usefulSectionID)
-                                    .background {
-                                        GeometryReader { geometry in
-                                            Color.clear.preference(
-                                                key: NotificationCenterSectionContentOffsetPreferenceKey.self,
-                                                value: geometry.frame(
-                                                    in: .named(NotificationCenterContentSpace.name)
-                                                ).minY
-                                            )
+                                VStack(spacing: 0) {
+                                    sectionTitle("Важное")
+                                        .padding(.top, 36)
+                                        .padding(.bottom, 24)
+                                        .id(importantSectionID)
+
+                                    VStack(spacing: 16) {
+                                        ForEach(importantCards) { card in
+                                            NotificationCenterCard(model: card)
                                         }
                                     }
 
-                                VStack(spacing: 16) {
-                                    ForEach(usefulCards) { card in
-                                        NotificationCenterCard(model: card)
+                                    sectionTitle("Полезное")
+                                        .padding(.top, 36)
+                                        .padding(.bottom, 24)
+                                        .id(usefulSectionID)
+                                        .background {
+                                            GeometryReader { geometry in
+                                                Color.clear.preference(
+                                                    key: NotificationCenterSectionContentOffsetPreferenceKey.self,
+                                                    value: geometry.frame(
+                                                        in: .named(NotificationCenterContentSpace.name)
+                                                    ).minY
+                                                )
+                                            }
+                                        }
+
+                                    VStack(spacing: 16) {
+                                        ForEach(usefulCards) { card in
+                                            NotificationCenterCard(model: card)
+                                        }
                                     }
                                 }
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, max(proxy.safeAreaInsets.bottom, 20) + 88)
+                                .coordinateSpace(name: NotificationCenterContentSpace.name)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, max(proxy.safeAreaInsets.bottom, 20) + 88)
-                            .coordinateSpace(name: NotificationCenterContentSpace.name)
                         }
-                    }
-                    .background {
-                        NotificationCenterScrollOffsetObserver { offset in
-                            let normalizedOffset = max(offset, 0)
-                            observeScrollMotion(for: normalizedOffset)
+                        .background {
+                            NotificationCenterScrollOffsetObserver { offset in
+                                let normalizedOffset = max(offset, 0)
+                                observeScrollMotion(for: normalizedOffset)
+                                updateAnchorTarget(
+                                    scrollOffset: normalizedOffset,
+                                    viewportHeight: proxy.size.height
+                                )
+                            }
+                        }
+                        .onPreferenceChange(NotificationCenterSectionContentOffsetPreferenceKey.self) { value in
+                            usefulSectionContentOffset = value
                             updateAnchorTarget(
-                                scrollOffset: normalizedOffset,
+                                scrollOffset: max(lastObservedScrollOffset ?? .zero, 0),
                                 viewportHeight: proxy.size.height
                             )
                         }
-                    }
-                    .onPreferenceChange(NotificationCenterSectionContentOffsetPreferenceKey.self) { value in
-                        usefulSectionContentOffset = value
-                        updateAnchorTarget(
-                            scrollOffset: max(lastObservedScrollOffset ?? .zero, 0),
-                            viewportHeight: proxy.size.height
-                        )
-                    }
-                    .overlay(alignment: .bottom) {
+                        .compositingGroup()
+                        .mask {
+                            NotificationCenterScrollViewportMask(
+                                safeAreaBottom: proxy.safeAreaInsets.bottom
+                            )
+                        }
+
                         if isAnchorVisible {
                             NotificationCenterBottomAnchor(
                                 direction: anchorTarget == .useful ? .down : .up,
@@ -271,32 +278,57 @@ private struct NotificationCenterBackButtonVisual: View {
 private struct NotificationCenterSummaryStack: View {
     @Binding var isExpanded: Bool
 
+    @State private var animationProgress: CGFloat = 0
+
+    private let animation = Animation.spring(response: 0.46, dampingFraction: 0.88)
+
     var body: some View {
+        let progress = animationProgress
+
         ZStack(alignment: .top) {
-            if isExpanded {
+            collapsedLayer(width: 319, height: 156, opacity: 0.48 * (1 - progress), yOffset: 22 + (14 * progress))
+            collapsedLayer(width: 331, height: 159, opacity: 0.72 * (1 - progress), yOffset: 11 + (10 * progress))
+
+            InlineSVGWebView(svg: notificationCenterStackCollapsedSVG)
+                .frame(width: 375, height: 162)
+                .allowsHitTesting(false)
+                .opacity(Double(1 - (CGFloat(0.94) * progress)))
+                .scaleEffect(1 - (CGFloat(0.015) * progress), anchor: .top)
+                .offset(y: 16 * progress)
+
+            if isExpanded || progress > 0.001 {
                 InlineSVGWebView(svg: notificationCenterStackExpandedSVG)
                     .frame(width: 375, height: 336)
                     .allowsHitTesting(false)
-                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
-            } else {
-                Button {
-                    withAnimation(.spring(response: 0.38, dampingFraction: 0.9)) {
-                        isExpanded = true
+                    .opacity(Double(progress))
+                    .scaleEffect(CGFloat(0.985) + (CGFloat(0.015) * progress), anchor: .top)
+                    .offset(y: 10 * (1 - progress))
+                    .mask(alignment: .top) {
+                        Rectangle()
+                            .frame(height: 132 + (204 * progress))
                     }
-                } label: {
-                    collapsedStack
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .transition(.opacity.combined(with: .scale(scale: 0.98)))
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: isExpanded ? 336 : 188)
+        .frame(height: 188 + (148 * progress))
+        .clipped()
+        .overlay {
+            if !isExpanded {
+                Button {
+                    withAnimation(animation) {
+                        isExpanded = true
+                    }
+                } label: {
+                    Color.clear
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
         .overlay(alignment: .top) {
             if isExpanded {
                 Button {
-                    withAnimation(.spring(response: 0.38, dampingFraction: 0.9)) {
+                    withAnimation(animation) {
                         isExpanded = false
                     }
                 } label: {
@@ -308,27 +340,22 @@ private struct NotificationCenterSummaryStack: View {
                 .offset(x: 24, y: 22)
             }
         }
+        .onAppear {
+            animationProgress = isExpanded ? 1 : 0
+        }
+        .onChange(of: isExpanded) { _, newValue in
+            withAnimation(animation) {
+                animationProgress = newValue ? 1 : 0
+            }
+        }
     }
 
-    private var collapsedStack: some View {
-        ZStack(alignment: .top) {
-            InlineSVGWebView(svg: notificationCenterStackLayerSVG)
-                .frame(width: 319, height: 156)
-                .opacity(0.48)
-                .offset(y: 22)
-                .allowsHitTesting(false)
-
-            InlineSVGWebView(svg: notificationCenterStackLayerSVG)
-                .frame(width: 331, height: 159)
-                .opacity(0.72)
-                .offset(y: 11)
-                .allowsHitTesting(false)
-
-            InlineSVGWebView(svg: notificationCenterStackCollapsedSVG)
-                .frame(width: 375, height: 162)
-                .allowsHitTesting(false)
-        }
-        .frame(width: 375, height: 188)
+    private func collapsedLayer(width: CGFloat, height: CGFloat, opacity: CGFloat, yOffset: CGFloat) -> some View {
+        InlineSVGWebView(svg: notificationCenterStackLayerSVG)
+            .frame(width: width, height: height)
+            .opacity(Double(opacity))
+            .offset(y: yOffset)
+            .allowsHitTesting(false)
     }
 }
 
@@ -487,6 +514,34 @@ private struct NotificationCenterBottomAnchor: View {
             )
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct NotificationCenterScrollViewportMask: View {
+    let safeAreaBottom: CGFloat
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                Rectangle()
+                    .fill(Color.white)
+                    .frame(height: max(geometry.size.height - (126 + safeAreaBottom), 0))
+
+                LinearGradient(
+                    stops: [
+                        .init(color: .white, location: 0),
+                        .init(color: .white, location: 0.36),
+                        .init(color: Color.white.opacity(0.74), location: 0.68),
+                        .init(color: Color.white.opacity(0.18), location: 0.90),
+                        .init(color: .clear, location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 126 + safeAreaBottom)
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
 
