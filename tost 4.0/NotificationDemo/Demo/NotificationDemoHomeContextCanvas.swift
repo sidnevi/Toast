@@ -65,6 +65,7 @@ struct NotificationDemoHomeContextCanvas: View {
             width: presentationMetrics.contentWidth,
             height: presentationMetrics.contentHeight
         )
+        style.footerVariant = presentationMetrics.footerVariant
         style.buttonSize = NotificationDemoHomeContextLayout.bellSize
         style.buttonCenter = NotificationDemoHomeContextLayout.bellCenter
         style.glassContainerSpacing = 50

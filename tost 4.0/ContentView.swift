@@ -10,7 +10,8 @@ import UIKit
 import WebKit
 
 struct ContentView: View {
-    @ObservedObject var notificationSelectionStore: NotificationSelectionStore
+    @ObservedObject var demoHomeBridge: NotificationDemoHomeBridge
+    let activeTab: AppRootTab
     @State private var isLoading = true
     @State private var loadingOpacity = 0.0
     @State private var companyHeaderDisplayMode: CompanyHeaderDisplayMode = .regular
@@ -22,7 +23,10 @@ struct ContentView: View {
     @State private var isAccountingVisible = false
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
+    @State private var homePlaybackTask: Task<Void, Never>?
+    @State private var notificationPresenterResetID = UUID()
     @State private var didStartInitialLoad = false
+    @State private var lastHandledHomePlaybackRequestID: UUID?
     @StateObject private var notificationController = NotificationAnimationController()
     @State private var initialContentLoadTracker = InitialHomeContentLoadTracker()
     private let placeholderHeight: CGFloat = 72
@@ -75,12 +79,23 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .onAppear {
             startInitialLoadIfNeeded()
+            handlePendingHomePlaybackIfNeeded()
         }
         .onChange(of: notificationController.isPresented) { _, newValue in
             scheduleToastLayoutSync(with: newValue)
         }
+        .onChange(of: demoHomeBridge.homePlaybackRequestID) { _, _ in
+            handlePendingHomePlaybackIfNeeded()
+        }
+        .onChange(of: activeTab) { _, newValue in
+            handleActiveTabChange(newValue)
+        }
+        .onChange(of: isLoading) { _, _ in
+            handlePendingHomePlaybackIfNeeded()
+        }
         .onDisappear {
             toastLayoutTask?.cancel()
+            homePlaybackTask?.cancel()
         }
         .overlay(alignment: .top) {
             if !isLoading {
@@ -183,6 +198,7 @@ struct ContentView: View {
         ) {
             currentNotificationContentView
         }
+        .id(notificationPresenterIdentity)
     }
 
     @ViewBuilder
@@ -192,11 +208,15 @@ struct ContentView: View {
     }
 
     private var currentNotificationScenario: NotificationScenario {
-        notificationSelectionStore.selectedScenario
+        demoHomeBridge.selectedScenario
     }
 
     private var currentNotificationMetrics: NotificationPresentationMetrics {
         NotificationContentFactory.presentationMetrics(for: currentNotificationScenario)
+    }
+
+    private var notificationPresenterIdentity: String {
+        "\(currentNotificationScenario.id)-\(notificationPresenterResetID.uuidString)"
     }
 
     private var toastHeight: CGFloat {
@@ -298,6 +318,7 @@ struct ContentView: View {
         var style = GlassMorphNotificationStyle()
         style.containerSize = CGSize(width: 375, height: toastHeight)
         style.notificationFrame = CGRect(x: 12, y: 0, width: toastWidth, height: toastCardHeight)
+        style.footerVariant = currentNotificationMetrics.footerVariant
         style.buttonSize = PlaceholderMultipleView.Layout.bellSize
         style.buttonCenter = currentNotificationBellCenter
         style.glassContainerSpacing = 50
@@ -364,6 +385,7 @@ struct ContentView: View {
             isLoading = false
 
             try? await revealLoadedContent()
+            handlePendingHomePlaybackIfNeeded()
         }
     }
 
@@ -409,6 +431,45 @@ struct ContentView: View {
 
     private func restoreToast() {
         notificationController.present()
+    }
+
+    private func handlePendingHomePlaybackIfNeeded() {
+        guard activeTab == .home, !isLoading else { return }
+        guard let requestID = demoHomeBridge.homePlaybackRequestID else { return }
+        guard lastHandledHomePlaybackRequestID != requestID else { return }
+
+        playSelectedScenarioOnHome(for: requestID)
+    }
+
+    private func handleActiveTabChange(_ newValue: AppRootTab) {
+        if newValue == .home {
+            handlePendingHomePlaybackIfNeeded()
+        } else {
+            resetHomeNotificationState()
+        }
+    }
+
+    private func playSelectedScenarioOnHome(for requestID: UUID) {
+        homePlaybackTask?.cancel()
+        resetHomeNotificationState()
+
+        homePlaybackTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 120_000_000)
+
+            guard !Task.isCancelled else { return }
+            guard activeTab == .home, !isLoading else { return }
+            guard demoHomeBridge.homePlaybackRequestID == requestID else { return }
+
+            lastHandledHomePlaybackRequestID = requestID
+            notificationController.present()
+        }
+    }
+
+    private func resetHomeNotificationState() {
+        homePlaybackTask?.cancel()
+        notificationPresenterResetID = UUID()
+        notificationController.reset(showsSourceBell: true)
+        syncToastLayout(with: false)
     }
 
     private func scheduleToastLayoutSync(with isVisible: Bool) {
@@ -1058,6 +1119,9 @@ private let accountsSVG = loadHomeSVG(named: "accounts")
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(notificationSelectionStore: NotificationSelectionStore())
+        ContentView(
+            demoHomeBridge: NotificationDemoHomeBridge(),
+            activeTab: .home
+        )
     }
 }

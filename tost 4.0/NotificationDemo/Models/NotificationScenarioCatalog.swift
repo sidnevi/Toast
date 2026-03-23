@@ -13,47 +13,35 @@ enum NotificationScenarioCatalog {
         actions: []
     )
 
-    static let longInApp = NotificationScenario(
-        id: "in-app.long-message",
-        title: "Long In-App",
-        kind: .inApp,
-        payload: .inApp(
-            InAppNotificationContent(
-                foregroundSVG: toastForegroundSVG
-            )
-        ),
-        actions: []
-    )
-
-    static let compactPush = NotificationScenario(
-        id: "push.compact",
-        title: "Compact Push",
+    static let infoPush = NotificationScenario(
+        id: "push.info",
+        title: "Info",
         kind: .push,
         payload: .push(
             PushNotificationContent(
                 appName: "Toast",
-                title: "Новое уведомление",
-                message: "Компактный push с коротким текстом.",
+                title: "Информационное уведомление",
+                message: "Спокойный push для обычного информирования пользователя.",
                 accessoryText: "Сейчас"
             )
         ),
         actions: []
     )
 
-    static let actionPush = NotificationScenario(
-        id: "push.with-action",
-        title: "Push With CTA",
+    static let criticalInfoPush = NotificationScenario(
+        id: "push.critical-info",
+        title: "Critical Info",
         kind: .push,
         payload: .push(
             PushNotificationContent(
                 appName: "Toast",
-                title: "Платеж требует подтверждения",
-                message: "Откройте главный экран, чтобы подтвердить действие и проверить детали операции.",
-                accessoryText: "1 мин назад"
+                title: "Критически важная информация",
+                message: "Уведомление требует внимания. Проверьте детали на главной странице.",
+                accessoryText: "Только что"
             )
         ),
         actions: [
-            NotificationAction(id: "push.open", title: "Открыть", style: .primary)
+            NotificationAction(id: "push.review", title: "Проверить", style: .primary)
         ]
     )
 
@@ -163,9 +151,8 @@ enum NotificationScenarioCatalog {
 
     static let all: [NotificationScenario] = [
         currentInApp,
-        longInApp,
-        compactPush,
-        actionPush,
+        infoPush,
+        criticalInfoPush,
         richEvent,
         minimalEvent,
         errorEvent,

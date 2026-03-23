@@ -5,44 +5,73 @@ import SwiftUI
 final class NotificationDemoViewModel: ObservableObject {
     @Published var state: NotificationDemoState
 
-    let selectionStore: NotificationSelectionStore
     let animationController: NotificationAnimationController
+    let scenarios: [NotificationScenario]
+    let homeBridge: NotificationDemoHomeBridge
     private var hasAutoPresentedOnOpen = false
 
     init(
-        selectionStore: NotificationSelectionStore,
-        animationController: NotificationAnimationController
+        scenarios: [NotificationScenario],
+        initialKind: NotificationKind,
+        animationController: NotificationAnimationController,
+        homeBridge: NotificationDemoHomeBridge
     ) {
-        self.selectionStore = selectionStore
+        self.scenarios = scenarios
         self.animationController = animationController
-        self.state = NotificationDemoState()
+        self.homeBridge = homeBridge
+
+        let initialScenario = NotificationScenarioCatalog.defaultScenario(for: initialKind)
+        self.state = NotificationDemoState(
+            selectedKind: initialKind,
+            selectedScenarioID: initialScenario.id
+        )
         self.animationController.setShowsSourceBell(state.showsSourceBell)
+        self.homeBridge.setSelectedScenario(id: initialScenario.id, requestPlayback: false)
     }
 
-    convenience init(selectionStore: NotificationSelectionStore) {
+    convenience init(
+        initialKind: NotificationKind = .inApp,
+        homeBridge: NotificationDemoHomeBridge
+    ) {
         self.init(
-            selectionStore: selectionStore,
-            animationController: NotificationAnimationController()
+            scenarios: NotificationScenarioCatalog.all,
+            initialKind: initialKind,
+            animationController: NotificationAnimationController(),
+            homeBridge: homeBridge
         )
     }
 
     var scenariosForSelectedKind: [NotificationScenario] {
-        selectionStore.scenariosForSelectedKind
+        scenarios.filter { $0.kind == state.selectedKind }
+    }
+
+    var showsScenarioPicker: Bool {
+        state.selectedKind != .inApp && scenariosForSelectedKind.count > 1
     }
 
     var selectedScenario: NotificationScenario {
-        selectionStore.selectedScenario
+        if let selectedScenarioID = state.selectedScenarioID,
+           let selectedScenario = scenarios.first(where: { $0.id == selectedScenarioID }) {
+            return selectedScenario
+        }
+
+        return NotificationScenarioCatalog.defaultScenario(for: state.selectedKind)
     }
 
     func selectKind(_ kind: NotificationKind) {
-        guard selectionStore.selectedKind != kind else { return }
-        selectionStore.selectKind(kind)
+        guard state.selectedKind != kind else { return }
+
+        state.selectedKind = kind
+        state.selectedScenarioID = NotificationScenarioCatalog.defaultScenario(for: kind).id
+        syncSelectedScenarioToHome()
         handleScenarioMutation()
     }
 
     func selectScenario(id: String) {
-        guard selectionStore.selectedScenarioID != id else { return }
-        selectionStore.selectScenario(id: id)
+        guard state.selectedScenarioID != id else { return }
+
+        state.selectedScenarioID = id
+        syncSelectedScenarioToHome()
         handleScenarioMutation()
     }
 
@@ -73,6 +102,10 @@ final class NotificationDemoViewModel: ObservableObject {
 
     func setAutoPresentOnScenarioChange(_ autoPresentOnScenarioChange: Bool) {
         state.autoPresentOnScenarioChange = autoPresentOnScenarioChange
+    }
+
+    func setAutoPlayOnHomeSelection(_ isEnabled: Bool) {
+        homeBridge.autoPlayOnHomeSelection = isEnabled
     }
 
     func handleDemoAppear(force: Bool = false) {
@@ -118,5 +151,9 @@ final class NotificationDemoViewModel: ObservableObject {
         if state.autoPresentOnScenarioChange {
             triggerAnimation()
         }
+    }
+
+    private func syncSelectedScenarioToHome() {
+        homeBridge.setSelectedScenario(id: selectedScenario.id)
     }
 }

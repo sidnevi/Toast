@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct NotificationDemoView: View {
-    @ObservedObject var notificationSelectionStore: NotificationSelectionStore
     @StateObject private var viewModel: NotificationDemoViewModel
 
-    init(notificationSelectionStore: NotificationSelectionStore) {
-        self.notificationSelectionStore = notificationSelectionStore
+    init(homeBridge: NotificationDemoHomeBridge) {
         _viewModel = StateObject(
-            wrappedValue: NotificationDemoViewModel(selectionStore: notificationSelectionStore)
+            wrappedValue: NotificationDemoViewModel(homeBridge: homeBridge)
         )
     }
 
@@ -18,7 +16,10 @@ struct NotificationDemoView: View {
                     previewCard
                     controlsCard
                 }
-                .padding(16)
+                .frame(maxWidth: NotificationDemoLayout.contentMaxWidth)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, NotificationDemoLayout.horizontalPadding)
+                .padding(.vertical, NotificationDemoLayout.verticalPadding)
             }
             .background(NotificationDemoBackground().ignoresSafeArea())
             .navigationTitle("Notification Demo")
@@ -33,7 +34,7 @@ struct NotificationDemoView: View {
             controlSectionTitle("Тип уведомления")
 
             Picker("Type", selection: Binding(
-                get: { notificationSelectionStore.selectedKind },
+                get: { viewModel.state.selectedKind },
                 set: { viewModel.selectKind($0) }
             )) {
                 ForEach(NotificationKind.allCases) { kind in
@@ -42,59 +43,26 @@ struct NotificationDemoView: View {
             }
             .pickerStyle(.segmented)
 
-            controlSectionTitle("Сценарий")
+            if viewModel.showsScenarioPicker {
+                controlSectionTitle("Сценарий")
 
-            Picker("Scenario", selection: Binding(
-                get: { notificationSelectionStore.selectedScenarioID },
-                set: { viewModel.selectScenario(id: $0) }
-            )) {
-                ForEach(notificationSelectionStore.scenariosForSelectedKind) { scenario in
-                    Text(scenario.title).tag(scenario.id)
+                Picker("Scenario", selection: Binding(
+                    get: { viewModel.selectedScenario.id },
+                    set: { viewModel.selectScenario(id: $0) }
+                )) {
+                    ForEach(viewModel.scenariosForSelectedKind) { scenario in
+                        Text(scenario.title).tag(scenario.id)
+                    }
                 }
             }
 
-            controlSectionTitle("Appearance")
-
-            Picker("Text size", selection: Binding(
-                get: { viewModel.state.dynamicTypeSize },
-                set: { viewModel.setDynamicTypeSize($0) }
-            )) {
-                ForEach(dynamicTypeOptions, id: \.self) { size in
-                    Text(dynamicTypeTitle(size)).tag(size)
-                }
-            }
-
-            controlSectionTitle("Behavior")
-
             Toggle(isOn: Binding(
-                get: { viewModel.state.showsSourceBell },
-                set: { viewModel.setShowsSourceBell($0) }
+                get: { viewModel.homeBridge.autoPlayOnHomeSelection },
+                set: { viewModel.setAutoPlayOnHomeSelection($0) }
             )) {
                 behaviorRow(
-                    title: "Show Source Bell",
-                    subtitle: "Показывать исходную кнопку-источник в home context."
-                )
-            }
-            .toggleStyle(.switch)
-
-            Toggle(isOn: Binding(
-                get: { viewModel.state.autoPresentOnOpen },
-                set: { viewModel.setAutoPresentOnOpen($0) }
-            )) {
-                behaviorRow(
-                    title: "Auto Present On Open",
-                    subtitle: "Автоматически проигрывать уведомление при открытии demo."
-                )
-            }
-            .toggleStyle(.switch)
-
-            Toggle(isOn: Binding(
-                get: { viewModel.state.autoPresentOnScenarioChange },
-                set: { viewModel.setAutoPresentOnScenarioChange($0) }
-            )) {
-                behaviorRow(
-                    title: "Auto Present On Change",
-                    subtitle: "Повторно запускать анимацию при смене типа или сценария."
+                    title: "Autoplay On Home",
+                    subtitle: "После выбора на Demo автоматически показывать выбранное уведомление на странице Home."
                 )
             }
             .toggleStyle(.switch)
@@ -123,17 +91,7 @@ struct NotificationDemoView: View {
     }
 
     private var isolatedPreview: some View {
-        NotificationDemoIsolatedPreview(scenario: notificationSelectionStore.selectedScenario)
-    }
-
-    private var homeContextPreview: some View {
-        NotificationDemoHomeContextPreviewRepresentable(
-            scenario: notificationSelectionStore.selectedScenario,
-            controller: viewModel.animationController,
-            preferredColorScheme: viewModel.state.preferredColorScheme,
-            dynamicTypeSize: viewModel.state.dynamicTypeSize
-        )
-        .frame(height: 812)
+        NotificationDemoIsolatedPreview(scenario: viewModel.selectedScenario)
     }
 
     private func controlSectionTitle(_ title: String) -> some View {
@@ -153,27 +111,6 @@ struct NotificationDemoView: View {
         }
     }
 
-    private func dynamicTypeTitle(_ size: DynamicTypeSize) -> String {
-        switch size {
-        case .small:
-            return "S"
-        case .medium:
-            return "M"
-        case .large:
-            return "L"
-        case .xLarge:
-            return "XL"
-        case .xxLarge:
-            return "XXL"
-        default:
-            return "AX"
-        }
-    }
-
-    private var dynamicTypeOptions: [DynamicTypeSize] {
-        [.small, .medium, .large, .xLarge, .xxLarge, .accessibility1]
-    }
-
     private func behaviorRow(title: String, subtitle: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
@@ -188,6 +125,12 @@ struct NotificationDemoView: View {
     }
 }
 
+private enum NotificationDemoLayout {
+    static let contentMaxWidth: CGFloat = 560
+    static let horizontalPadding: CGFloat = 20
+    static let verticalPadding: CGFloat = 16
+}
+
 private struct NotificationDemoIsolatedPreview: View {
     let scenario: NotificationScenario
 
@@ -196,22 +139,53 @@ private struct NotificationDemoIsolatedPreview: View {
     }
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                NotificationContentFactory.makeView(for: scenario)
-                    .frame(width: presentationMetrics.contentWidth, alignment: .top)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 16)
+        GeometryReader { proxy in
+            let availableCanvasWidth = max(
+                proxy.size.width - (NotificationDemoIsolatedPreviewLayout.horizontalInset * 2),
+                1
+            )
+            let scale = min(
+                1,
+                availableCanvasWidth / NotificationDemoIsolatedPreviewLayout.canvasWidth
+            )
+            let containerHeight = presentationMetrics.containerHeight
+            let scaledContainerHeight = containerHeight * scale
+
+            ZStack {
+                NotificationStaticCardView(scenario: scenario)
+                    .scaleEffect(scale, anchor: .topLeading)
+                    .frame(
+                        width: NotificationDemoIsolatedPreviewLayout.canvasWidth,
+                        height: containerHeight,
+                        alignment: .topLeading
+                    )
+                    .padding(.top, NotificationDemoIsolatedPreviewLayout.topInset)
             }
-            .frame(maxWidth: .infinity)
+            .frame(
+                width: proxy.size.width,
+                height: max(
+                    NotificationDemoIsolatedPreviewLayout.minimumHeight,
+                    scaledContainerHeight + NotificationDemoIsolatedPreviewLayout.verticalPadding
+                ),
+                alignment: .topLeading
+            )
         }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 180, maxHeight: 360, alignment: .top)
-        .background {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color.black.opacity(0.26))
-        }
+        .frame(
+            minHeight: max(
+                NotificationDemoIsolatedPreviewLayout.minimumHeight,
+                presentationMetrics.containerHeight + NotificationDemoIsolatedPreviewLayout.verticalPadding
+            ),
+            alignment: .top
+        )
     }
+}
+
+private enum NotificationDemoIsolatedPreviewLayout {
+    static let canvasWidth: CGFloat = 375
+    static let horizontalInset: CGFloat = 8
+    static let topInset: CGFloat = 8
+    static let verticalPadding: CGFloat = 16
+    static let minimumHeight: CGFloat = 144
 }
 
 private struct NotificationDemoBackground: View {

@@ -4,6 +4,8 @@ import UIKit
 struct NotificationPresentationMetrics {
     let contentWidth: CGFloat
     let contentHeight: CGFloat
+    let footerHeight: CGFloat
+    let footerVariant: NotificationFooterView.Variant
     let containerHeight: CGFloat
 }
 
@@ -36,23 +38,29 @@ enum NotificationContentFactory {
 
     static func presentationMetrics(for scenario: NotificationScenario) -> NotificationPresentationMetrics {
         let contentHeight: CGFloat
+        let footerVariant: NotificationFooterView.Variant
 
         switch scenario.payload {
         case .inApp:
             contentHeight = Layout.minimumCardHeight
+            footerVariant = .inApp
         case .push(let model):
             contentHeight = pushContentHeight(for: model, actions: scenario.actions)
+            footerVariant = .inApp
         case .event(let model):
             if let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty {
                 contentHeight = model.preferredHeight
             } else {
                 contentHeight = eventContentHeight(for: model, actions: scenario.actions)
             }
+            footerVariant = .event
         }
 
         return .init(
             contentWidth: Layout.contentWidth,
             contentHeight: contentHeight,
+            footerHeight: Layout.footerHeight,
+            footerVariant: footerVariant,
             containerHeight: contentHeight + Layout.footerHeight
         )
     }

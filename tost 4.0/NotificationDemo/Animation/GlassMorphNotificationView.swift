@@ -5,6 +5,7 @@ import UIKit
 struct GlassMorphNotificationStyle {
     var containerSize = CGSize(width: 375, height: 134)
     var notificationFrame = CGRect(x: 12, y: 0, width: 351, height: 134)
+    var footerVariant: NotificationFooterView.Variant = .inApp
     var buttonSize: CGFloat = 56
     var buttonCenter = CGPoint(x: 335, y: 36)
     var glassContainerSpacing: CGFloat = 50
@@ -162,7 +163,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         Group {
             if style.footerFrame.height > 0 {
                 NotificationFooterView(
-                    style: .init(size: style.footerFrame.size)
+                    style: .init(
+                        size: style.footerFrame.size,
+                        variant: style.footerVariant
+                    )
                 )
                 .opacity(footerOpacity)
                 .scaleEffect(footerScale, anchor: .center)
