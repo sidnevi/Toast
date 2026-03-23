@@ -4,6 +4,7 @@ import UIKit
 enum NotificationResourceFolder: String {
     case eventStatus = "EventStatus"
     case homeAssets = "HomeAssets"
+    case notificationCenterAssets = "NotificationCenterAssets"
 }
 
 func loadNotificationSVG(

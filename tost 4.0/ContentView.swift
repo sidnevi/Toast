@@ -12,6 +12,7 @@ import WebKit
 struct ContentView: View {
     @ObservedObject var demoHomeBridge: NotificationDemoHomeBridge
     let activeTab: AppRootTab
+    let onOpenNotificationCenter: () -> Void
     @State private var isLoading = true
     @State private var loadingOpacity = 0.0
     @State private var companyHeaderDisplayMode: CompanyHeaderDisplayMode = .regular
@@ -109,7 +110,7 @@ struct ContentView: View {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
                 showsBellButton: notificationController.showsSourceBell,
-                onBellTap: restoreToast,
+                onBellTap: openNotificationCenter,
                 onSVGReady: initialContentLoadTracker.markLoaded
             )
                 .opacity(isHeaderVisible ? 1 : 0)
@@ -413,10 +414,6 @@ struct ContentView: View {
         )
     }
 
-    private func restoreToast() {
-        notificationController.present()
-    }
-
     private func handlePendingHomePlaybackIfNeeded() {
         guard activeTab == .home, !isLoading else { return }
         guard let requestID = demoHomeBridge.homePlaybackRequestID else { return }
@@ -494,6 +491,14 @@ struct ContentView: View {
         withAnimation(.spring(response: 0.5, dampingFraction: 0.9)) {
             toastLayoutProgress = isVisible ? 1 : 0
         }
+    }
+
+    private func openNotificationCenter() {
+        if notificationController.isPresented {
+            resetHomeNotificationState()
+        }
+
+        onOpenNotificationCenter()
     }
 
     private func updateCompanyHeaderMode(with minY: CGFloat) {
@@ -1104,7 +1109,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(
             demoHomeBridge: NotificationDemoHomeBridge(),
-            activeTab: .home
+            activeTab: .home,
+            onOpenNotificationCenter: {}
         )
     }
 }
