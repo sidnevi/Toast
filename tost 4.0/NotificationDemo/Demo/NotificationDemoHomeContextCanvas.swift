@@ -16,15 +16,6 @@ struct NotificationDemoHomeContextCanvas: View {
                     height: NotificationDemoHomeContextLayout.canvasHeight
                 )
 
-            if controller.showsSourceBell {
-                NotificationBellVisual(size: NotificationDemoHomeContextLayout.bellSize)
-                    .frame(
-                        width: NotificationDemoHomeContextLayout.bellSize,
-                        height: NotificationDemoHomeContextLayout.bellSize
-                    )
-                    .position(NotificationDemoHomeContextLayout.bellCenter)
-            }
-
             NotificationPresenter(
                 isPresented: $controller.isPresented,
                 showsSourceBell: $controller.showsSourceBell,
@@ -55,6 +46,7 @@ struct NotificationDemoHomeContextCanvas: View {
 
     private var glassStyle: GlassMorphNotificationStyle {
         var style = GlassMorphNotificationStyle()
+        style.applySharedMotionPreset()
         style.containerSize = CGSize(
             width: NotificationDemoHomeContextLayout.canvasWidth,
             height: presentationMetrics.containerHeight
@@ -72,15 +64,6 @@ struct NotificationDemoHomeContextCanvas: View {
         style.splitStartProgress = 0.95
         style.preTearStartProgress = 0.968
         style.tearProgress = 0.992
-        style.animationDuration = 0.92
-        style.contentRevealDelay = 0.31
-        style.contentRevealDuration = 0.26
-        style.contentEntryOffset = 10
-        style.contentEntryBlurRadius = 8
-        style.contentEntryScale = 0.992
-        style.footerEntryOffset = 6
-        style.morphResponse = 0.62
-        style.morphDampingFraction = 0.82
         style.finalCornerRadius = 32
         return style
     }

@@ -1,6 +1,44 @@
 import SwiftUI
 import UIKit
 
+enum NotificationGlassMotionPreset {
+    static let animationDuration: Double = 0.46
+    static let contentRevealDelay: Double = 0.16
+    static let contentRevealDuration: Double = 0.13
+    static let contentEntryOffset: CGFloat = 10
+    static let contentEntryBlurRadius: CGFloat = 8
+    static let contentEntryScale: CGFloat = 0.992
+    static let contentEntryHorizontalOffset: CGFloat = -14
+    static let footerEntryOffset: CGFloat = 6
+
+    static let anticipationEndProgress: CGFloat = 0.14
+    static let anticipationScaleX: CGFloat = 0.9
+    static let anticipationScaleY: CGFloat = 1.08
+    static let anticipationLift: CGFloat = 6
+    static let midStageWidth: CGFloat = 74
+    static let midStageHeight: CGFloat = 44
+    static let finalExpansionStartProgress: CGFloat = 0.2
+    static let finalExpansionEndProgress: CGFloat = 0.84
+
+    static let morphResponse: Double = 0.31
+    static let morphDampingFraction: Double = 0.82
+
+    static let bellRingLeadTime: Double = 0.24
+    static let bellRingDuration: Double = 0.30
+    static let bellRingAmplitude: CGFloat = 5.5
+    static let bellRingCycles: CGFloat = 2.35
+    static let bellRingPivotY: CGFloat = 0.12
+    static let bellRingWaveInset: CGFloat = 5
+    static let bellRingWaveTravel: CGFloat = 7
+
+    static let presentationSettleLeadTime: Double = 0.18
+    static let presentationSettleCompressionDuration: Double = 0.06
+    static let presentationSettleReturnDuration: Double = 0.09
+    static let presentationSettleRevealLeadTime: Double = 0.12
+    static let presentationSettleScaleX: CGFloat = 1.04
+    static let presentationSettleScaleY: CGFloat = 0.955
+}
+
 @available(iOS 26.0, *)
 struct GlassMorphNotificationStyle {
     var containerSize = CGSize(width: 375, height: 134)
@@ -12,26 +50,60 @@ struct GlassMorphNotificationStyle {
     var splitStartProgress: CGFloat = 0.95
     var preTearStartProgress: CGFloat = 0.968
     var tearProgress: CGFloat = 0.992
-    var animationDuration: Double = 0.86
-    var contentRevealDelay: Double = 0.8
-    var contentRevealDuration: Double = 0.12
-    var contentEntryOffset: CGFloat = 12
-    var contentEntryBlurRadius: CGFloat = 10
-    var contentEntryScale: CGFloat = 0.985
-    var footerEntryOffset: CGFloat = 8
+    // Общая длина morph-анимации появления.
+    var animationDuration: Double = NotificationGlassMotionPreset.animationDuration
+    // Через сколько после старта morph начинает раскрываться контент.
+    var contentRevealDelay: Double = NotificationGlassMotionPreset.contentRevealDelay
+    // Длительность появления контента после раскрытия.
+    var contentRevealDuration: Double = NotificationGlassMotionPreset.contentRevealDuration
+    var contentEntryOffset: CGFloat = NotificationGlassMotionPreset.contentEntryOffset
+    var contentEntryBlurRadius: CGFloat = NotificationGlassMotionPreset.contentEntryBlurRadius
+    var contentEntryScale: CGFloat = NotificationGlassMotionPreset.contentEntryScale
+    var footerEntryOffset: CGFloat = NotificationGlassMotionPreset.footerEntryOffset
     var finalCornerRadius: CGFloat = 32
+    // Ранняя фаза "anticipation": bubble чуть сжимается/тянется перед раскрытием.
+    var anticipationEndProgress: CGFloat = NotificationGlassMotionPreset.anticipationEndProgress
+    var anticipationScaleX: CGFloat = NotificationGlassMotionPreset.anticipationScaleX
+    var anticipationScaleY: CGFloat = NotificationGlassMotionPreset.anticipationScaleY
+    var anticipationLift: CGFloat = NotificationGlassMotionPreset.anticipationLift
+    // Промежуточная компактная форма перед полным раскрытием.
+    var midStageWidth: CGFloat = NotificationGlassMotionPreset.midStageWidth
+    var midStageHeight: CGFloat = NotificationGlassMotionPreset.midStageHeight
+    var finalExpansionStartProgress: CGFloat = NotificationGlassMotionPreset.finalExpansionStartProgress
+    var finalExpansionEndProgress: CGFloat = NotificationGlassMotionPreset.finalExpansionEndProgress
     var swipeDismissThreshold: CGFloat = 50
     var swipeDismissPredictedThreshold: CGFloat = 120
     var bounceLift: CGFloat = 24
     var bounceHoldDuration: Double = 0.2
-    var morphResponse: Double = 0.55
-    var morphDampingFraction: Double = 0.68
-    var bellLandingLeadTime: Double = 0.11
-    var bellLandingCompressionDuration: Double = 0.075
-    var bellLandingResponse: Double = 0.32
-    var bellLandingDampingFraction: Double = 0.6
-    var bellLandingScaleX: CGFloat = 1.055
-    var bellLandingScaleY: CGFloat = 0.94
+    // "Пружинистость" основного morph.
+    // Меньше = быстрее и резче, больше = мягче и длиннее.
+    var morphResponse: Double = NotificationGlassMotionPreset.morphResponse
+    var morphDampingFraction: Double = NotificationGlassMotionPreset.morphDampingFraction
+    // Небольшой ring колокола на финале dismiss.
+    // LeadTime: больше = стартует раньше до конца сворачивания.
+    var bellRingLeadTime: Double = NotificationGlassMotionPreset.bellRingLeadTime
+    var bellRingDuration: Double = NotificationGlassMotionPreset.bellRingDuration
+    var bellRingAmplitude: CGFloat = NotificationGlassMotionPreset.bellRingAmplitude
+    var bellRingCycles: CGFloat = NotificationGlassMotionPreset.bellRingCycles
+    var bellRingPivotY: CGFloat = NotificationGlassMotionPreset.bellRingPivotY
+    var bellRingWaveInset: CGFloat = NotificationGlassMotionPreset.bellRingWaveInset
+    var bellRingWaveTravel: CGFloat = NotificationGlassMotionPreset.bellRingWaveTravel
+    // Смещение bounce внутри финальной фазы morph.
+    // Больше = раньше по таймлайну.
+    var presentationSettleLeadTime: Double = NotificationGlassMotionPreset.presentationSettleLeadTime
+    // Длительность сжатия перед bounce-back.
+    var presentationSettleCompressionDuration: Double = NotificationGlassMotionPreset.presentationSettleCompressionDuration
+    // Длительность возврата после сжатия.
+    var presentationSettleReturnDuration: Double = NotificationGlassMotionPreset.presentationSettleReturnDuration
+    // Насколько раньше запустить bounce относительно reveal.
+    // Больше = bounce стартует раньше, ещё до появления контента.
+    var presentationSettleRevealLeadTime: Double = NotificationGlassMotionPreset.presentationSettleRevealLeadTime
+    // Амплитуда bounce.
+    // X > 1 расширяет, Y < 1 сжимает по вертикали.
+    var presentationSettleScaleX: CGFloat = NotificationGlassMotionPreset.presentationSettleScaleX
+    var presentationSettleScaleY: CGFloat = NotificationGlassMotionPreset.presentationSettleScaleY
+    // Лёгкий horizontal catch-up для контента, чтобы он входил вслед за morph.
+    var contentEntryHorizontalOffset: CGFloat = NotificationGlassMotionPreset.contentEntryHorizontalOffset
 
     var notificationCenter: CGPoint {
         CGPoint(x: notificationFrame.midX, y: notificationFrame.midY)
@@ -48,6 +120,40 @@ struct GlassMorphNotificationStyle {
 
     var footerCenter: CGPoint {
         CGPoint(x: footerFrame.midX, y: footerFrame.midY)
+    }
+
+    mutating func applySharedMotionPreset() {
+        animationDuration = NotificationGlassMotionPreset.animationDuration
+        contentRevealDelay = NotificationGlassMotionPreset.contentRevealDelay
+        contentRevealDuration = NotificationGlassMotionPreset.contentRevealDuration
+        contentEntryOffset = NotificationGlassMotionPreset.contentEntryOffset
+        contentEntryBlurRadius = NotificationGlassMotionPreset.contentEntryBlurRadius
+        contentEntryScale = NotificationGlassMotionPreset.contentEntryScale
+        contentEntryHorizontalOffset = NotificationGlassMotionPreset.contentEntryHorizontalOffset
+        footerEntryOffset = NotificationGlassMotionPreset.footerEntryOffset
+        anticipationEndProgress = NotificationGlassMotionPreset.anticipationEndProgress
+        anticipationScaleX = NotificationGlassMotionPreset.anticipationScaleX
+        anticipationScaleY = NotificationGlassMotionPreset.anticipationScaleY
+        anticipationLift = NotificationGlassMotionPreset.anticipationLift
+        midStageWidth = NotificationGlassMotionPreset.midStageWidth
+        midStageHeight = NotificationGlassMotionPreset.midStageHeight
+        finalExpansionStartProgress = NotificationGlassMotionPreset.finalExpansionStartProgress
+        finalExpansionEndProgress = NotificationGlassMotionPreset.finalExpansionEndProgress
+        morphResponse = NotificationGlassMotionPreset.morphResponse
+        morphDampingFraction = NotificationGlassMotionPreset.morphDampingFraction
+        bellRingLeadTime = NotificationGlassMotionPreset.bellRingLeadTime
+        bellRingDuration = NotificationGlassMotionPreset.bellRingDuration
+        bellRingAmplitude = NotificationGlassMotionPreset.bellRingAmplitude
+        bellRingCycles = NotificationGlassMotionPreset.bellRingCycles
+        bellRingPivotY = NotificationGlassMotionPreset.bellRingPivotY
+        bellRingWaveInset = NotificationGlassMotionPreset.bellRingWaveInset
+        bellRingWaveTravel = NotificationGlassMotionPreset.bellRingWaveTravel
+        presentationSettleLeadTime = NotificationGlassMotionPreset.presentationSettleLeadTime
+        presentationSettleCompressionDuration = NotificationGlassMotionPreset.presentationSettleCompressionDuration
+        presentationSettleReturnDuration = NotificationGlassMotionPreset.presentationSettleReturnDuration
+        presentationSettleRevealLeadTime = NotificationGlassMotionPreset.presentationSettleRevealLeadTime
+        presentationSettleScaleX = NotificationGlassMotionPreset.presentationSettleScaleX
+        presentationSettleScaleY = NotificationGlassMotionPreset.presentationSettleScaleY
     }
 }
 
@@ -69,8 +175,13 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     @State private var dismissSurfaceLift: CGFloat = 0
     @State private var isBounceDismissing = false
     @State private var isBellHandedOff = false
-    @State private var bellLandingBounceProgress: CGFloat = 0
-    @State private var bellLandingTask: Task<Void, Never>?
+    @State private var isReturningSourceBell = false
+    @State private var bellRingOffsetXState: CGFloat = 0
+    @State private var bellRingAngleState: CGFloat = 0
+    @State private var isBellRinging = false
+    @State private var bellRingTask: Task<Void, Never>?
+    @State private var presentationSettleProgress: CGFloat = 0
+    @State private var presentationSettleTask: Task<Void, Never>?
 
     var body: some View {
         ZStack {
@@ -82,13 +193,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                     .frame(width: style.containerSize.width, height: style.containerSize.height)
             }
 
-            if showsOverlayBellBubble {
-                bellBubble
-                    .position(style.buttonCenter)
-                    .opacity(bellBubbleOpacity)
-                    .allowsHitTesting(false)
-            }
-
+            bellStaticLayer
+            bellBubbleLayer
             bellGlyphLayer
             notificationFooterLayer
             notificationContentLayer
@@ -102,26 +208,19 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         .onDisappear {
             animationTask?.cancel()
             bounceDismissTask?.cancel()
-            bellLandingTask?.cancel()
+            bellRingTask?.cancel()
+            presentationSettleTask?.cancel()
             showsSourceBell = true
             isBellHandedOff = false
-            bellLandingBounceProgress = 0
+            isReturningSourceBell = false
+            bellRingOffsetXState = 0
+            bellRingAngleState = 0
+            isBellRinging = false
+            presentationSettleProgress = 0
         }
         .onChange(of: isPresented) { _, newValue in
             scheduleAnimation(for: newValue)
         }
-    }
-
-    private var bellBubble: some View {
-        let bubble = Circle()
-
-        return ZStack {
-            bubble
-                .fill(.clear)
-                .frame(width: style.buttonSize, height: style.buttonSize)
-                .glassEffect(in: bubble)
-        }
-        .scaleEffect(x: bellBubbleScaleX, y: bellBubbleScaleY)
     }
 
     private var notificationSurface: some View {
@@ -134,11 +233,25 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             .glassEffect(in: shape)
     }
 
+    private var bellStaticLayer: some View {
+        NotificationBellVisual(size: style.buttonSize)
+            .position(style.buttonCenter)
+            .opacity(sourceBellOpacity * (isBellRinging ? 0 : 1))
+            .allowsHitTesting(false)
+    }
+
+    private var bellBubbleLayer: some View {
+        NotificationBellBubbleVisual(size: style.buttonSize)
+            .position(style.buttonCenter)
+            .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
+            .allowsHitTesting(false)
+    }
+
     private var bellGlyphLayer: some View {
         NotificationBellGlyphVisual(size: style.buttonSize)
             .position(style.buttonCenter)
-            .opacity(bellBubbleOpacity)
-            .scaleEffect(x: bellScaleX, y: bellScaleY)
+            .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
+            .offset(x: bellRingOffsetX)
             .allowsHitTesting(false)
     }
 
@@ -146,7 +259,12 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         notificationContent()
             .frame(width: style.notificationFrame.width, height: style.notificationFrame.height)
             .opacity(contentOpacity)
-            .scaleEffect(contentScale, anchor: .center)
+            .scaleEffect(
+                x: contentScale * presentationSettleScaleX,
+                y: contentScale * presentationSettleScaleY,
+                anchor: .center
+            )
+            .offset(x: contentHorizontalOffset)
             .offset(y: contentVerticalOffset)
             .blur(radius: contentBlurRadius, opaque: false)
             .position(seedCenter)
@@ -169,7 +287,11 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                     )
                 )
                 .opacity(footerOpacity)
-                .scaleEffect(footerScale, anchor: .center)
+                .scaleEffect(
+                    x: footerScale * presentationSettleScaleX,
+                    y: footerScale * presentationSettleScaleY,
+                    anchor: .center
+                )
                 .position(style.footerCenter)
                 .offset(y: surfaceVerticalOffset + footerVerticalOffset)
                 .blur(radius: footerBlurRadius, opaque: false)
@@ -205,41 +327,67 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var seedCenter: CGPoint {
-        let seedTravel = softenedSegment(progress, start: 0.06, end: 0.88)
+        let seedTravel = softenedSegment(progress, start: style.anticipationEndProgress * 0.5, end: 0.88)
+        let anticipationLift = lerp(0, -style.anticipationLift, anticipationProgress) * (1 - seedTravel)
         return CGPoint(
             x: lerp(style.buttonCenter.x, style.notificationCenter.x, seedTravel),
-            y: lerp(style.buttonCenter.y, style.notificationCenter.y, seedTravel)
+            y: lerp(style.buttonCenter.y, style.notificationCenter.y, seedTravel) + anticipationLift
         )
     }
 
     private var notificationWidth: CGFloat {
-        if progress < 0.34 {
-            return lerp(style.buttonSize, 72, softenedSegment(progress, start: 0, end: 0.34))
+        if progress < style.anticipationEndProgress {
+            return lerp(style.buttonSize, style.buttonSize * style.anticipationScaleX, anticipationProgress)
+        }
+        if progress < style.finalExpansionStartProgress {
+            return lerp(
+                style.buttonSize * style.anticipationScaleX,
+                style.midStageWidth,
+                softenedSegment(progress, start: style.anticipationEndProgress, end: style.finalExpansionStartProgress)
+            )
         }
         return lerp(
-            62,
+            style.midStageWidth,
             style.notificationFrame.width,
-            softenedSegment(progress, start: 0.34, end: 0.9)
+            softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
         )
     }
 
     private var notificationHeight: CGFloat {
-        if progress < 0.34 {
-            return lerp(style.buttonSize, 48, softenedSegment(progress, start: 0, end: 0.34))
+        if progress < style.anticipationEndProgress {
+            return lerp(style.buttonSize, style.buttonSize * style.anticipationScaleY, anticipationProgress)
+        }
+        if progress < style.finalExpansionStartProgress {
+            return lerp(
+                style.buttonSize * style.anticipationScaleY,
+                style.midStageHeight,
+                softenedSegment(progress, start: style.anticipationEndProgress, end: style.finalExpansionStartProgress)
+            )
         }
         return lerp(
-            48,
+            style.midStageHeight,
             style.notificationFrame.height,
-            softenedSegment(progress, start: 0.34, end: 0.9)
+            softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
         )
     }
 
     private var notificationCornerRadius: CGFloat {
         let initialRadius = style.buttonSize / 2
+        let compactRadius: CGFloat = 22
+        if progress < style.anticipationEndProgress {
+            return lerp(initialRadius, initialRadius * 0.9, anticipationProgress)
+        }
+        if progress < style.finalExpansionStartProgress {
+            return lerp(
+                initialRadius * 0.9,
+                compactRadius,
+                softenedSegment(progress, start: style.anticipationEndProgress, end: style.finalExpansionStartProgress)
+            )
+        }
         return lerp(
-            initialRadius,
+            compactRadius,
             style.finalCornerRadius,
-            softenedSegment(progress, start: 0.18, end: 0.9)
+            softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
         )
     }
 
@@ -252,22 +400,11 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         return baseOpacity * (1 - bellLandingHandoffProgress)
     }
 
-    private var bellBubbleOpacity: CGFloat {
-        (showsSourceBell || isBellHandedOff) ? 1 : 0
-    }
-
-    private var showsDetachedBellBubble: Bool {
-        isPresented &&
-            !isAnimating &&
-            !isBounceDismissing &&
-            !isBellHandedOff &&
-            showsSourceBell &&
-            showsContent &&
-            progress >= 0.999
-    }
-
-    private var showsOverlayBellBubble: Bool {
-        showsSourceBell || isBellHandedOff || showsDetachedBellBubble
+    private var sourceBellOpacity: CGFloat {
+        let persistedOpacity: CGFloat = showsSourceBell ? 1 : 0
+        let handoffOpacity: CGFloat = isBellHandedOff ? 1 : 0
+        let returningOpacity: CGFloat = isReturningSourceBell ? bellLandingHandoffProgress : 0
+        return max(persistedOpacity, max(handoffOpacity, returningOpacity))
     }
 
     private var contentOpacity: CGFloat {
@@ -280,6 +417,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     private var contentVerticalOffset: CGFloat {
         showsContent ? 0 : style.contentEntryOffset
+    }
+
+    private var contentHorizontalOffset: CGFloat {
+        showsContent ? 0 : style.contentEntryHorizontalOffset
     }
 
     private var contentBlurRadius: CGFloat {
@@ -302,42 +443,46 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         showsContent ? 0 : style.contentEntryBlurRadius * 0.55
     }
 
+    private var sourceBellIsStatic: Bool {
+        showsSourceBell && !isPresented
+    }
+
     private var bellScaleX: CGFloat {
-        let press = softenedSegment(progress, start: 0, end: 0.34)
-        let release = softenedSegment(progress, start: 0.34, end: 0.68)
-        if progress < 0.34 {
-            return lerp(1, 1.045, press)
+        guard !sourceBellIsStatic else { return 1 }
+        let release = softenedSegment(progress, start: style.anticipationEndProgress, end: 0.42)
+        if progress < style.anticipationEndProgress {
+            return lerp(1, 1.06, anticipationProgress)
         }
-        return lerp(1.045, 1, release)
+        return lerp(1.06, 1, release)
     }
 
     private var bellScaleY: CGFloat {
-        let press = softenedSegment(progress, start: 0, end: 0.34)
-        let release = softenedSegment(progress, start: 0.34, end: 0.68)
-        if progress < 0.34 {
-            return lerp(1, 0.96, press)
+        guard !sourceBellIsStatic else { return 1 }
+        let release = softenedSegment(progress, start: style.anticipationEndProgress, end: 0.42)
+        if progress < style.anticipationEndProgress {
+            return lerp(1, 0.93, anticipationProgress)
         }
-        return lerp(0.96, 1, release)
+        return lerp(0.93, 1, release)
     }
 
-    private var bellBubbleScaleX: CGFloat {
-        bellScaleX *
-            lerp(1, 1.012, bellLandingHandoffProgress) *
-            lerp(1, style.bellLandingScaleX, bellLandingBounceProgress)
-    }
-
-    private var bellBubbleScaleY: CGFloat {
-        bellScaleY *
-            lerp(1, 0.988, bellLandingHandoffProgress) *
-            lerp(1, style.bellLandingScaleY, bellLandingBounceProgress)
+    private var anticipationProgress: CGFloat {
+        softenedSegment(progress, start: 0, end: style.anticipationEndProgress)
     }
 
     private var notificationSurfaceScaleX: CGFloat {
-        lerp(1, 1.01, bellLandingHandoffProgress)
+        lerp(1, 1.01, bellLandingHandoffProgress) * presentationSettleScaleX
     }
 
     private var notificationSurfaceScaleY: CGFloat {
-        lerp(1, 0.99, bellLandingHandoffProgress)
+        lerp(1, 0.99, bellLandingHandoffProgress) * presentationSettleScaleY
+    }
+
+    private var presentationSettleScaleX: CGFloat {
+        lerp(1, style.presentationSettleScaleX, presentationSettleProgress)
+    }
+
+    private var presentationSettleScaleY: CGFloat {
+        lerp(1, style.presentationSettleScaleY, presentationSettleProgress)
     }
 
     private var bellLandingHandoffProgress: CGFloat {
@@ -345,9 +490,28 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         return 1 - softenedSegment(progress, start: 0.02, end: 0.12)
     }
 
+    private var bellRingAngle: CGFloat {
+        isBellRinging ? bellRingAngleState : 0
+    }
+
+    private var bellRingOffsetX: CGFloat {
+        isBellRinging ? bellRingOffsetXState : 0
+    }
+
     private func scheduleAnimation(for presented: Bool) {
         animationTask?.cancel()
+        bounceDismissTask?.cancel()
+        bellRingTask?.cancel()
+        presentationSettleTask?.cancel()
+
         animationTask = Task { @MainActor in
+            isAnimating = false
+            isReturningSourceBell = false
+            bellRingOffsetXState = 0
+            bellRingAngleState = 0
+            isBellRinging = false
+            presentationSettleProgress = 0
+
             if presented {
                 await playPresentation()
             } else {
@@ -376,11 +540,16 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     private func syncImmediately(with presented: Bool) {
         animationTask?.cancel()
         bounceDismissTask?.cancel()
-        bellLandingTask?.cancel()
+        bellRingTask?.cancel()
+        presentationSettleTask?.cancel()
         interactiveDismissOffset = 0
         dismissSurfaceLift = 0
         isBounceDismissing = false
-        bellLandingBounceProgress = 0
+        isReturningSourceBell = false
+        bellRingOffsetXState = 0
+        bellRingAngleState = 0
+        isBellRinging = false
+        presentationSettleProgress = 0
 
         if presented {
             progress = 1
@@ -397,8 +566,6 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     @MainActor
     private func playPresentation() async {
-        guard !isAnimating else { return }
-
         let feedback = UIImpactFeedbackGenerator(style: .soft)
         feedback.prepare()
         feedback.impactOccurred(intensity: 0.9)
@@ -407,8 +574,11 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         interactiveDismissOffset = 0
         dismissSurfaceLift = 0
         isBounceDismissing = false
-        bellLandingTask?.cancel()
-        bellLandingBounceProgress = 0
+        isReturningSourceBell = false
+        bellRingOffsetXState = 0
+        bellRingAngleState = 0
+        isBellRinging = false
+        presentationSettleProgress = 0
         isBellHandedOff = true
         showsSourceBell = false
         showsContent = false
@@ -417,9 +587,24 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             progress = 1
         }
 
-        try? await Task.sleep(nanoseconds: UInt64(style.contentRevealDelay * 1_000_000_000))
+        // Ждём почти до момента reveal, но оставляем небольшой люфт,
+        // чтобы bounce стартовал чуть раньше появления контента.
+        let settleRevealLeadTime = min(style.presentationSettleRevealLeadTime, style.contentRevealDelay)
+        let contentRevealWait = max(style.contentRevealDelay - settleRevealLeadTime, 0)
+
+        try? await Task.sleep(nanoseconds: UInt64(contentRevealWait * 1_000_000_000))
         guard !Task.isCancelled, isPresented else { return }
 
+        // Стартуем bounce чуть ДО reveal.
+        schedulePresentationSettleBounce()
+
+        if settleRevealLeadTime > 0 {
+            try? await Task.sleep(nanoseconds: UInt64(settleRevealLeadTime * 1_000_000_000))
+        }
+
+        guard !Task.isCancelled, isPresented else { return }
+
+        // А здесь уже раскрывается сам контент.
         withAnimation(contentRevealAnimation) {
             showsContent = true
         }
@@ -433,22 +618,21 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     @MainActor
     private func playDismissal() async {
-        guard !isAnimating else { return }
         isAnimating = true
-        bounceDismissTask?.cancel()
-        bellLandingTask?.cancel()
         isBellHandedOff = false
-        bellLandingBounceProgress = 0
+        bellRingTask?.cancel()
+        bellRingOffsetXState = 0
+        bellRingAngleState = 0
+        isBellRinging = false
+        presentationSettleTask?.cancel()
+        presentationSettleProgress = 0
+        isReturningSourceBell = true
 
         withAnimation(contentHideAnimation) {
             showsContent = false
         }
 
-        let sourceBellReturnDelay = min(style.contentRevealDuration * 0.35, 0.10)
-        try? await Task.sleep(nanoseconds: UInt64(sourceBellReturnDelay * 1_000_000_000))
-        guard !Task.isCancelled else { return }
-
-        showsSourceBell = true
+        showsSourceBell = false
         onDismissMorphStart?()
 
         withAnimation(morphAnimation) {
@@ -457,14 +641,14 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             dismissSurfaceLift = 0
         }
 
-        scheduleBellLandingBounce()
-
         try? await Task.sleep(nanoseconds: UInt64(style.animationDuration * 1_000_000_000))
         guard !Task.isCancelled else { return }
+        isReturningSourceBell = false
         showsSourceBell = true
         isBellHandedOff = false
         isBounceDismissing = false
         isAnimating = false
+        scheduleBellRing(after: 0.02)
     }
 
     private func startBounceDismissal() {
@@ -477,41 +661,83 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                 dismissSurfaceLift = -style.bounceLift
             }
 
-            try? await Task.sleep(nanoseconds: UInt64(style.bounceHoldDuration * 1_000_000_000))
-            guard !Task.isCancelled else { return }
             isPresented = false
         }
     }
 
-    private func scheduleBellLandingBounce() {
-        bellLandingTask?.cancel()
-        bellLandingTask = Task { @MainActor in
-            let impactDelay = max(style.animationDuration - style.bellLandingLeadTime, 0)
+    private func scheduleBellRing(after delay: Double = 0) {
+        bellRingTask?.cancel()
+        bellRingTask = Task { @MainActor in
+            let startDelay = max(delay, 0)
+
+            if startDelay > 0 {
+                try? await Task.sleep(nanoseconds: UInt64(startDelay * 1_000_000_000))
+            }
+
+            guard !Task.isCancelled, !isPresented else { return }
+
+            bellRingOffsetXState = 0
+            isBellRinging = true
+
+            // Bell ring только по X внутри статичной bubble.
+            // Поворот убран полностью, чтобы исключить диагональное и "кивающее" движение.
+            let travel = max(style.bellRingAmplitude * 0.7, 2.5)
+            let keyframes: [(offsetX: CGFloat, duration: Double)] = [
+                (-travel, 0.050),
+                (travel * 0.84, 0.065),
+                (-travel * 0.58, 0.060),
+                (travel * 0.32, 0.055),
+                (-travel * 0.14, 0.050),
+                (0, max(style.bellRingDuration - 0.280, 0.08))
+            ]
+
+            for keyframe in keyframes {
+                guard !Task.isCancelled, !isPresented else { return }
+
+                withAnimation(.easeInOut(duration: keyframe.duration)) {
+                    bellRingOffsetXState = keyframe.offsetX
+                }
+
+                try? await Task.sleep(nanoseconds: UInt64(keyframe.duration * 1_000_000_000))
+            }
+            guard !Task.isCancelled else { return }
+
+            bellRingOffsetXState = 0
+            bellRingAngleState = 0
+            isBellRinging = false
+        }
+    }
+
+    private func schedulePresentationSettleBounce() {
+        presentationSettleTask?.cancel()
+        presentationSettleTask = Task { @MainActor in
+            let impactDelay = max(
+                style.animationDuration -
+                    style.contentRevealDelay -
+                    style.presentationSettleLeadTime -
+                    style.presentationSettleCompressionDuration -
+                    style.presentationSettleReturnDuration,
+                0
+            )
 
             if impactDelay > 0 {
                 try? await Task.sleep(nanoseconds: UInt64(impactDelay * 1_000_000_000))
             }
 
-            guard !Task.isCancelled, !isPresented else { return }
+            guard !Task.isCancelled, isPresented else { return }
 
-            withAnimation(.easeOut(duration: style.bellLandingCompressionDuration)) {
-                bellLandingBounceProgress = 1
+            withAnimation(.easeOut(duration: style.presentationSettleCompressionDuration)) {
+                presentationSettleProgress = 1
             }
 
             try? await Task.sleep(
-                nanoseconds: UInt64(style.bellLandingCompressionDuration * 0.75 * 1_000_000_000)
+                nanoseconds: UInt64(style.presentationSettleCompressionDuration * 1_000_000_000)
             )
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, isPresented else { return }
 
-            withAnimation(
-                .spring(
-                    response: style.bellLandingResponse,
-                    dampingFraction: style.bellLandingDampingFraction,
-                    blendDuration: 0
-                )
-            ) {
-                bellLandingBounceProgress = 0
+            withAnimation(.easeOut(duration: style.presentationSettleReturnDuration)) {
+                presentationSettleProgress = 0
             }
         }
     }

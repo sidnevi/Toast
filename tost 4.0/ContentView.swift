@@ -24,7 +24,6 @@ struct ContentView: View {
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
     @State private var homePlaybackTask: Task<Void, Never>?
-    @State private var notificationPresenterResetID = UUID()
     @State private var didStartInitialLoad = false
     @State private var lastHandledHomePlaybackRequestID: UUID?
     @StateObject private var notificationController = NotificationAnimationController()
@@ -51,7 +50,7 @@ struct ContentView: View {
     private let contentBottomPadding: CGFloat = 32
     private let loadingDuration: UInt64 = 1_200_000_000
     private let sectionRevealOffset: CGFloat = 18
-    private let toastAnimationDuration: Double = 0.92
+    private let toastAnimationDuration: Double = NotificationGlassMotionPreset.animationDuration
     private let toastDismissLiftLag: Double = 0.06
     private let accountingRevealAnimationDuration: Double = 0.34
 
@@ -61,7 +60,7 @@ struct ContentView: View {
 
             ScrollView(showsIndicators: false) {
                 ZStack(alignment: .top) {
-                    loadedContent(includeNotificationMorph: !isLoading)
+                    loadedContent
                         .opacity(isLoading ? 0.001 : 1)
                         .allowsHitTesting(!isLoading)
 
@@ -105,7 +104,7 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private func loadedContent(includeNotificationMorph: Bool) -> some View {
+    private var loadedContent: some View {
         ZStack(alignment: .topLeading) {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
@@ -144,10 +143,8 @@ struct ContentView: View {
                 .opacity(isAccountingVisible ? 1 : 0)
                 .offset(y: accountingTopOffset + revealOffset(for: isAccountingVisible))
 
-            if includeNotificationMorph {
-                notificationMorphView
-                    .zIndex(1)
-            }
+            notificationMorphView
+                .zIndex(1)
         }
         .frame(maxWidth: .infinity, minHeight: contentHeight, alignment: .top)
     }
@@ -198,7 +195,6 @@ struct ContentView: View {
         ) {
             currentNotificationContentView
         }
-        .id(notificationPresenterIdentity)
     }
 
     @ViewBuilder
@@ -213,10 +209,6 @@ struct ContentView: View {
 
     private var currentNotificationMetrics: NotificationPresentationMetrics {
         NotificationContentFactory.presentationMetrics(for: currentNotificationScenario)
-    }
-
-    private var notificationPresenterIdentity: String {
-        "\(currentNotificationScenario.id)-\(notificationPresenterResetID.uuidString)"
     }
 
     private var toastHeight: CGFloat {
@@ -316,6 +308,7 @@ struct ContentView: View {
 
     private var notificationMorphStyle: GlassMorphNotificationStyle {
         var style = GlassMorphNotificationStyle()
+        style.applySharedMotionPreset()
         style.containerSize = CGSize(width: 375, height: toastHeight)
         style.notificationFrame = CGRect(x: 12, y: 0, width: toastWidth, height: toastCardHeight)
         style.footerVariant = currentNotificationMetrics.footerVariant
@@ -325,15 +318,6 @@ struct ContentView: View {
         style.splitStartProgress = 0.95
         style.preTearStartProgress = 0.968
         style.tearProgress = 0.992
-        style.animationDuration = toastAnimationDuration
-        style.contentRevealDelay = 0.31
-        style.contentRevealDuration = 0.26
-        style.contentEntryOffset = 10
-        style.contentEntryBlurRadius = 8
-        style.contentEntryScale = 0.992
-        style.footerEntryOffset = 6
-        style.morphResponse = 0.62
-        style.morphDampingFraction = 0.82
         style.finalCornerRadius = 32
         return style
     }
@@ -467,7 +451,6 @@ struct ContentView: View {
 
     private func resetHomeNotificationState() {
         homePlaybackTask?.cancel()
-        notificationPresenterResetID = UUID()
         notificationController.reset(showsSourceBell: true)
         syncToastLayout(with: false)
     }
