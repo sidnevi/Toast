@@ -92,8 +92,13 @@ final class InlineSVGSnapshotStore: ObservableObject {
             let webView = WKWebView(frame: CGRect(origin: .zero, size: size), configuration: configuration)
             webView.isOpaque = false
             webView.backgroundColor = .clear
+            if #available(iOS 15.0, *) {
+                webView.underPageBackgroundColor = .clear
+            }
             webView.scrollView.isScrollEnabled = false
+            webView.scrollView.isOpaque = false
             webView.scrollView.backgroundColor = .clear
+            webView.layer.backgroundColor = UIColor.clear.cgColor
             webView.isUserInteractionEnabled = false
             webView.navigationDelegate = self
             return webView

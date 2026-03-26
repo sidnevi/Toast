@@ -49,43 +49,9 @@ struct NotificationCenterView: View {
         )
     ]
 
-    private let usefulCards: [NotificationCenterCardModel] = [
-        .init(
-            title: "Ответьте покупателям",
-            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
-            iconSVG: notificationCenterMarketplaceSVG,
-            showsIndicator: true,
-            action: .text("Подробнее")
-        ),
-        .init(
-            title: "Ответьте покупателям",
-            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
-            iconSVG: notificationCenterMarketplaceSVG,
-            showsIndicator: true,
-            action: .text("Подробнее")
-        ),
-        .init(
-            title: "Ответьте покупателям",
-            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
-            iconSVG: notificationCenterMarketplaceSVG,
-            showsIndicator: true,
-            action: .text("Подробнее")
-        ),
-        .init(
-            title: "Ответьте покупателям",
-            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
-            iconSVG: notificationCenterMarketplaceSVG,
-            showsIndicator: true,
-            action: .text("Подробнее")
-        ),
-        .init(
-            title: "Ответьте покупателям",
-            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
-            iconSVG: notificationCenterMarketplaceSVG,
-            showsIndicator: true,
-            action: .text("Подробнее")
-        )
-    ]
+    private var usefulCards: [NotificationCenterCardModel] {
+        (0..<5).map { _ in makeUsefulMarketplaceCard() }
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -217,6 +183,16 @@ struct NotificationCenterView: View {
 
     private var summaryStack: some View {
         NotificationCenterSummaryStack(isExpanded: $isSummaryStackExpanded)
+    }
+
+    private func makeUsefulMarketplaceCard() -> NotificationCenterCardModel {
+        .init(
+            title: "Ответьте покупателям",
+            message: "У вас есть непрочитанные отзывы на Wildberries — нейросеть в Селлере поможет ответить в пару кликов.",
+            iconSVG: notificationCenterMarketplaceSVG,
+            showsIndicator: true,
+            action: .text("Подробнее")
+        )
     }
 
     private func sectionTitle(_ title: String) -> some View {
