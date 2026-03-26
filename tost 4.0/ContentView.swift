@@ -58,7 +58,7 @@ struct ContentView: View {
     private let loadingDuration: UInt64 = 1_200_000_000
     private let sectionRevealOffset: CGFloat = 18
     private let toastAnimationDuration: Double = NotificationGlassMotionPreset.animationDuration
-    private let toastDismissLiftLag: Double = 0.06
+    private let toastDismissLiftLag: Double = 0.06 * NotificationGlassMotionPreset.timingScale
     private let accountingRevealAnimationDuration: Double = 0.34
 
     var body: some View {
@@ -497,7 +497,7 @@ struct ContentView: View {
             demoHomeBridge.requestPlayback()
             handlePendingHomePlaybackIfNeeded()
         } else {
-            resetHomeNotificationState()
+            resetHomeNotificationState(preserveBellVisualState: true)
         }
     }
 
@@ -539,15 +539,20 @@ struct ContentView: View {
         }
     }
 
-    private func resetHomeNotificationState() {
+    private func resetHomeNotificationState(preserveBellVisualState: Bool = false) {
         homePlaybackTask?.cancel()
         homeAutoDismissTask?.cancel()
         shouldDismissEventOnCommunicationReturn = false
         notificationPresenterResetID = UUID()
+
+        let showsSourceBell = preserveBellVisualState ? notificationController.showsSourceBell : true
+        let isSourceBellFilled = preserveBellVisualState ? notificationController.isSourceBellFilled : false
+        let isSourceBellCritical = preserveBellVisualState ? notificationController.isSourceBellCritical : false
+
         notificationController.reset(
-            showsSourceBell: true,
-            isSourceBellFilled: false,
-            isSourceBellCritical: false
+            showsSourceBell: showsSourceBell,
+            isSourceBellFilled: isSourceBellFilled,
+            isSourceBellCritical: isSourceBellCritical
         )
         syncToastLayout(with: false)
     }
