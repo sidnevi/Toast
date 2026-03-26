@@ -2,9 +2,11 @@ import SwiftUI
 import UIKit
 
 enum NotificationGlassMotionPreset {
-    static let animationDuration: Double = 0.46
-    static let contentRevealDelay: Double = 0.16
-    static let contentRevealDuration: Double = 0.13
+    static let timingScale: Double = 1.2
+
+    static let animationDuration: Double = 0.46 * timingScale
+    static let contentRevealDelay: Double = 0.16 * timingScale
+    static let contentRevealDuration: Double = 0.13 * timingScale
     static let contentEntryOffset: CGFloat = 10
     static let contentEntryBlurRadius: CGFloat = 8
     static let contentEntryScale: CGFloat = 0.992
@@ -20,21 +22,21 @@ enum NotificationGlassMotionPreset {
     static let finalExpansionStartProgress: CGFloat = 0.2
     static let finalExpansionEndProgress: CGFloat = 0.84
 
-    static let morphResponse: Double = 0.31
+    static let morphResponse: Double = 0.31 * timingScale
     static let morphDampingFraction: Double = 0.82
 
-    static let bellRingLeadTime: Double = 0.24
-    static let bellRingDuration: Double = 0.58
+    static let bellRingLeadTime: Double = 0.24 * timingScale
+    static let bellRingDuration: Double = 0.58 * timingScale
     static let bellRingAmplitude: CGFloat = 14
     static let bellRingCycles: CGFloat = 2.35
     static let bellRingPivotY: CGFloat = 0.12
     static let bellRingWaveInset: CGFloat = 5
     static let bellRingWaveTravel: CGFloat = 7
 
-    static let presentationSettleLeadTime: Double = 0.18
-    static let presentationSettleCompressionDuration: Double = 0.06
-    static let presentationSettleReturnDuration: Double = 0.09
-    static let presentationSettleRevealLeadTime: Double = 0.12
+    static let presentationSettleLeadTime: Double = 0.18 * timingScale
+    static let presentationSettleCompressionDuration: Double = 0.06 * timingScale
+    static let presentationSettleReturnDuration: Double = 0.09 * timingScale
+    static let presentationSettleRevealLeadTime: Double = 0.12 * timingScale
     static let presentationSettleScaleX: CGFloat = 1.04
     static let presentationSettleScaleY: CGFloat = 0.955
 }
@@ -179,10 +181,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     @State private var isBounceDismissing = false
     @State private var isBellHandedOff = false
     @State private var isReturningSourceBell = false
-    @State private var bellRingOffsetXState: CGFloat = 0
-    @State private var bellRingAngleState: CGFloat = 0
     @State private var isBellRinging = false
     @State private var bellRingTask: Task<Void, Never>?
+    @State private var bellRingStartDate: Date?
+    @State private var bellRingDurationState: Double = 0
     @State private var presentationSettleProgress: CGFloat = 0
     @State private var presentationSettleTask: Task<Void, Never>?
 
@@ -216,9 +218,9 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             showsSourceBell = true
             isBellHandedOff = false
             isReturningSourceBell = false
-            bellRingOffsetXState = 0
-            bellRingAngleState = 0
             isBellRinging = false
+            bellRingStartDate = nil
+            bellRingDurationState = 0
             presentationSettleProgress = 0
         }
         .onChange(of: isPresented) { _, newValue in
@@ -255,14 +257,19 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var bellGlyphLayer: some View {
-        ringingBellGlyph
-            .rotationEffect(
-                .degrees(Double(bellRingAngle)),
-                anchor: UnitPoint(x: 0.5, y: style.bellRingPivotY)
-            )
-            .position(style.buttonCenter)
-            .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
-            .allowsHitTesting(false)
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !isBellRinging)) { timeline in
+            ringingBellGlyph
+                .rotationEffect(
+                    .degrees(Double(bellRingAngle(at: timeline.date))),
+                    anchor: UnitPoint(x: 0.5, y: style.bellRingPivotY)
+                )
+                .position(
+                    x: style.buttonCenter.x + bellRingOffsetX(at: timeline.date),
+                    y: style.buttonCenter.y
+                )
+                .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
+        }
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder
@@ -515,12 +522,36 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         return 1 - softenedSegment(progress, start: 0.02, end: 0.12)
     }
 
-    private var bellRingAngle: CGFloat {
-        isBellRinging ? bellRingAngleState : 0
+    private func bellRingProgress(at date: Date) -> CGFloat {
+        guard
+            isBellRinging,
+            let bellRingStartDate,
+            bellRingDurationState > 0
+        else {
+            return 0
+        }
+
+        let elapsed = date.timeIntervalSince(bellRingStartDate)
+        let rawProgress = elapsed / bellRingDurationState
+        return min(max(CGFloat(rawProgress), 0), 1)
     }
 
-    private var bellRingOffsetX: CGFloat {
-        isBellRinging ? bellRingOffsetXState : 0
+    private func bellRingAngle(at date: Date) -> CGFloat {
+        let progress = bellRingProgress(at: date)
+        guard progress < 1 else { return 0 }
+
+        let envelope = pow(1 - progress, 1.35)
+        let phase = progress * style.bellRingCycles * .pi * 2
+        return sin(phase) * style.bellRingAmplitude * envelope
+    }
+
+    private func bellRingOffsetX(at date: Date) -> CGFloat {
+        let progress = bellRingProgress(at: date)
+        guard progress < 1 else { return 0 }
+
+        let envelope = pow(1 - progress, 1.5)
+        let phase = progress * style.bellRingCycles * .pi * 2
+        return sin(phase - (.pi / 2)) * style.bellRingWaveTravel * 0.18 * envelope
     }
 
     private func scheduleAnimation(for presented: Bool) {
@@ -532,9 +563,9 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         animationTask = Task { @MainActor in
             isAnimating = false
             isReturningSourceBell = false
-            bellRingOffsetXState = 0
-            bellRingAngleState = 0
             isBellRinging = false
+            bellRingStartDate = nil
+            bellRingDurationState = 0
             presentationSettleProgress = 0
 
             if presented {
@@ -571,9 +602,9 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         dismissSurfaceLift = 0
         isBounceDismissing = false
         isReturningSourceBell = false
-        bellRingOffsetXState = 0
-        bellRingAngleState = 0
         isBellRinging = false
+        bellRingStartDate = nil
+        bellRingDurationState = 0
         presentationSettleProgress = 0
 
         if presented {
@@ -600,9 +631,9 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         dismissSurfaceLift = 0
         isBounceDismissing = false
         isReturningSourceBell = false
-        bellRingOffsetXState = 0
-        bellRingAngleState = 0
         isBellRinging = false
+        bellRingStartDate = nil
+        bellRingDurationState = 0
         presentationSettleProgress = 0
         isBellHandedOff = true
         showsSourceBell = false
@@ -646,9 +677,9 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         isAnimating = true
         isBellHandedOff = false
         bellRingTask?.cancel()
-        bellRingOffsetXState = 0
-        bellRingAngleState = 0
         isBellRinging = false
+        bellRingStartDate = nil
+        bellRingDurationState = 0
         presentationSettleTask?.cancel()
         presentationSettleProgress = 0
         isReturningSourceBell = true
@@ -666,6 +697,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             dismissSurfaceLift = 0
         }
 
+        scheduleBellRing(after: max(style.animationDuration - style.bellRingLeadTime, 0))
+
         try? await Task.sleep(nanoseconds: UInt64(style.animationDuration * 1_000_000_000))
         guard !Task.isCancelled else { return }
         isReturningSourceBell = false
@@ -673,7 +706,6 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         isBellHandedOff = false
         isBounceDismissing = false
         isAnimating = false
-        scheduleBellRing(after: 0.02)
     }
 
     private func startBounceDismissal() {
@@ -701,39 +733,16 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
             guard !Task.isCancelled, !isPresented else { return }
 
-            bellRingOffsetXState = 0
-            bellRingAngleState = 0
             isBellRinging = true
+            bellRingStartDate = Date()
+            bellRingDurationState = style.bellRingDuration
 
-            // Затухающее покачивание, близкое к HTML-референсу:
-            // 14, -12, 9, -6, 3, 0 градусов.
-            let maxAngle = max(style.bellRingAmplitude, 1)
-            let keyframes: [(angle: CGFloat, portion: Double)] = [
-                (maxAngle, 0.17),
-                (-maxAngle * 0.84, 0.17),
-                (maxAngle * 0.62, 0.17),
-                (-maxAngle * 0.40, 0.16),
-                (maxAngle * 0.23, 0.15),
-                (-maxAngle * 0.10, 0.09),
-                (0, 0.09)
-            ]
+            try? await Task.sleep(nanoseconds: UInt64(style.bellRingDuration * 1_000_000_000))
+            guard !Task.isCancelled, !isPresented else { return }
 
-            for keyframe in keyframes {
-                guard !Task.isCancelled, !isPresented else { return }
-
-                let duration = max(style.bellRingDuration * keyframe.portion, 0.045)
-
-                withAnimation(.timingCurve(0.22, 0.78, 0.2, 1, duration: duration)) {
-                    bellRingAngleState = keyframe.angle
-                }
-
-                try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
-            }
-            guard !Task.isCancelled else { return }
-
-            bellRingOffsetXState = 0
-            bellRingAngleState = 0
             isBellRinging = false
+            bellRingStartDate = nil
+            bellRingDurationState = 0
         }
     }
 

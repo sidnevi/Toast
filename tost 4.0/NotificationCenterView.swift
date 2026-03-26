@@ -295,8 +295,7 @@ private struct NotificationCenterSummaryStack: View {
         .init(
             title: "Бизнес-карта: Ilya Sidnev",
             message: "Доставка сегодня, 11:00-11:30",
-            trailing: .avatar(notificationCenterBusinessAvatarImage),
-            showsHighlight: true
+            trailing: .avatar(notificationCenterBusinessAvatarImage)
         )
     ]
 
@@ -304,13 +303,10 @@ private struct NotificationCenterSummaryStack: View {
         let progress = animationProgress
         let cardsAreaHeight = collapsedCardsHeight + ((expandedCardsHeight - collapsedCardsHeight) * progress)
 
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             ZStack(alignment: .top) {
                 ForEach(Array(cards.enumerated()), id: \.element.id) { index, card in
-                    NotificationCenterSummaryCard(
-                        model: card,
-                        highlightOpacity: index == 2 ? progress : 0
-                    )
+                    NotificationCenterSummaryCard(model: card)
                     .frame(height: cardHeight)
                     .offset(y: cardOffset(for: index, progress: progress))
                     .scaleEffect(cardScale(for: index, progress: progress), anchor: .top)
@@ -332,15 +328,15 @@ private struct NotificationCenterSummaryStack: View {
                         .foregroundStyle(Color.white.opacity(0.72))
                         .rotationEffect(.degrees(isExpanded ? 0 : 180))
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: footerHeight)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(height: footerHeight, alignment: .center)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 14)
-        .padding(.bottom, 16)
+            .padding(.horizontal, 8)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color.white.opacity(0.06))
@@ -357,8 +353,8 @@ private struct NotificationCenterSummaryStack: View {
     }
 
     private let cardHeight: CGFloat = 76
-    private let cardSpacing: CGFloat = 14
-    private let footerHeight: CGFloat = 36
+    private let cardSpacing: CGFloat = 8
+    private let footerHeight: CGFloat = 34
 
     private var collapsedCardsHeight: CGFloat {
         cardHeight
@@ -396,7 +392,6 @@ private struct NotificationCenterSummaryStack: View {
 
 private struct NotificationCenterSummaryCard: View {
     let model: NotificationCenterSummaryCardModel
-    let highlightOpacity: CGFloat
 
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
@@ -424,11 +419,6 @@ private struct NotificationCenterSummaryCard: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color(red: 0.12, green: 0.12, blue: 0.13))
         )
-        .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color(red: 0.11, green: 0.56, blue: 0.98), lineWidth: 3)
-                .opacity(model.showsHighlight ? Double(highlightOpacity) : 0)
-        }
     }
 }
 
@@ -672,7 +662,6 @@ private struct NotificationCenterSummaryCardModel: Identifiable {
     let title: String
     let message: String
     let trailing: Trailing
-    var showsHighlight: Bool = false
 }
 
 private enum NotificationCenterContentSpace {
