@@ -4,7 +4,7 @@ import UIKit
 struct NotificationCenterView: View {
     let onBack: () -> Void
 
-    @State private var isSummaryStackExpanded = false
+    @State private var isSummaryStackExpanded = true
     @State private var anchorTarget: NotificationCenterAnchorTarget = .useful
     @State private var isAnchorVisible = true
     @State private var usefulSectionContentOffset: CGFloat?
@@ -281,65 +281,71 @@ private struct NotificationCenterSummaryStack: View {
     @State private var animationProgress: CGFloat = 0
 
     private let animation = Animation.spring(response: 0.46, dampingFraction: 0.88)
+    private let cards: [NotificationCenterSummaryCardModel] = [
+        .init(
+            title: "Pay to phone",
+            message: "Не можем подключить",
+            trailing: .svg(notificationCenterWalletSVG, CGSize(width: 56, height: 56))
+        ),
+        .init(
+            title: "Торговый эквайринг",
+            message: "Оформите доставку устройств",
+            trailing: .svg(notificationCenterProgressCircleSVG, CGSize(width: 56, height: 56))
+        ),
+        .init(
+            title: "Бизнес-карта: Ilya Sidnev",
+            message: "Доставка сегодня, 11:00-11:30",
+            trailing: .avatar(notificationCenterBusinessAvatarImage),
+            showsHighlight: true
+        )
+    ]
 
     var body: some View {
         let progress = animationProgress
+        let cardsAreaHeight = collapsedCardsHeight + ((expandedCardsHeight - collapsedCardsHeight) * progress)
 
-        ZStack(alignment: .top) {
-            collapsedLayer(width: 319, height: 156, opacity: 0.48 * (1 - progress), yOffset: 22 + (14 * progress))
-            collapsedLayer(width: 331, height: 159, opacity: 0.72 * (1 - progress), yOffset: 11 + (10 * progress))
-
-            InlineSVGWebView(svg: notificationCenterStackCollapsedSVG)
-                .frame(width: 375, height: 162)
-                .allowsHitTesting(false)
-                .opacity(Double(1 - (CGFloat(0.94) * progress)))
-                .scaleEffect(1 - (CGFloat(0.015) * progress), anchor: .top)
-                .offset(y: 16 * progress)
-
-            if isExpanded || progress > 0.001 {
-                InlineSVGWebView(svg: notificationCenterStackExpandedSVG)
-                    .frame(width: 375, height: 336)
-                    .allowsHitTesting(false)
-                    .opacity(Double(progress))
-                    .scaleEffect(CGFloat(0.985) + (CGFloat(0.015) * progress), anchor: .top)
-                    .offset(y: 10 * (1 - progress))
-                    .mask(alignment: .top) {
-                        Rectangle()
-                            .frame(height: 132 + (204 * progress))
-                    }
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 188 + (148 * progress))
-        .clipped()
-        .overlay {
-            if !isExpanded {
-                Button {
-                    withAnimation(animation) {
-                        isExpanded = true
-                    }
-                } label: {
-                    Color.clear
-                        .contentShape(Rectangle())
+        VStack(spacing: 0) {
+            ZStack(alignment: .top) {
+                ForEach(Array(cards.enumerated()), id: \.element.id) { index, card in
+                    NotificationCenterSummaryCard(
+                        model: card,
+                        highlightOpacity: index == 2 ? progress : 0
+                    )
+                    .frame(height: cardHeight)
+                    .offset(y: cardOffset(for: index, progress: progress))
+                    .scaleEffect(cardScale(for: index, progress: progress), anchor: .top)
+                    .opacity(cardOpacity(for: index, progress: progress))
+                    .zIndex(Double(cards.count - index))
                 }
-                .buttonStyle(.plain)
             }
-        }
-        .overlay(alignment: .top) {
-            if isExpanded {
-                Button {
-                    withAnimation(animation) {
-                        isExpanded = false
-                    }
-                } label: {
-                    Color.clear
-                        .frame(width: 170, height: 36)
-                        .contentShape(Rectangle())
+            .frame(height: cardsAreaHeight, alignment: .top)
+            .clipped()
+
+            Button(action: toggleExpansion) {
+                HStack(spacing: 12) {
+                    Text(isExpanded ? "Свернуть события" : "Еще 2 события")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color.white.opacity(0.72))
+
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.white.opacity(0.72))
+                        .rotationEffect(.degrees(isExpanded ? 0 : 180))
                 }
-                .buttonStyle(.plain)
-                .offset(x: 24, y: 22)
+                .frame(maxWidth: .infinity)
+                .frame(height: footerHeight)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
         }
+        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color.white.opacity(0.06))
+        )
+        .padding(.horizontal, 16)
         .onAppear {
             animationProgress = isExpanded ? 1 : 0
         }
@@ -350,12 +356,109 @@ private struct NotificationCenterSummaryStack: View {
         }
     }
 
-    private func collapsedLayer(width: CGFloat, height: CGFloat, opacity: CGFloat, yOffset: CGFloat) -> some View {
-        InlineSVGWebView(svg: notificationCenterStackLayerSVG)
-            .frame(width: width, height: height)
-            .opacity(Double(opacity))
-            .offset(y: yOffset)
-            .allowsHitTesting(false)
+    private let cardHeight: CGFloat = 76
+    private let cardSpacing: CGFloat = 14
+    private let footerHeight: CGFloat = 36
+
+    private var collapsedCardsHeight: CGFloat {
+        cardHeight
+    }
+
+    private var expandedCardsHeight: CGFloat {
+        (cardHeight * CGFloat(cards.count)) + (cardSpacing * CGFloat(cards.count - 1))
+    }
+
+    private func toggleExpansion() {
+        withAnimation(animation) {
+            isExpanded.toggle()
+        }
+    }
+
+    private func cardOffset(for index: Int, progress: CGFloat) -> CGFloat {
+        let expandedOffset = CGFloat(index) * (cardHeight + cardSpacing)
+        let collapsedOffset = CGFloat(index) * 10
+        return collapsedOffset + ((expandedOffset - collapsedOffset) * progress)
+    }
+
+    private func cardScale(for index: Int, progress: CGFloat) -> CGFloat {
+        let collapsedScale = max(1 - (CGFloat(index) * 0.03), 0.9)
+        return collapsedScale + ((1 - collapsedScale) * progress)
+    }
+
+    private func cardOpacity(for index: Int, progress: CGFloat) -> Double {
+        guard index > 0 else { return 1 }
+
+        let startThreshold = CGFloat(index) * 0.16
+        let normalizedProgress = max(progress - startThreshold, 0) / max(1 - startThreshold, 0.001)
+        return Double(normalizedProgress)
+    }
+}
+
+private struct NotificationCenterSummaryCard: View {
+    let model: NotificationCenterSummaryCardModel
+    let highlightOpacity: CGFloat
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 14) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(model.title)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+
+                Text(model.message)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(Color(red: 0.57, green: 0.60, blue: 0.64))
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 0)
+
+            NotificationCenterSummaryCardTrailingContentView(trailing: model.trailing)
+        }
+        .padding(.leading, 18)
+        .padding(.trailing, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 76)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(red: 0.12, green: 0.12, blue: 0.13))
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color(red: 0.11, green: 0.56, blue: 0.98), lineWidth: 3)
+                .opacity(model.showsHighlight ? Double(highlightOpacity) : 0)
+        }
+    }
+}
+
+private struct NotificationCenterSummaryCardTrailingContentView: View {
+    let trailing: NotificationCenterSummaryCardModel.Trailing
+
+    var body: some View {
+        switch trailing {
+        case .svg(let svg, let size):
+            PrewarmedSVGView(svg: svg, size: size)
+                .frame(width: size.width, height: size.height)
+        case .avatar(let image):
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 52, height: 52)
+                    .clipShape(Circle())
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.16))
+
+                    Text("IS")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 52, height: 52)
+            }
+        }
     }
 }
 
@@ -559,6 +662,19 @@ private struct NotificationCenterCardModel: Identifiable {
     var action: Action? = nil
 }
 
+private struct NotificationCenterSummaryCardModel: Identifiable {
+    enum Trailing {
+        case svg(String, CGSize)
+        case avatar(UIImage?)
+    }
+
+    let id = UUID()
+    let title: String
+    let message: String
+    let trailing: Trailing
+    var showsHighlight: Bool = false
+}
+
 private enum NotificationCenterContentSpace {
     static let name = "notification-center-content"
 }
@@ -583,12 +699,20 @@ private let notificationCenterArrowSVG = loadNotificationCenterSVG(named: "notif
 private let notificationCenterMarketplaceSVG = loadNotificationCenterSVG(
     named: "notification-center-marketplace"
 )
-private let notificationCenterStackCollapsedSVG = loadNotificationCenterSVG(
-    named: "notification-center-stack-collapsed"
-)
-private let notificationCenterStackLayerSVG = loadNotificationCenterSVG(
-    named: "notification-center-stack-layer"
-)
 private let notificationCenterStackExpandedSVG = loadNotificationCenterSVG(
     named: "notification-center-stack-expanded"
 )
+private let notificationCenterBusinessAvatarImage = extractEmbeddedNotificationCenterImage(
+    from: notificationCenterStackExpandedSVG
+)
+
+private func extractEmbeddedNotificationCenterImage(from svg: String) -> UIImage? {
+    guard let base64PrefixRange = svg.range(of: "data:image/jpeg;base64,") else { return nil }
+    let imageDataStartIndex = base64PrefixRange.upperBound
+    guard let imageDataEndIndex = svg[imageDataStartIndex...].firstIndex(of: "\"") else { return nil }
+
+    let encodedImage = String(svg[imageDataStartIndex..<imageDataEndIndex])
+    guard let imageData = Data(base64Encoded: encodedImage) else { return nil }
+
+    return UIImage(data: imageData)
+}
