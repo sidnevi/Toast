@@ -22,6 +22,7 @@ struct LiquidNotificationButton: View {
     let notificationText: String
 
     @State private var isContentVisible = false
+    @State private var interactiveDismissOffset: CGFloat = 0
     @State private var revealTask: Task<Void, Never>?
 
     init(
@@ -81,6 +82,7 @@ struct LiquidNotificationButton: View {
             )
         }
         .frame(width: config.containerSize, height: config.containerSize)
+        .offset(y: interactiveDismissOffset)
         .highPriorityGesture(swipeUpDismissGesture, including: .gesture)
         .onAppear {
             syncImmediately(with: isExpanded)
@@ -95,16 +97,23 @@ struct LiquidNotificationButton: View {
 
     private var swipeUpDismissGesture: some Gesture {
         DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                guard isExpanded else { return }
+                interactiveDismissOffset = max(-50, min(0, value.translation.height))
+            }
             .onEnded { value in
-                guard allowsInteractiveDismiss else { return }
                 guard isExpanded else { return }
 
                 let shouldDismiss =
                     value.translation.height < -50 ||
                     value.predictedEndTranslation.height < -120
 
-                if shouldDismiss {
+                if allowsInteractiveDismiss && shouldDismiss {
                     toggleState(forceExpanded: false)
+                } else {
+                    withAnimation(.spring(response: 0.34, dampingFraction: 0.88)) {
+                        interactiveDismissOffset = 0
+                    }
                 }
             }
     }
@@ -119,6 +128,7 @@ struct LiquidNotificationButton: View {
 
         if expanded {
             withAnimation(config.morphSpring) {
+                interactiveDismissOffset = 0
                 isExpanded = true
             }
 
@@ -135,6 +145,7 @@ struct LiquidNotificationButton: View {
             }
 
             withAnimation(config.morphSpring) {
+                interactiveDismissOffset = 0
                 isExpanded = false
             }
         }
@@ -142,6 +153,7 @@ struct LiquidNotificationButton: View {
 
     private func syncImmediately(with expanded: Bool) {
         revealTask?.cancel()
+        interactiveDismissOffset = 0
         isContentVisible = expanded
     }
 

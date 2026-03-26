@@ -98,7 +98,7 @@ struct NotificationCenterView: View {
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 0) {
                                 topBar
-                                    .padding(.top, proxy.safeAreaInsets.top + 10)
+                                    .padding(.top, max(62 - proxy.safeAreaInsets.top, 0))
                                     .padding(.horizontal, 16)
 
                                 summaryStack
@@ -190,6 +190,13 @@ struct NotificationCenterView: View {
                     }
                 }
             }
+            .overlay(alignment: .leading) {
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(width: 28)
+                    .contentShape(Rectangle())
+                    .highPriorityGesture(backSwipeGesture)
+            }
         }
         .onDisappear {
             anchorVisibilityTask?.cancel()
@@ -250,6 +257,20 @@ struct NotificationCenterView: View {
         let switchThreshold = max(usefulSectionContentOffset - viewportHeight + 1, 0)
         anchorTarget = scrollOffset >= switchThreshold ? .important : .useful
     }
+
+    private var backSwipeGesture: some Gesture {
+        DragGesture(minimumDistance: 12, coordinateSpace: .global)
+            .onEnded { value in
+                let startsFromEdge = value.startLocation.x <= 28
+                let isHorizontal = abs(value.translation.width) > abs(value.translation.height)
+                let shouldGoBack =
+                    value.translation.width > 44 ||
+                    value.predictedEndTranslation.width > 88
+
+                guard startsFromEdge, isHorizontal, shouldGoBack else { return }
+                onBack()
+            }
+    }
 }
 
 private enum NotificationCenterAnchorTarget {
@@ -285,12 +306,12 @@ private struct NotificationCenterSummaryStack: View {
         .init(
             title: "Pay to phone",
             message: "Не можем подключить",
-            trailing: .svg(notificationCenterWalletSVG, CGSize(width: 56, height: 56))
+            trailing: .svg(notificationCenterWalletSVG, CGSize(width: 40, height: 40))
         ),
         .init(
             title: "Торговый эквайринг",
             message: "Оформите доставку устройств",
-            trailing: .svg(notificationCenterProgressCircleSVG, CGSize(width: 56, height: 56))
+            trailing: .svg(notificationCenterProgressCircleSVG, CGSize(width: 40, height: 40))
         ),
         .init(
             title: "Бизнес-карта: Ilya Sidnev",
@@ -352,7 +373,7 @@ private struct NotificationCenterSummaryStack: View {
         }
     }
 
-    private let cardHeight: CGFloat = 76
+    private let cardHeight: CGFloat = 80
     private let cardSpacing: CGFloat = 8
     private let footerHeight: CGFloat = 34
 
@@ -411,10 +432,10 @@ private struct NotificationCenterSummaryCard: View {
 
             NotificationCenterSummaryCardTrailingContentView(trailing: model.trailing)
         }
-        .padding(.leading, 18)
-        .padding(.trailing, 14)
+        .padding(.leading, 20)
+        .padding(.trailing, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 76)
+        .frame(height: 80)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color(red: 0.12, green: 0.12, blue: 0.13))
@@ -435,7 +456,7 @@ private struct NotificationCenterSummaryCardTrailingContentView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 52, height: 52)
+                    .frame(width: 40, height: 40)
                     .clipShape(Circle())
             } else {
                 ZStack {
@@ -446,7 +467,7 @@ private struct NotificationCenterSummaryCardTrailingContentView: View {
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
                 }
-                .frame(width: 52, height: 52)
+                .frame(width: 40, height: 40)
             }
         }
     }

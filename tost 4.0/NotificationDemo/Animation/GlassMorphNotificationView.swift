@@ -231,11 +231,18 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     private var notificationSurface: some View {
         let shape = RoundedRectangle(cornerRadius: notificationCornerRadius, style: .continuous)
 
-        return shape
-            .fill(.clear)
+        return ZStack {
+            // Keep a stable dark base under the glass to avoid sporadic white flashes.
+            shape
+                .fill(Color.black.opacity(0.32))
+
+            shape
+                .fill(.clear)
+                .glassEffect(in: shape)
+        }
+        .clipShape(shape)
             .frame(width: notificationWidth, height: notificationHeight)
             .scaleEffect(x: notificationSurfaceScaleX, y: notificationSurfaceScaleY)
-            .glassEffect(in: shape)
     }
 
     private var bellStaticLayer: some View {
@@ -316,7 +323,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                         variant: style.footerVariant
                     )
                 )
-                .opacity(footerOpacity)
+                .opacity(footerOpacity * footerInteractionOpacity)
                 .scaleEffect(
                     x: footerScale * presentationSettleScaleX,
                     y: footerScale * presentationSettleScaleY,
@@ -325,6 +332,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                 .position(style.footerCenter)
                 .offset(y: surfaceVerticalOffset + footerVerticalOffset)
                 .blur(radius: footerBlurRadius, opaque: false)
+                .animation(.easeOut(duration: 0.12), value: footerInteractionOpacity)
                 .allowsHitTesting(false)
             }
         }
@@ -333,18 +341,16 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     private var swipeUpToDismissGesture: some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard allowsInteractiveDismiss else { return }
                 guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
                 interactiveDismissOffset = max(-style.bounceLift, min(0, value.translation.height))
             }
             .onEnded { value in
-                guard allowsInteractiveDismiss else { return }
                 guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
                 let shouldDismiss =
                     value.translation.height < -style.swipeDismissThreshold ||
                     value.predictedEndTranslation.height < -style.swipeDismissPredictedThreshold
 
-                if shouldDismiss {
+                if allowsInteractiveDismiss && shouldDismiss {
                     startBounceDismissal()
                 } else {
                     withAnimation(.spring(response: 0.34, dampingFraction: 0.88)) {
@@ -461,6 +467,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     private var footerOpacity: CGFloat {
         showsContent ? 1 : 0
+    }
+
+    private var footerInteractionOpacity: CGFloat {
+        interactiveDismissOffset < -0.5 ? 0 : 1
     }
 
     private var footerScale: CGFloat {
