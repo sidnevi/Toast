@@ -23,4 +23,9 @@ final class NotificationDemoHomeBridge: ObservableObject {
             homePlaybackRequestID = UUID()
         }
     }
+
+    func requestPlayback(force: Bool = false) {
+        guard force || autoPlayOnHomeSelection else { return }
+        homePlaybackRequestID = UUID()
+    }
 }

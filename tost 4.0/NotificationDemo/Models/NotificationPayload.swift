@@ -15,6 +15,24 @@ struct PushNotificationContent: Hashable {
     let title: String
     let message: String
     let accessoryText: String?
+    let foregroundSVG: String?
+    let preferredHeight: CGFloat
+
+    init(
+        appName: String,
+        title: String,
+        message: String,
+        accessoryText: String?,
+        foregroundSVG: String? = nil,
+        preferredHeight: CGFloat = 114
+    ) {
+        self.appName = appName
+        self.title = title
+        self.message = message
+        self.accessoryText = accessoryText
+        self.foregroundSVG = foregroundSVG
+        self.preferredHeight = preferredHeight
+    }
 }
 
 struct EventNotificationContent: Hashable {

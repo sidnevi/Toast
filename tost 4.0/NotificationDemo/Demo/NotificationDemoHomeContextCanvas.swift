@@ -16,9 +16,24 @@ struct NotificationDemoHomeContextCanvas: View {
                     height: NotificationDemoHomeContextLayout.canvasHeight
                 )
 
+            if controller.showsSourceBell {
+                NotificationBellVisual(
+                    size: NotificationDemoHomeContextLayout.bellSize,
+                    isFilled: controller.isSourceBellFilled,
+                    isCritical: controller.isSourceBellCritical
+                )
+                    .frame(
+                        width: NotificationDemoHomeContextLayout.bellSize,
+                        height: NotificationDemoHomeContextLayout.bellSize
+                    )
+                    .position(NotificationDemoHomeContextLayout.bellCenter)
+            }
             NotificationPresenter(
                 isPresented: $controller.isPresented,
                 showsSourceBell: $controller.showsSourceBell,
+                isSourceBellFilled: $controller.isSourceBellFilled,
+                isSourceBellCritical: $controller.isSourceBellCritical,
+                allowsInteractiveDismiss: true,
                 glassStyle: glassStyle,
                 liquidConfig: liquidConfig,
                 liquidNotificationText: scenario.title,

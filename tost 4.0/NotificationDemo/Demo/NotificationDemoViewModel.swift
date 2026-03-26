@@ -46,10 +46,11 @@ final class NotificationDemoViewModel: ObservableObject {
     }
 
     var showsScenarioPicker: Bool {
-        state.selectedKind != .inApp && scenariosForSelectedKind.count > 1
+        guard state.displayMode == .single else { return false }
+        return state.selectedKind != .inApp && scenariosForSelectedKind.count > 1
     }
 
-    var selectedScenario: NotificationScenario {
+    var selectedSingleScenario: NotificationScenario {
         if let selectedScenarioID = state.selectedScenarioID,
            let selectedScenario = scenarios.first(where: { $0.id == selectedScenarioID }) {
             return selectedScenario
@@ -58,11 +59,57 @@ final class NotificationDemoViewModel: ObservableObject {
         return NotificationScenarioCatalog.defaultScenario(for: state.selectedKind)
     }
 
+    var multipleCandidates: [NotificationCandidate] {
+        NotificationCandidateCatalog.candidates(for: state.candidatePreset)
+    }
+
+    var selectionResult: NotificationSelectionResult {
+        NotificationSelectionEngine.selectWinner(from: multipleCandidates)
+    }
+
+    var selectedScenario: NotificationScenario {
+        switch state.displayMode {
+        case .single:
+            return selectedSingleScenario
+        case .multiple:
+            if let winnerScenarioID = selectionResult.winnerScenarioID,
+               let winnerScenario = NotificationScenarioCatalog.scenario(id: winnerScenarioID) {
+                return winnerScenario
+            }
+
+            return NotificationScenarioCatalog.currentInApp
+        }
+    }
+
+    var multipleWinnerLabel: String {
+        selectedScenario.title
+    }
+
+    var selectedCandidatePresetSubtitle: String {
+        state.candidatePreset.subtitle
+    }
+
     func selectKind(_ kind: NotificationKind) {
         guard state.selectedKind != kind else { return }
 
         state.selectedKind = kind
         state.selectedScenarioID = NotificationScenarioCatalog.defaultScenario(for: kind).id
+        syncSelectedScenarioToHome()
+        handleScenarioMutation()
+    }
+
+    func setDisplayMode(_ displayMode: NotificationDisplayMode) {
+        guard state.displayMode != displayMode else { return }
+
+        state.displayMode = displayMode
+        syncSelectedScenarioToHome()
+        handleScenarioMutation()
+    }
+
+    func setCandidatePreset(_ candidatePreset: NotificationCandidatePreset) {
+        guard state.candidatePreset != candidatePreset else { return }
+
+        state.candidatePreset = candidatePreset
         syncSelectedScenarioToHome()
         handleScenarioMutation()
     }

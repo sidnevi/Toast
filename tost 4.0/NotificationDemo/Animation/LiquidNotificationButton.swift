@@ -18,6 +18,7 @@ struct LiquidNotificationButton: View {
     @Binding var isExpanded: Bool
 
     let config: LiquidNotificationConfig
+    let allowsInteractiveDismiss: Bool
     let notificationText: String
 
     @State private var isContentVisible = false
@@ -26,10 +27,12 @@ struct LiquidNotificationButton: View {
     init(
         isExpanded: Binding<Bool>,
         config: LiquidNotificationConfig = .init(),
+        allowsInteractiveDismiss: Bool = true,
         notificationText: String = "Новое событие"
     ) {
         _isExpanded = isExpanded
         self.config = config
+        self.allowsInteractiveDismiss = allowsInteractiveDismiss
         self.notificationText = notificationText
     }
 
@@ -60,6 +63,7 @@ struct LiquidNotificationButton: View {
                 y: config.containerSize - (config.buttonSize / 2) - (isExpanded ? config.verticalOffset : 0)
             )
             .onTapGesture {
+                guard allowsInteractiveDismiss else { return }
                 toggleState()
             }
 
@@ -92,6 +96,7 @@ struct LiquidNotificationButton: View {
     private var swipeUpDismissGesture: some Gesture {
         DragGesture(minimumDistance: 12)
             .onEnded { value in
+                guard allowsInteractiveDismiss else { return }
                 guard isExpanded else { return }
 
                 let shouldDismiss =
@@ -105,6 +110,7 @@ struct LiquidNotificationButton: View {
     }
 
     private func toggleState() {
+        guard allowsInteractiveDismiss else { return }
         toggleState(forceExpanded: !isExpanded)
     }
 

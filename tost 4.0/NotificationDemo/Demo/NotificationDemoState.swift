@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct NotificationDemoState: Equatable {
+    var displayMode: NotificationDisplayMode = .single
+    var candidatePreset: NotificationCandidatePreset = .stackPushInApp
     var selectedKind: NotificationKind = .inApp
     var selectedScenarioID: String?
     var previewMode: NotificationPreviewMode = .homeContext

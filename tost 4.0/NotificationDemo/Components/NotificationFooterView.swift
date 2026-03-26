@@ -3,6 +3,7 @@ import SwiftUI
 struct NotificationFooterView: View {
     enum Variant {
         case inApp
+        case push
         case event
     }
 
@@ -50,6 +51,8 @@ private enum FooterLayout {
         switch variant {
         case .inApp:
             return indicatorCenter
+        case .push:
+            return CGPoint(x: 315, y: 16)
         case .event:
             return CGPoint(x: 315, y: 16)
         }
@@ -67,6 +70,8 @@ private struct FooterHighlightShape: Shape {
         switch variant {
         case .inApp:
             return 0
+        case .push:
+            return -4
         case .event:
             return -4
         }

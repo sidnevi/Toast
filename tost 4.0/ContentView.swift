@@ -13,6 +13,8 @@ struct ContentView: View {
     @ObservedObject var demoHomeBridge: NotificationDemoHomeBridge
     let activeTab: AppRootTab
     let onOpenNotificationCenter: () -> Void
+    @State private var isCommunicationPagePresented = false
+    @State private var shouldDismissEventOnCommunicationReturn = false
     @State private var isLoading = true
     @State private var loadingOpacity = 0.0
     @State private var companyHeaderDisplayMode: CompanyHeaderDisplayMode = .regular
@@ -25,7 +27,11 @@ struct ContentView: View {
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
     @State private var homePlaybackTask: Task<Void, Never>?
+    @State private var homeAutoDismissTask: Task<Void, Never>?
+    @State private var initialHomeAutoplayTask: Task<Void, Never>?
+    @State private var notificationPresenterResetID = UUID()
     @State private var didStartInitialLoad = false
+    @State private var didScheduleInitialHomeAutoplay = false
     @State private var lastHandledHomePlaybackRequestID: UUID?
     @StateObject private var notificationController = NotificationAnimationController()
     @State private var initialContentLoadTracker = InitialHomeContentLoadTracker()
@@ -79,6 +85,7 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .onAppear {
             startInitialLoadIfNeeded()
+            scheduleInitialHomeAutoplayIfNeeded()
             handlePendingHomePlaybackIfNeeded()
         }
         .onChange(of: notificationController.isPresented) { _, newValue in
@@ -96,11 +103,19 @@ struct ContentView: View {
         .onDisappear {
             toastLayoutTask?.cancel()
             homePlaybackTask?.cancel()
+            homeAutoDismissTask?.cancel()
+            initialHomeAutoplayTask?.cancel()
         }
         .overlay(alignment: .top) {
             if !isLoading {
                 compactHeaderOverlay
             }
+        }
+        .fullScreenCover(
+            isPresented: $isCommunicationPagePresented,
+            onDismiss: handleCommunicationPageDismiss
+        ) {
+            CommunicationPlaceholderView(title: "Страница события")
         }
     }
 
@@ -110,7 +125,9 @@ struct ContentView: View {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
                 showsBellButton: notificationController.showsSourceBell,
-                onBellTap: openNotificationCenter,
+                isBellFilled: notificationController.isSourceBellFilled,
+                isBellCritical: notificationController.isSourceBellCritical,
+                onBellTap: handleBellTap,
                 onSVGReady: initialContentLoadTracker.markLoaded
             )
                 .opacity(isHeaderVisible ? 1 : 0)
@@ -188,6 +205,9 @@ struct ContentView: View {
         NotificationPresenter(
             isPresented: $notificationController.isPresented,
             showsSourceBell: $notificationController.showsSourceBell,
+            isSourceBellFilled: $notificationController.isSourceBellFilled,
+            isSourceBellCritical: $notificationController.isSourceBellCritical,
+            allowsInteractiveDismiss: currentNotificationScenario.kind != .event,
             glassStyle: notificationMorphStyle,
             liquidConfig: liquidNotificationConfig,
             liquidNotificationText: "Новое уведомление",
@@ -196,6 +216,12 @@ struct ContentView: View {
         ) {
             currentNotificationContentView
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard notificationController.isPresented else { return }
+            openCommunicationPageForCurrentEvent()
+        }
+        .id(notificationPresenterIdentity)
     }
 
     @ViewBuilder
@@ -210,6 +236,10 @@ struct ContentView: View {
 
     private var currentNotificationMetrics: NotificationPresentationMetrics {
         NotificationContentFactory.presentationMetrics(for: currentNotificationScenario)
+    }
+
+    private var notificationPresenterIdentity: String {
+        "\(currentNotificationScenario.id)-\(notificationPresenterResetID.uuidString)"
     }
 
     private var toastHeight: CGFloat {
@@ -414,6 +444,19 @@ struct ContentView: View {
         )
     }
 
+    private func restoreToast() {
+        notificationController.setSourceBellFilled(false, isCritical: false)
+        notificationController.present()
+        scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
+    }
+
+    private func handleBellTap() {
+        if notificationController.isSourceBellFilled || notificationController.isSourceBellCritical {
+            restoreToast()
+        } else {
+            openNotificationCenter()
+        }
+    }
     private func handlePendingHomePlaybackIfNeeded() {
         guard activeTab == .home, !isLoading else { return }
         guard let requestID = demoHomeBridge.homePlaybackRequestID else { return }
@@ -424,9 +467,27 @@ struct ContentView: View {
 
     private func handleActiveTabChange(_ newValue: AppRootTab) {
         if newValue == .home {
+            demoHomeBridge.requestPlayback()
             handlePendingHomePlaybackIfNeeded()
         } else {
             resetHomeNotificationState()
+        }
+    }
+
+    private func scheduleInitialHomeAutoplayIfNeeded() {
+        guard activeTab == .home else { return }
+        guard !didScheduleInitialHomeAutoplay else { return }
+
+        didScheduleInitialHomeAutoplay = true
+        initialHomeAutoplayTask?.cancel()
+        initialHomeAutoplayTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+
+            guard !Task.isCancelled else { return }
+            guard activeTab == .home else { return }
+
+            demoHomeBridge.requestPlayback(force: true)
+            handlePendingHomePlaybackIfNeeded()
         }
     }
 
@@ -442,14 +503,58 @@ struct ContentView: View {
             guard demoHomeBridge.homePlaybackRequestID == requestID else { return }
 
             lastHandledHomePlaybackRequestID = requestID
+            notificationController.setSourceBellFilled(false, isCritical: false)
             notificationController.present()
+            scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
         }
     }
 
     private func resetHomeNotificationState() {
         homePlaybackTask?.cancel()
-        notificationController.reset(showsSourceBell: true)
+        homeAutoDismissTask?.cancel()
+        shouldDismissEventOnCommunicationReturn = false
+        notificationPresenterResetID = UUID()
+        notificationController.reset(
+            showsSourceBell: true,
+            isSourceBellFilled: false,
+            isSourceBellCritical: false
+        )
         syncToastLayout(with: false)
+    }
+
+    private func scheduleHomeDismissIfNeeded(for scenario: NotificationScenario) {
+        homeAutoDismissTask?.cancel()
+
+        guard scenario.kind != .event else { return }
+
+        homeAutoDismissTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+
+            guard !Task.isCancelled else { return }
+            guard activeTab == .home else { return }
+            guard currentNotificationScenario.id == scenario.id else { return }
+            guard notificationController.isPresented else { return }
+
+            notificationController.dismiss()
+        }
+    }
+
+    private func openCommunicationPageForCurrentEvent() {
+        guard currentNotificationScenario.kind == .event else { return }
+
+        homeAutoDismissTask?.cancel()
+        shouldDismissEventOnCommunicationReturn = true
+        isCommunicationPagePresented = true
+    }
+
+    private func handleCommunicationPageDismiss() {
+        guard shouldDismissEventOnCommunicationReturn else { return }
+
+        shouldDismissEventOnCommunicationReturn = false
+        guard currentNotificationScenario.kind == .event else { return }
+        guard notificationController.isPresented else { return }
+
+        notificationController.dismiss()
     }
 
     private func scheduleToastLayoutSync(with isVisible: Bool) {
@@ -476,6 +581,10 @@ struct ContentView: View {
 
     private func scheduleToastCollapseFromDismissMorphStart() {
         toastLayoutTask?.cancel()
+        notificationController.setSourceBellFilled(
+            true,
+            isCritical: currentNotificationScenario.isCriticalAttention
+        )
 
         toastLayoutTask = Task { @MainActor in
             try? await Task.sleep(
@@ -566,6 +675,8 @@ private struct PlaceholderMultipleView: View {
 
     let showsBellVisual: Bool
     let showsBellButton: Bool
+    let isBellFilled: Bool
+    let isBellCritical: Bool
     let onBellTap: () -> Void
     let onSVGReady: (String) -> Void
 
@@ -584,7 +695,11 @@ private struct PlaceholderMultipleView: View {
             }
             .overlay(alignment: .topLeading) {
                 if showsBellVisual {
-                    NotificationBellVisual(size: Layout.bellSize)
+                    NotificationBellVisual(
+                        size: Layout.bellSize,
+                        isFilled: isBellFilled,
+                        isCritical: isBellCritical
+                    )
                         .offset(x: Layout.bellOrigin.x, y: Layout.bellOrigin.y)
                 }
             }

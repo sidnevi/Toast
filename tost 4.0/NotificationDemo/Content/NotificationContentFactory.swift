@@ -45,8 +45,12 @@ enum NotificationContentFactory {
             contentHeight = Layout.minimumCardHeight
             footerVariant = .inApp
         case .push(let model):
-            contentHeight = pushContentHeight(for: model, actions: scenario.actions)
-            footerVariant = .inApp
+            if let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty {
+                contentHeight = model.preferredHeight
+            } else {
+                contentHeight = pushContentHeight(for: model, actions: scenario.actions)
+            }
+            footerVariant = .push
         case .event(let model):
             if let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty {
                 contentHeight = model.preferredHeight

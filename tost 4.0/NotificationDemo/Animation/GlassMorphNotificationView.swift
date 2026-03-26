@@ -24,8 +24,8 @@ enum NotificationGlassMotionPreset {
     static let morphDampingFraction: Double = 0.82
 
     static let bellRingLeadTime: Double = 0.24
-    static let bellRingDuration: Double = 0.30
-    static let bellRingAmplitude: CGFloat = 5.5
+    static let bellRingDuration: Double = 0.58
+    static let bellRingAmplitude: CGFloat = 14
     static let bellRingCycles: CGFloat = 2.35
     static let bellRingPivotY: CGFloat = 0.12
     static let bellRingWaveInset: CGFloat = 5
@@ -161,7 +161,10 @@ struct GlassMorphNotificationStyle {
 struct GlassMorphNotificationView<NotificationContent: View>: View {
     @Binding var isPresented: Bool
     @Binding var showsSourceBell: Bool
+    @Binding var isSourceBellFilled: Bool
+    @Binding var isSourceBellCritical: Bool
 
+    let allowsInteractiveDismiss: Bool
     let style: GlassMorphNotificationStyle
     let onDismissMorphStart: (() -> Void)?
     @ViewBuilder let notificationContent: () -> NotificationContent
@@ -234,7 +237,11 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var bellStaticLayer: some View {
-        NotificationBellVisual(size: style.buttonSize)
+        NotificationBellVisual(
+            size: style.buttonSize,
+            isFilled: isSourceBellFilled,
+            isCritical: isSourceBellCritical
+        )
             .position(style.buttonCenter)
             .opacity(sourceBellOpacity * (isBellRinging ? 0 : 1))
             .allowsHitTesting(false)
@@ -248,11 +255,27 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var bellGlyphLayer: some View {
-        NotificationBellGlyphVisual(size: style.buttonSize)
+        ringingBellGlyph
+            .rotationEffect(
+                .degrees(Double(bellRingAngle)),
+                anchor: UnitPoint(x: 0.5, y: style.bellRingPivotY)
+            )
             .position(style.buttonCenter)
             .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
-            .offset(x: bellRingOffsetX)
             .allowsHitTesting(false)
+    }
+
+    @ViewBuilder
+    private var ringingBellGlyph: some View {
+        if isSourceBellFilled {
+            if isSourceBellCritical {
+                NotificationBellCriticalGlyphVisual(size: style.buttonSize)
+            } else {
+                NotificationBellFilledGlyphVisual(size: style.buttonSize)
+            }
+        } else {
+            NotificationBellGlyphVisual(size: style.buttonSize)
+        }
     }
 
     private var notificationContentLayer: some View {
@@ -274,7 +297,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                     .frame(width: notificationWidth, height: notificationHeight)
                     .position(seedCenter)
             }
-            .allowsHitTesting(false)
+            .allowsHitTesting(showsContent && isPresented)
     }
 
     private var notificationFooterLayer: some View {
@@ -303,10 +326,12 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     private var swipeUpToDismissGesture: some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
+                guard allowsInteractiveDismiss else { return }
                 guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
                 interactiveDismissOffset = max(-style.bounceLift, min(0, value.translation.height))
             }
             .onEnded { value in
+                guard allowsInteractiveDismiss else { return }
                 guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
                 let shouldDismiss =
                     value.translation.height < -style.swipeDismissThreshold ||
@@ -677,28 +702,32 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             guard !Task.isCancelled, !isPresented else { return }
 
             bellRingOffsetXState = 0
+            bellRingAngleState = 0
             isBellRinging = true
 
-            // Bell ring только по X внутри статичной bubble.
-            // Поворот убран полностью, чтобы исключить диагональное и "кивающее" движение.
-            let travel = max(style.bellRingAmplitude * 0.7, 2.5)
-            let keyframes: [(offsetX: CGFloat, duration: Double)] = [
-                (-travel, 0.050),
-                (travel * 0.84, 0.065),
-                (-travel * 0.58, 0.060),
-                (travel * 0.32, 0.055),
-                (-travel * 0.14, 0.050),
-                (0, max(style.bellRingDuration - 0.280, 0.08))
+            // Затухающее покачивание, близкое к HTML-референсу:
+            // 14, -12, 9, -6, 3, 0 градусов.
+            let maxAngle = max(style.bellRingAmplitude, 1)
+            let keyframes: [(angle: CGFloat, portion: Double)] = [
+                (maxAngle, 0.17),
+                (-maxAngle * 0.84, 0.17),
+                (maxAngle * 0.62, 0.17),
+                (-maxAngle * 0.40, 0.16),
+                (maxAngle * 0.23, 0.15),
+                (-maxAngle * 0.10, 0.09),
+                (0, 0.09)
             ]
 
             for keyframe in keyframes {
                 guard !Task.isCancelled, !isPresented else { return }
 
-                withAnimation(.easeInOut(duration: keyframe.duration)) {
-                    bellRingOffsetXState = keyframe.offsetX
+                let duration = max(style.bellRingDuration * keyframe.portion, 0.045)
+
+                withAnimation(.timingCurve(0.22, 0.78, 0.2, 1, duration: duration)) {
+                    bellRingAngleState = keyframe.angle
                 }
 
-                try? await Task.sleep(nanoseconds: UInt64(keyframe.duration * 1_000_000_000))
+                try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
             }
             guard !Task.isCancelled else { return }
 

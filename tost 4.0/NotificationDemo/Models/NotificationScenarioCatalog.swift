@@ -5,6 +5,7 @@ enum NotificationScenarioCatalog {
         id: "in-app.current-home-toast",
         title: "Current In-App Toast",
         kind: .inApp,
+        isCriticalAttention: false,
         payload: .inApp(
             InAppNotificationContent(
                 foregroundSVG: toastForegroundSVG
@@ -17,12 +18,15 @@ enum NotificationScenarioCatalog {
         id: "push.info",
         title: "Info",
         kind: .push,
+        isCriticalAttention: false,
         payload: .push(
             PushNotificationContent(
                 appName: "Toast",
                 title: "Информационное уведомление",
                 message: "Спокойный push для обычного информирования пользователя.",
-                accessoryText: "Сейчас"
+                accessoryText: "Сейчас",
+                foregroundSVG: pushInfoSVG,
+                preferredHeight: 74
             )
         ),
         actions: []
@@ -32,23 +36,25 @@ enum NotificationScenarioCatalog {
         id: "push.critical-info",
         title: "Critical Info",
         kind: .push,
+        isCriticalAttention: true,
         payload: .push(
             PushNotificationContent(
                 appName: "Toast",
                 title: "Критически важная информация",
                 message: "Уведомление требует внимания. Проверьте детали на главной странице.",
-                accessoryText: "Только что"
+                accessoryText: "Только что",
+                foregroundSVG: pushCriticalInfoSVG,
+                preferredHeight: 92
             )
         ),
-        actions: [
-            NotificationAction(id: "push.review", title: "Проверить", style: .primary)
-        ]
+        actions: []
     )
 
     static let richEvent = NotificationScenario(
         id: "event.long-running",
         title: "Long Running Event",
         kind: .event,
+        isCriticalAttention: true,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -66,6 +72,7 @@ enum NotificationScenarioCatalog {
         id: "event.error-alert",
         title: "Error Alert",
         kind: .event,
+        isCriticalAttention: true,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -83,6 +90,7 @@ enum NotificationScenarioCatalog {
         id: "event.error",
         title: "Error",
         kind: .event,
+        isCriticalAttention: true,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -100,6 +108,7 @@ enum NotificationScenarioCatalog {
         id: "event.success",
         title: "Success",
         kind: .event,
+        isCriticalAttention: false,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -117,6 +126,7 @@ enum NotificationScenarioCatalog {
         id: "event.action-required",
         title: "Action Required",
         kind: .event,
+        isCriticalAttention: true,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -134,6 +144,7 @@ enum NotificationScenarioCatalog {
         id: "event.pending",
         title: "Pending",
         kind: .event,
+        isCriticalAttention: false,
         payload: .event(
             EventNotificationContent(
                 eyebrow: "Событие",
@@ -163,6 +174,10 @@ enum NotificationScenarioCatalog {
 
     static func scenarios(for kind: NotificationKind) -> [NotificationScenario] {
         all.filter { $0.kind == kind }
+    }
+
+    static func scenario(id: String) -> NotificationScenario? {
+        all.first(where: { $0.id == id })
     }
 
     static func defaultScenario(for kind: NotificationKind) -> NotificationScenario {

@@ -3,7 +3,10 @@ import SwiftUI
 struct NotificationPresenter<NotificationContent: View>: View {
     @Binding var isPresented: Bool
     @Binding var showsSourceBell: Bool
+    @Binding var isSourceBellFilled: Bool
+    @Binding var isSourceBellCritical: Bool
 
+    let allowsInteractiveDismiss: Bool
     let glassStyle: GlassMorphNotificationStyle
     let liquidConfig: LiquidNotificationConfig
     let liquidNotificationText: String
@@ -17,6 +20,9 @@ struct NotificationPresenter<NotificationContent: View>: View {
                 GlassMorphNotificationView(
                     isPresented: $isPresented,
                     showsSourceBell: $showsSourceBell,
+                    isSourceBellFilled: $isSourceBellFilled,
+                    isSourceBellCritical: $isSourceBellCritical,
+                    allowsInteractiveDismiss: allowsInteractiveDismiss,
                     style: glassStyle,
                     onDismissMorphStart: onDismissMorphStart,
                     notificationContent: notificationContent
@@ -26,6 +32,7 @@ struct NotificationPresenter<NotificationContent: View>: View {
                 LiquidNotificationButton(
                     isExpanded: $isPresented,
                     config: liquidConfig,
+                    allowsInteractiveDismiss: allowsInteractiveDismiss,
                     notificationText: liquidNotificationText
                 )
                 .offset(x: liquidOffset.width, y: liquidOffset.height)

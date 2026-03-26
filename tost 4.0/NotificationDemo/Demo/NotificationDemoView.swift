@@ -13,8 +13,17 @@ struct NotificationDemoView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    previewCard
+                    multipleCandidatesCard
+                    if viewModel.state.displayMode == .single {
+                        previewCard
+                    }
                     controlsCard
+                    homeBehaviorCard
+                    if viewModel.state.displayMode == .multiple {
+                        NotificationMultiplePreviewSection(
+                            selectionResult: viewModel.selectionResult
+                        )
+                    }
                 }
                 .frame(maxWidth: NotificationDemoLayout.contentMaxWidth)
                 .frame(maxWidth: .infinity)
@@ -33,39 +42,101 @@ struct NotificationDemoView: View {
         VStack(alignment: .leading, spacing: 16) {
             controlSectionTitle("Тип уведомления")
 
-            Picker("Type", selection: Binding(
-                get: { viewModel.state.selectedKind },
-                set: { viewModel.selectKind($0) }
+            if viewModel.state.displayMode == .single {
+                Picker("Type", selection: Binding(
+                    get: { viewModel.state.selectedKind },
+                    set: { viewModel.selectKind($0) }
+                )) {
+                    ForEach(NotificationKind.allCases) { kind in
+                        Text(kindTitle(kind)).tag(kind)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                if viewModel.showsScenarioPicker {
+                    controlSectionTitle("Сценарий")
+
+                    Picker("Scenario", selection: Binding(
+                        get: { viewModel.selectedSingleScenario.id },
+                        set: { viewModel.selectScenario(id: $0) }
+                    )) {
+                        ForEach(viewModel.scenariosForSelectedKind) { scenario in
+                            Text(scenario.title).tag(scenario.id)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(18)
+        .background(DemoPanelBackground())
+    }
+
+    @ViewBuilder
+    private var multipleCandidatesCard: some View {
+        if viewModel.state.displayMode == .multiple {
+            VStack(alignment: .leading, spacing: 16) {
+                controlSectionTitle("Кандидаты на показ")
+
+                Picker("Candidate Preset", selection: Binding(
+                    get: { viewModel.state.candidatePreset },
+                    set: { viewModel.setCandidatePreset($0) }
+                )) {
+                    ForEach(NotificationCandidatePreset.allCases) { preset in
+                        Text(preset.title).tag(preset)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                Text(viewModel.selectedCandidatePresetSubtitle)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.white.opacity(0.56))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(DemoPanelBackground())
+        }
+    }
+
+    private var homeBehaviorCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            controlSectionTitle("Настройки показа")
+
+            Picker("Display Mode", selection: Binding(
+                get: { viewModel.state.displayMode },
+                set: { viewModel.setDisplayMode($0) }
             )) {
-                ForEach(NotificationKind.allCases) { kind in
-                    Text(kindTitle(kind)).tag(kind)
+                ForEach(NotificationDisplayMode.allCases) { mode in
+                    Text(mode.title).tag(mode)
                 }
             }
             .pickerStyle(.segmented)
 
-            if viewModel.showsScenarioPicker {
-                controlSectionTitle("Сценарий")
+            Text(
+                viewModel.state.displayMode == .single
+                    ? "В single-режиме Demo показывает только итоговое уведомление."
+                    : "В multiple-режиме Demo показывает всех кандидатов, победителя и объяснение выбора."
+            )
+            .font(.system(size: 13))
+            .foregroundStyle(Color.white.opacity(0.56))
+            .fixedSize(horizontal: false, vertical: true)
 
-                Picker("Scenario", selection: Binding(
-                    get: { viewModel.selectedScenario.id },
-                    set: { viewModel.selectScenario(id: $0) }
-                )) {
-                    ForEach(viewModel.scenariosForSelectedKind) { scenario in
-                        Text(scenario.title).tag(scenario.id)
-                    }
-                }
-            }
-
-            Toggle(isOn: Binding(
+            Toggle("Autoplay On Home", isOn: Binding(
                 get: { viewModel.homeBridge.autoPlayOnHomeSelection },
                 set: { viewModel.setAutoPlayOnHomeSelection($0) }
-            )) {
-                behaviorRow(
-                    title: "Autoplay On Home",
-                    subtitle: "После выбора на Demo автоматически показывать выбранное уведомление на странице Home."
-                )
-            }
+            ))
             .toggleStyle(.switch)
+            .tint(.white.opacity(0.8))
+
+            behaviorRow(
+                title: "In-App и Push",
+                subtitle: "Показываются на главной странице 2 секунды и скрываются автоматически."
+            )
+
+            behaviorRow(
+                title: "Event",
+                subtitle: "Остается на главной и не закрывается вручную, пока не будет открыт связанный экран события. После возврата на Home скрывается стандартной анимацией."
+            )
         }
         .padding(18)
         .background(DemoPanelBackground())
@@ -149,17 +220,31 @@ private struct NotificationDemoIsolatedPreview: View {
                 availableCanvasWidth / NotificationDemoIsolatedPreviewLayout.canvasWidth
             )
             let containerHeight = presentationMetrics.containerHeight
+            let contentHeight = presentationMetrics.contentHeight
             let scaledContainerHeight = containerHeight * scale
 
             ZStack {
-                NotificationStaticCardView(scenario: scenario)
-                    .scaleEffect(scale, anchor: .topLeading)
-                    .frame(
-                        width: NotificationDemoIsolatedPreviewLayout.canvasWidth,
-                        height: containerHeight,
-                        alignment: .topLeading
-                    )
-                    .padding(.top, NotificationDemoIsolatedPreviewLayout.topInset)
+                ZStack(alignment: .topLeading) {
+                    NotificationDemoPreviewStageBackground()
+                        .frame(
+                            width: presentationMetrics.contentWidth,
+                            height: contentHeight
+                        )
+
+                    NotificationStaticCardView(scenario: scenario)
+                        .frame(
+                            width: presentationMetrics.contentWidth,
+                            height: containerHeight,
+                            alignment: .topLeading
+                        )
+                }
+                .scaleEffect(scale, anchor: .topLeading)
+                .frame(
+                    width: NotificationDemoIsolatedPreviewLayout.canvasWidth,
+                    height: containerHeight,
+                    alignment: .topLeading
+                )
+                .padding(.top, NotificationDemoIsolatedPreviewLayout.topInset)
             }
             .frame(
                 width: proxy.size.width,
@@ -186,6 +271,42 @@ private enum NotificationDemoIsolatedPreviewLayout {
     static let topInset: CGFloat = 8
     static let verticalPadding: CGFloat = 16
     static let minimumHeight: CGFloat = 144
+}
+
+private struct NotificationDemoPreviewStageBackground: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: 24, style: .continuous)
+            .fill(Color.black.opacity(0.28))
+            .overlay {
+                ZStack {
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.02),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.97, green: 0.94, blue: 0.86).opacity(0.22),
+                            Color(red: 0.96, green: 0.90, blue: 0.72).opacity(0.10),
+                            .clear
+                        ],
+                        center: .bottomTrailing,
+                        startRadius: 8,
+                        endRadius: 180
+                    )
+                    .offset(x: 26, y: 24)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .stroke(Color.white.opacity(0.06), lineWidth: 1)
+            }
+    }
 }
 
 private struct NotificationDemoBackground: View {
