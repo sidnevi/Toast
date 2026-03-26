@@ -6,8 +6,10 @@ struct PushNotificationView: View {
 
     var body: some View {
         if let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty {
-            InlineSVGWebView(svg: foregroundSVG)
-                .frame(width: PushNotificationLayout.width, height: model.preferredHeight)
+            PrewarmedSVGView(
+                svg: foregroundSVG,
+                size: CGSize(width: PushNotificationLayout.width, height: model.preferredHeight)
+            )
         } else {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .top, spacing: 12) {

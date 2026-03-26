@@ -6,8 +6,10 @@ struct EventNotificationView: View {
 
     var body: some View {
         if let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty {
-            InlineSVGWebView(svg: foregroundSVG)
-                .frame(width: EventNotificationLayout.width, height: model.preferredHeight)
+            PrewarmedSVGView(
+                svg: foregroundSVG,
+                size: CGSize(width: EventNotificationLayout.width, height: model.preferredHeight)
+            )
         } else {
             VStack(alignment: .leading, spacing: 14) {
                 if let eyebrow = model.eyebrow {

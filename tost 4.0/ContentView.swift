@@ -97,6 +97,9 @@ struct ContentView: View {
         .onChange(of: activeTab) { _, newValue in
             handleActiveTabChange(newValue)
         }
+        .onChange(of: demoHomeBridge.selectedScenarioID) { _, _ in
+            prewarmCurrentNotificationContentIfNeeded()
+        }
         .onChange(of: isLoading) { _, _ in
             handlePendingHomePlaybackIfNeeded()
         }
@@ -236,6 +239,28 @@ struct ContentView: View {
 
     private var currentNotificationMetrics: NotificationPresentationMetrics {
         NotificationContentFactory.presentationMetrics(for: currentNotificationScenario)
+    }
+
+    private var currentNotificationSnapshotRequest: (svg: String, size: CGSize)? {
+        switch currentNotificationScenario.payload {
+        case .inApp(let model):
+            return (
+                svg: model.foregroundSVG,
+                size: CGSize(width: currentNotificationMetrics.contentWidth, height: currentNotificationMetrics.contentHeight)
+            )
+        case .push(let model):
+            guard let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty else { return nil }
+            return (
+                svg: foregroundSVG,
+                size: CGSize(width: currentNotificationMetrics.contentWidth, height: currentNotificationMetrics.contentHeight)
+            )
+        case .event(let model):
+            guard let foregroundSVG = model.foregroundSVG, !foregroundSVG.isEmpty else { return nil }
+            return (
+                svg: foregroundSVG,
+                size: CGSize(width: currentNotificationMetrics.contentWidth, height: currentNotificationMetrics.contentHeight)
+            )
+        }
     }
 
     private var notificationPresenterIdentity: String {
@@ -384,6 +409,7 @@ struct ContentView: View {
             isAccountingVisible = false
             notificationController.reset()
             loadingOpacity = 0
+            prewarmCurrentNotificationContentIfNeeded()
 
             withAnimation(.easeOut(duration: 0.24)) {
                 loadingOpacity = 1
@@ -462,6 +488,7 @@ struct ContentView: View {
         guard let requestID = demoHomeBridge.homePlaybackRequestID else { return }
         guard lastHandledHomePlaybackRequestID != requestID else { return }
 
+        prewarmCurrentNotificationContentIfNeeded()
         playSelectedScenarioOnHome(for: requestID)
     }
 
@@ -496,7 +523,10 @@ struct ContentView: View {
         resetHomeNotificationState()
 
         homePlaybackTask = Task { @MainActor in
+            prewarmCurrentNotificationContentIfNeeded()
+
             try? await Task.sleep(nanoseconds: 120_000_000)
+            await waitForCurrentNotificationContentIfNeeded()
 
             guard !Task.isCancelled else { return }
             guard activeTab == .home, !isLoading else { return }
@@ -618,6 +648,19 @@ struct ContentView: View {
         withAnimation(.easeOut(duration: 0.22)) {
             companyHeaderDisplayMode = nextMode
         }
+    }
+
+    private func prewarmCurrentNotificationContentIfNeeded() {
+        guard let request = currentNotificationSnapshotRequest else { return }
+        InlineSVGSnapshotStore.shared.warm(svg: request.svg, size: request.size)
+    }
+
+    private func waitForCurrentNotificationContentIfNeeded() async {
+        guard let request = currentNotificationSnapshotRequest else { return }
+        await InlineSVGSnapshotStore.shared.waitUntilReady(
+            for: request.svg,
+            timeoutNanoseconds: 800_000_000
+        )
     }
 }
 
@@ -1032,39 +1075,7 @@ struct InlineSVGWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        let html = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-          <style>
-            html, body {
-              margin: 0;
-              width: 100%;
-              height: 100%;
-              background: transparent;
-              overflow: hidden;
-              font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-            }
-
-            svg {
-              display: block;
-              width: 100%;
-              height: 100%;
-            }
-
-            svg, text, tspan, div, span, p, foreignObject {
-              font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
-              -webkit-font-smoothing: antialiased;
-              text-rendering: geometricPrecision;
-            }
-          </style>
-        </head>
-        <body>
-        \(svg)
-        </body>
-        </html>
-        """
+        let html = makeInlineSVGHTML(svg)
 
         context.coordinator.loadID = loadID
         context.coordinator.onLoad = onLoad

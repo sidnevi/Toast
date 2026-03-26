@@ -9,7 +9,7 @@ struct NotificationBellVisual: View {
         ZStack {
             NotificationBellBubbleBackgroundVisual(size: size)
 
-            NotificationBellGlyphVisual(size: size)
+            NotificationBellOutlineGlyphVisual(size: size)
                 .opacity(isFilled ? 0 : 1)
                 .scaleEffect(isFilled ? 0.96 : 1)
 
@@ -31,7 +31,8 @@ struct NotificationBellBubbleBackgroundVisual: View {
     let size: CGFloat
 
     var body: some View {
-        InlineSVGWebView(svg: notificationBellBubbleBackgroundSVG)
+        Circle()
+            .fill(Color.white.opacity(0.1))
             .frame(width: size, height: size)
     }
 }
@@ -40,8 +41,7 @@ struct NotificationBellGlyphVisual: View {
     let size: CGFloat
 
     var body: some View {
-        InlineSVGWebView(svg: notificationBellGlyphSVG)
-            .frame(width: size, height: size)
+        NotificationBellOutlineGlyphVisual(size: size)
     }
 }
 
@@ -49,7 +49,8 @@ struct NotificationBellBubbleVisual: View {
     let size: CGFloat
 
     var body: some View {
-        InlineSVGWebView(svg: notificationBellBubbleSVG)
+        Circle()
+            .fill(Color.white.opacity(0.1))
             .frame(width: size, height: size)
     }
 }
@@ -58,7 +59,8 @@ struct NotificationBellFilledGlyphVisual: View {
     let size: CGFloat
 
     var body: some View {
-        InlineSVGWebView(svg: notificationBellFilledGlyphSVG)
+        NotificationBellFilledShape()
+            .fill(Color.white)
             .frame(width: size, height: size)
     }
 }
@@ -67,73 +69,179 @@ struct NotificationBellCriticalGlyphVisual: View {
     let size: CGFloat
 
     var body: some View {
-        InlineSVGWebView(svg: notificationBellCriticalGlyphSVG)
+        NotificationBellFilledShape()
+            .fill(Color(red: 1.0, green: 0.30, blue: 0.30))
             .frame(width: size, height: size)
     }
 }
 
-private let notificationBellBubbleBackgroundSVG = #"""
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="40" height="40" rx="20" fill="white" fill-opacity="0.1"/>
-</svg>
-"""#
+private struct NotificationBellOutlineGlyphVisual: View {
+    let size: CGFloat
 
-private let notificationBellBubbleSVG = #"""
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="40" height="40" rx="20" fill="white" fill-opacity="0.1"/>
-</svg>
-"""#
+    var body: some View {
+        NotificationBellOutlineShape()
+            .fill(Color.white, style: FillStyle(eoFill: true))
+            .frame(width: size, height: size)
+    }
+}
 
-private let notificationBellGlyphSVG = #"""
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_2185_63748" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="10" y="10" width="20" height="20">
-<path opacity="0.5" d="M16.5 27H23.5C23.5 28.6569 22.1569 30 20.5 30H19.5C17.8431 30 16.5 28.6569 16.5 27Z" fill="black"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M20.5 13.1H19.5C17.0699 13.1 15.1 15.0699 15.1 17.5V22.2181C15.1 22.9656 14.9731 23.7029 14.7289 24.4H25.2711C25.0269 23.7029 24.9 22.9656 24.9 22.2181V17.5C24.9 15.0699 22.9301 13.1 20.5 13.1ZM28.1475 24.4C27.7256 23.7518 27.5 22.994 27.5 22.2181V17.5C27.5 13.634 24.366 10.5 20.5 10.5H19.5C15.634 10.5 12.5 13.634 12.5 17.5V22.2181C12.5 22.994 12.2744 23.7518 11.8525 24.4C11.8211 24.4483 11.7886 24.496 11.7549 24.5431L10 27H30L28.2451 24.5431C28.2114 24.496 28.1789 24.4483 28.1475 24.4Z" fill="url(#paint0_linear_2185_63748)"/>
-</mask>
-<g mask="url(#mask0_2185_63748)">
-<path d="M8 8H32V32H8V8Z" fill="white"/>
-</g>
-<defs>
-<linearGradient id="paint0_linear_2185_63748" x1="23.9583" y1="20.6667" x2="17.6673" y2="5.56058" gradientUnits="userSpaceOnUse">
-<stop/>
-<stop offset="1" stop-opacity="0.6"/>
-</linearGradient>
-</defs>
-</svg>
-"""#
+private struct NotificationBellOutlineShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
 
-private let notificationBellFilledGlyphSVG = #"""
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_2185_28904" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="10" y="10" width="20" height="20">
-<path opacity="0.5" d="M16.5 27H23.5C23.5 28.6569 22.1569 30 20.5 30H19.5C17.8431 30 16.5 28.6569 16.5 27Z" fill="black"/>
-<path d="M12.5 17.5C12.5 13.634 15.634 10.5 19.5 10.5H20.5C24.366 10.5 27.5 13.634 27.5 17.5V22.2181C27.5 23.0518 27.7605 23.8647 28.2451 24.5431L30 27H10L11.7549 24.5431C12.2395 23.8647 12.5 23.0518 12.5 22.2181V17.5Z" fill="url(#paint0_linear_2185_28904)"/>
-</mask>
-<g mask="url(#mask0_2185_28904)">
-<path d="M8 8H32V32H8V8Z" fill="white"/>
-</g>
-<defs>
-<linearGradient id="paint0_linear_2185_28904" x1="23.6842" y1="27" x2="17.0775" y2="10.9189" gradientUnits="userSpaceOnUse">
-<stop/>
-<stop offset="1" stop-opacity="0.8"/>
-</linearGradient>
-</defs>
-</svg>
-"""#
+        path.addPath(makeBellFootPath(in: rect))
+        path.addPath(makeBellOutlineBodyPath(in: rect))
 
-private let notificationBellCriticalGlyphSVG = #"""
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_notification_bell_critical" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="10" y="10" width="20" height="20">
-<path opacity="0.5" d="M16.5 27H23.5C23.5 28.6569 22.1569 30 20.5 30H19.5C17.8431 30 16.5 28.6569 16.5 27Z" fill="black"/>
-<path d="M12.5 17.5C12.5 13.634 15.634 10.5 19.5 10.5H20.5C24.366 10.5 27.5 13.634 27.5 17.5V22.2181C27.5 23.0518 27.7605 23.8647 28.2451 24.5431L30 27H10L11.7549 24.5431C12.2395 23.8647 12.5 23.0518 12.5 22.2181V17.5Z" fill="url(#paint0_notification_bell_critical)"/>
-</mask>
-<g mask="url(#mask0_notification_bell_critical)">
-<path d="M8 8H32V32H8V8Z" fill="#FF4D4D"/>
-</g>
-<defs>
-<linearGradient id="paint0_notification_bell_critical" x1="23.6842" y1="27" x2="17.0775" y2="10.9189" gradientUnits="userSpaceOnUse">
-<stop/>
-<stop offset="1" stop-opacity="0.8"/>
-</linearGradient>
-</defs>
-</svg>
-"""#
+        return path
+    }
+
+    private func makeBellFootPath(in rect: CGRect) -> Path {
+        let x = rect.width / 40
+        let y = rect.height / 40
+
+        var path = Path()
+        path.move(to: CGPoint(x: 16.5 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 23.5 * x, y: 27 * y))
+        path.addCurve(
+            to: CGPoint(x: 20.5 * x, y: 30 * y),
+            control1: CGPoint(x: 23.5 * x, y: 28.6569 * y),
+            control2: CGPoint(x: 22.1569 * x, y: 30 * y)
+        )
+        path.addLine(to: CGPoint(x: 19.5 * x, y: 30 * y))
+        path.addCurve(
+            to: CGPoint(x: 16.5 * x, y: 27 * y),
+            control1: CGPoint(x: 17.8431 * x, y: 30 * y),
+            control2: CGPoint(x: 16.5 * x, y: 28.6569 * y)
+        )
+        path.closeSubpath()
+        return path
+    }
+
+    private func makeBellOutlineBodyPath(in rect: CGRect) -> Path {
+        let x = rect.width / 40
+        let y = rect.height / 40
+
+        var path = Path()
+        path.move(to: CGPoint(x: 20.5 * x, y: 13.1 * y))
+        path.addLine(to: CGPoint(x: 19.5 * x, y: 13.1 * y))
+        path.addCurve(
+            to: CGPoint(x: 15.1 * x, y: 17.5 * y),
+            control1: CGPoint(x: 17.0699 * x, y: 13.1 * y),
+            control2: CGPoint(x: 15.1 * x, y: 15.0699 * y)
+        )
+        path.addLine(to: CGPoint(x: 15.1 * x, y: 22.2181 * y))
+        path.addCurve(
+            to: CGPoint(x: 14.7289 * x, y: 24.4 * y),
+            control1: CGPoint(x: 15.1 * x, y: 22.9656 * y),
+            control2: CGPoint(x: 14.9731 * x, y: 23.7029 * y)
+        )
+        path.addLine(to: CGPoint(x: 25.2711 * x, y: 24.4 * y))
+        path.addCurve(
+            to: CGPoint(x: 24.9 * x, y: 22.2181 * y),
+            control1: CGPoint(x: 25.0269 * x, y: 23.7029 * y),
+            control2: CGPoint(x: 24.9 * x, y: 22.9656 * y)
+        )
+        path.addLine(to: CGPoint(x: 24.9 * x, y: 17.5 * y))
+        path.addCurve(
+            to: CGPoint(x: 20.5 * x, y: 13.1 * y),
+            control1: CGPoint(x: 24.9 * x, y: 15.0699 * y),
+            control2: CGPoint(x: 22.9301 * x, y: 13.1 * y)
+        )
+        path.closeSubpath()
+
+        path.move(to: CGPoint(x: 28.1475 * x, y: 24.4 * y))
+        path.addCurve(
+            to: CGPoint(x: 27.5 * x, y: 22.2181 * y),
+            control1: CGPoint(x: 27.7256 * x, y: 23.7518 * y),
+            control2: CGPoint(x: 27.5 * x, y: 22.994 * y)
+        )
+        path.addLine(to: CGPoint(x: 27.5 * x, y: 17.5 * y))
+        path.addCurve(
+            to: CGPoint(x: 20.5 * x, y: 10.5 * y),
+            control1: CGPoint(x: 27.5 * x, y: 13.634 * y),
+            control2: CGPoint(x: 24.366 * x, y: 10.5 * y)
+        )
+        path.addLine(to: CGPoint(x: 19.5 * x, y: 10.5 * y))
+        path.addCurve(
+            to: CGPoint(x: 12.5 * x, y: 17.5 * y),
+            control1: CGPoint(x: 15.634 * x, y: 10.5 * y),
+            control2: CGPoint(x: 12.5 * x, y: 13.634 * y)
+        )
+        path.addLine(to: CGPoint(x: 12.5 * x, y: 22.2181 * y))
+        path.addCurve(
+            to: CGPoint(x: 11.8525 * x, y: 24.4 * y),
+            control1: CGPoint(x: 12.5 * x, y: 22.994 * y),
+            control2: CGPoint(x: 12.2744 * x, y: 23.7518 * y)
+        )
+        path.addCurve(
+            to: CGPoint(x: 11.7549 * x, y: 24.5431 * y),
+            control1: CGPoint(x: 11.8211 * x, y: 24.4483 * y),
+            control2: CGPoint(x: 11.7886 * x, y: 24.496 * y)
+        )
+        path.addLine(to: CGPoint(x: 10 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 30 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 28.2451 * x, y: 24.5431 * y))
+        path.addCurve(
+            to: CGPoint(x: 28.1475 * x, y: 24.4 * y),
+            control1: CGPoint(x: 28.2114 * x, y: 24.496 * y),
+            control2: CGPoint(x: 28.1789 * x, y: 24.4483 * y)
+        )
+        path.closeSubpath()
+
+        return path
+    }
+}
+
+private struct NotificationBellFilledShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let x = rect.width / 40
+        let y = rect.height / 40
+
+        var path = Path()
+        path.move(to: CGPoint(x: 16.5 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 23.5 * x, y: 27 * y))
+        path.addCurve(
+            to: CGPoint(x: 20.5 * x, y: 30 * y),
+            control1: CGPoint(x: 23.5 * x, y: 28.6569 * y),
+            control2: CGPoint(x: 22.1569 * x, y: 30 * y)
+        )
+        path.addLine(to: CGPoint(x: 19.5 * x, y: 30 * y))
+        path.addCurve(
+            to: CGPoint(x: 16.5 * x, y: 27 * y),
+            control1: CGPoint(x: 17.8431 * x, y: 30 * y),
+            control2: CGPoint(x: 16.5 * x, y: 28.6569 * y)
+        )
+        path.closeSubpath()
+
+        path.move(to: CGPoint(x: 12.5 * x, y: 17.5 * y))
+        path.addCurve(
+            to: CGPoint(x: 19.5 * x, y: 10.5 * y),
+            control1: CGPoint(x: 12.5 * x, y: 13.634 * y),
+            control2: CGPoint(x: 15.634 * x, y: 10.5 * y)
+        )
+        path.addLine(to: CGPoint(x: 20.5 * x, y: 10.5 * y))
+        path.addCurve(
+            to: CGPoint(x: 27.5 * x, y: 17.5 * y),
+            control1: CGPoint(x: 24.366 * x, y: 10.5 * y),
+            control2: CGPoint(x: 27.5 * x, y: 13.634 * y)
+        )
+        path.addLine(to: CGPoint(x: 27.5 * x, y: 22.2181 * y))
+        path.addCurve(
+            to: CGPoint(x: 28.2451 * x, y: 24.5431 * y),
+            control1: CGPoint(x: 27.5 * x, y: 23.0518 * y),
+            control2: CGPoint(x: 27.7605 * x, y: 23.8647 * y)
+        )
+        path.addLine(to: CGPoint(x: 30 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 10 * x, y: 27 * y))
+        path.addLine(to: CGPoint(x: 11.7549 * x, y: 24.5431 * y))
+        path.addCurve(
+            to: CGPoint(x: 12.5 * x, y: 22.2181 * y),
+            control1: CGPoint(x: 12.2395 * x, y: 23.8647 * y),
+            control2: CGPoint(x: 12.5 * x, y: 23.0518 * y)
+        )
+        path.addLine(to: CGPoint(x: 12.5 * x, y: 17.5 * y))
+        path.closeSubpath()
+
+        return path
+    }
+}

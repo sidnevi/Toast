@@ -4,8 +4,10 @@ struct InAppNotificationView: View {
     let model: InAppNotificationContent
 
     var body: some View {
-        InlineSVGWebView(svg: model.foregroundSVG)
-            .frame(width: Layout.width, height: Layout.height)
+        PrewarmedSVGView(
+            svg: model.foregroundSVG,
+            size: CGSize(width: Layout.width, height: Layout.height)
+        )
     }
 }
 
