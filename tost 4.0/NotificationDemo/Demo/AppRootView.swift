@@ -30,7 +30,7 @@ struct AppRootView: View {
             }
 
             if showsNotificationCenter {
-                NotificationCenterView {
+                NotificationCenterView(layoutMode: demoHomeBridge.notificationCenterLayoutMode) {
                     withAnimation(.easeInOut(duration: 0.22)) {
                         showsNotificationCenter = false
                     }

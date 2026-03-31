@@ -53,6 +53,18 @@ struct NotificationDemoView: View {
                 }
                 .pickerStyle(.segmented)
 
+                controlSectionTitle("Вид ЦУ")
+
+                Picker("Notification Center Layout", selection: Binding(
+                    get: { viewModel.state.notificationCenterLayoutMode },
+                    set: { viewModel.setNotificationCenterLayoutMode($0) }
+                )) {
+                    ForEach(NotificationCenterLayoutMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+
                 if viewModel.showsScenarioPicker {
                     controlSectionTitle("Сценарий")
 
@@ -65,6 +77,18 @@ struct NotificationDemoView: View {
                         }
                     }
                 }
+            } else {
+                controlSectionTitle("Вид ЦУ")
+
+                Picker("Notification Center Layout", selection: Binding(
+                    get: { viewModel.state.notificationCenterLayoutMode },
+                    set: { viewModel.setNotificationCenterLayoutMode($0) }
+                )) {
+                    ForEach(NotificationCenterLayoutMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
         }
         .padding(18)

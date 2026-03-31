@@ -5,10 +5,15 @@ import Foundation
 final class NotificationDemoHomeBridge: ObservableObject {
     @Published private(set) var selectedScenarioID: String
     @Published var autoPlayOnHomeSelection = true
+    @Published var notificationCenterLayoutMode: NotificationCenterLayoutMode
     @Published private(set) var homePlaybackRequestID: UUID?
 
-    init(initialScenarioID: String? = nil) {
+    init(
+        initialScenarioID: String? = nil,
+        initialNotificationCenterLayoutMode: NotificationCenterLayoutMode = .united
+    ) {
         self.selectedScenarioID = initialScenarioID ?? NotificationScenarioCatalog.currentInApp.id
+        self.notificationCenterLayoutMode = initialNotificationCenterLayoutMode
     }
 
     var selectedScenario: NotificationScenario {
@@ -27,5 +32,9 @@ final class NotificationDemoHomeBridge: ObservableObject {
     func requestPlayback(force: Bool = false) {
         guard force || autoPlayOnHomeSelection else { return }
         homePlaybackRequestID = UUID()
+    }
+
+    func setNotificationCenterLayoutMode(_ mode: NotificationCenterLayoutMode) {
+        notificationCenterLayoutMode = mode
     }
 }

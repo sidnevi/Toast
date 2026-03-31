@@ -23,6 +23,7 @@ final class NotificationDemoViewModel: ObservableObject {
         let initialScenario = NotificationScenarioCatalog.defaultScenario(for: initialKind)
         self.state = NotificationDemoState(
             selectedKind: initialKind,
+            notificationCenterLayoutMode: homeBridge.notificationCenterLayoutMode,
             selectedScenarioID: initialScenario.id
         )
         self.animationController.setShowsSourceBell(state.showsSourceBell)
@@ -132,6 +133,13 @@ final class NotificationDemoViewModel: ObservableObject {
 
     func setDynamicTypeSize(_ dynamicTypeSize: DynamicTypeSize) {
         state.dynamicTypeSize = dynamicTypeSize
+    }
+
+    func setNotificationCenterLayoutMode(_ mode: NotificationCenterLayoutMode) {
+        guard state.notificationCenterLayoutMode != mode else { return }
+
+        state.notificationCenterLayoutMode = mode
+        homeBridge.setNotificationCenterLayoutMode(mode)
     }
 
     func setShowsSourceBell(_ showsSourceBell: Bool) {
