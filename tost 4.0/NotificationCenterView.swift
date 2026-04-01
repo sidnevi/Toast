@@ -97,7 +97,7 @@ struct NotificationCenterView: View {
     }
 
     private var usesLeadingSectionHeaders: Bool {
-        layoutMode != .united
+        layoutMode == .separated2
     }
 
     var body: some View {
@@ -324,6 +324,7 @@ struct NotificationCenterView: View {
                             isExpanded: isSummaryStackExpanded,
                             action: toggleEventsExpansion
                         )
+                        .fixedSize(horizontal: true, vertical: false)
                     }
                 }
 
@@ -804,13 +805,13 @@ private struct NotificationCenterSectionToggleButton: View {
                 Text(isExpanded ? "Свернуть" : "Развернуть")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 92, alignment: .leading)
                     .transaction { transaction in
                         transaction.animation = nil
                     }
             }
             .padding(.horizontal, 12)
             .frame(height: 32)
+            .fixedSize(horizontal: true, vertical: false)
             .background(
                 Capsule(style: .continuous)
                     .fill(Color.white.opacity(0.10))
