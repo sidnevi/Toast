@@ -127,7 +127,7 @@ struct ContentView: View {
         ZStack(alignment: .topLeading) {
             PlaceholderMultipleView(
                 showsBellVisual: showsInlineHeaderBellVisual,
-                showsBellButton: notificationController.showsSourceBell,
+                showsBellButton: showsBellTapTarget,
                 isBellFilled: notificationController.isSourceBellFilled,
                 isBellCritical: notificationController.isSourceBellCritical,
                 onBellTap: handleBellTap,
@@ -166,6 +166,17 @@ struct ContentView: View {
 
             notificationMorphView
                 .zIndex(1)
+
+            if showsBellTapTarget {
+                NotificationBellButton(action: handleBellTap)
+                    .offset(
+                        x: PlaceholderMultipleView.Layout.bellHitOrigin.x,
+                        y: PlaceholderMultipleView.Layout.bellHitOrigin.y +
+                            placeholderTopOffset +
+                            revealOffset(for: isHeaderVisible)
+                    )
+                    .zIndex(2)
+            }
         }
         .frame(maxWidth: .infinity, minHeight: contentHeight, alignment: .top)
     }
@@ -289,6 +300,10 @@ struct ContentView: View {
         }
 
         return notificationController.showsSourceBell
+    }
+
+    private var showsBellTapTarget: Bool {
+        notificationController.showsSourceBell || notificationController.isSourceBellFilled
     }
 
     private var currentNotificationBellCenter: CGPoint {
@@ -470,18 +485,8 @@ struct ContentView: View {
         )
     }
 
-    private func restoreToast() {
-        notificationController.setSourceBellFilled(false, isCritical: false)
-        notificationController.present()
-        scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
-    }
-
     private func handleBellTap() {
-        if notificationController.isSourceBellFilled || notificationController.isSourceBellCritical {
-            restoreToast()
-        } else {
-            openNotificationCenter()
-        }
+        openNotificationCenter()
     }
     private func handlePendingHomePlaybackIfNeeded() {
         guard activeTab == .home, !isLoading else { return }
