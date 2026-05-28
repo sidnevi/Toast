@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var isCommunicationPagePresented = false
     @State private var shouldDismissEventOnCommunicationReturn = false
     @State private var isLoading = true
+    @State private var showsLoadingContent = true
     @State private var loadingOpacity = 0.0
     @State private var companyHeaderDisplayMode: CompanyHeaderDisplayMode = .regular
     @State private var isHeaderVisible = false
@@ -24,14 +25,19 @@ struct ContentView: View {
     @State private var isOperationsVisible = false
     @State private var isAccountsVisible = false
     @State private var isAccountingVisible = false
+    @State private var keepsInitialLowerContentInPlace = false
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
     @State private var homePlaybackTask: Task<Void, Never>?
     @State private var homeAutoDismissTask: Task<Void, Never>?
     @State private var initialHomeAutoplayTask: Task<Void, Never>?
     @State private var notificationPresenterResetID = UUID()
+    @State private var isNotificationInteractionActive = false
     @State private var didStartInitialLoad = false
     @State private var didScheduleInitialHomeAutoplay = false
+    @State private var isInitialHomeContentRevealed = false
+    @State private var didPlayInitialHomeNotification = false
+    @State private var initialNotificationBellCenterOverride: CGPoint?
     @State private var lastHandledHomePlaybackRequestID: UUID?
     @StateObject private var notificationController = NotificationAnimationController()
     @State private var initialContentLoadTracker = InitialHomeContentLoadTracker()
@@ -56,7 +62,9 @@ struct ContentView: View {
     private let accountingVisibleHeight: CGFloat = AccountingSectionView.Layout.totalHeight
     private let contentBottomPadding: CGFloat = 32
     private let loadingDuration: UInt64 = 1_200_000_000
+    private let loadingFadeOutDuration: Double = 0.28
     private let sectionRevealOffset: CGFloat = 18
+    private let notificationBellGapReduction: CGFloat = 4
     private let toastAnimationDuration: Double = NotificationGlassMotionPreset.animationDuration
     private let toastDismissLiftLag: Double = 0.06 * NotificationGlassMotionPreset.timingScale
     private let accountingRevealAnimationDuration: Double = 0.34
@@ -71,7 +79,7 @@ struct ContentView: View {
                         .opacity(isLoading ? 0.001 : 1)
                         .allowsHitTesting(!isLoading)
 
-                    if isLoading {
+                    if showsLoadingContent {
                         loadingContent
                     }
                 }
@@ -134,7 +142,7 @@ struct ContentView: View {
                 onSVGReady: initialContentLoadTracker.markLoaded
             )
                 .opacity(isHeaderVisible ? 1 : 0)
-                .offset(y: placeholderTopOffset + revealOffset(for: isHeaderVisible))
+                .offset(y: placeholderTopOffset)
                 .background {
                     GeometryReader { proxy in
                         Color.clear.preference(
@@ -146,23 +154,23 @@ struct ContentView: View {
 
             TotalView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isTotalVisible ? 1 : 0)
-                .offset(y: totalTopOffset + revealOffset(for: isTotalVisible))
+                .offset(y: lowerTotalTopOffset)
 
             ActionsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isActionsVisible ? 1 : 0)
-                .offset(y: actionsTopOffset + revealOffset(for: isActionsVisible))
+                .offset(y: lowerActionsTopOffset)
 
             OperationsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isOperationsVisible ? 1 : 0)
-                .offset(y: operationsTopOffset + revealOffset(for: isOperationsVisible))
+                .offset(y: lowerOperationsTopOffset)
 
             AccountsView(onSVGReady: initialContentLoadTracker.markLoaded)
                 .opacity(isAccountsVisible ? 1 : 0)
-                .offset(y: accountsTopOffset + revealOffset(for: isAccountsVisible))
+                .offset(y: lowerAccountsTopOffset)
 
             AccountingSectionView()
                 .opacity(isAccountingVisible ? 1 : 0)
-                .offset(y: accountingTopOffset + revealOffset(for: isAccountingVisible))
+                .offset(y: lowerAccountingTopOffset + lowerContentRevealOffset(for: isAccountingVisible))
 
             notificationMorphView
                 .zIndex(1)
@@ -183,6 +191,7 @@ struct ContentView: View {
             operationsSpacing: operationsSpacing,
             accountsSpacing: accountsSpacing,
             accountingSpacing: accountingSpacing,
+            lowerContentTopOffset: loadingLowerContentPlaceholderTopOffset,
             contentBottomPadding: contentBottomPadding
         )
         .opacity(loadingOpacity)
@@ -210,12 +219,13 @@ struct ContentView: View {
             showsSourceBell: $notificationController.showsSourceBell,
             isSourceBellFilled: $notificationController.isSourceBellFilled,
             isSourceBellCritical: $notificationController.isSourceBellCritical,
-            allowsInteractiveDismiss: currentNotificationScenario.kind != .event,
+            allowsInteractiveDismiss: true,
             glassStyle: notificationMorphStyle,
             liquidConfig: liquidNotificationConfig,
             liquidNotificationText: "Новое уведомление",
             liquidOffset: CGSize(width: liquidNotificationOffsetX, height: liquidNotificationOffsetY),
-            onDismissMorphStart: scheduleToastCollapseFromDismissMorphStart
+            onDismissMorphStart: scheduleToastCollapseFromDismissMorphStart,
+            onInteractionChanged: handleNotificationInteractionChanged
         ) {
             currentNotificationContentView
         }
@@ -283,6 +293,16 @@ struct ContentView: View {
         max(animatedToastLayoutHeight - placeholderLiftOffset, 0)
     }
 
+    private var lowerContentPlaceholderTopOffset: CGFloat {
+        keepsInitialLowerContentInPlace
+            ? max(toastHeight - placeholderLiftOffset, 0)
+            : placeholderTopOffset
+    }
+
+    private var loadingLowerContentPlaceholderTopOffset: CGFloat {
+        max(toastHeight - placeholderLiftOffset, 0)
+    }
+
     private var showsInlineHeaderBellVisual: Bool {
         if #available(iOS 26.0, *) {
             return false
@@ -296,7 +316,26 @@ struct ContentView: View {
             x: PlaceholderMultipleView.Layout.bellCenter.x,
             y: PlaceholderMultipleView.Layout.bellCenter.y +
                 placeholderTopOffset +
-                revealOffset(for: isHeaderVisible)
+                revealOffset(for: isHeaderVisible) -
+                notificationBellGapReduction
+        )
+    }
+
+    private var settledNotificationBellCenter: CGPoint {
+        CGPoint(
+            x: PlaceholderMultipleView.Layout.bellCenter.x,
+            y: PlaceholderMultipleView.Layout.bellCenter.y +
+                max(toastHeight - placeholderLiftOffset, 0) -
+                notificationBellGapReduction
+        )
+    }
+
+    private var initialNotificationBellCenter: CGPoint {
+        CGPoint(
+            x: PlaceholderMultipleView.Layout.bellCenter.x,
+            y: PlaceholderMultipleView.Layout.bellCenter.y +
+                revealOffset(for: isHeaderVisible) -
+                notificationBellGapReduction
         )
     }
 
@@ -304,32 +343,68 @@ struct ContentView: View {
         placeholderTopOffset + placeholderHeight + totalSpacing
     }
 
+    private var lowerTotalTopOffset: CGFloat {
+        lowerContentPlaceholderTopOffset + placeholderHeight + totalSpacing
+    }
+
     private var actionsTopOffset: CGFloat {
         totalTopOffset + totalHeight + actionsSpacing
+    }
+
+    private var lowerActionsTopOffset: CGFloat {
+        lowerContentPlaceholderTopOffset +
+            placeholderHeight +
+            totalSpacing +
+            totalHeight +
+            actionsSpacing
     }
 
     private var operationsVisibleTopOffset: CGFloat {
         actionsTopOffset + actionsHeight + operationsSpacing
     }
 
+    private var lowerOperationsVisibleTopOffset: CGFloat {
+        lowerActionsTopOffset + actionsHeight + operationsSpacing
+    }
+
     private var operationsTopOffset: CGFloat {
         operationsVisibleTopOffset - operationsTopInset
+    }
+
+    private var lowerOperationsTopOffset: CGFloat {
+        lowerOperationsVisibleTopOffset - operationsTopInset
     }
 
     private var accountsVisibleTopOffset: CGFloat {
         operationsVisibleTopOffset + operationsVisibleHeight + accountsSpacing
     }
 
+    private var lowerAccountsVisibleTopOffset: CGFloat {
+        lowerOperationsVisibleTopOffset + operationsVisibleHeight + accountsSpacing
+    }
+
     private var accountsTopOffset: CGFloat {
         accountsVisibleTopOffset - accountsTopInset
+    }
+
+    private var lowerAccountsTopOffset: CGFloat {
+        lowerAccountsVisibleTopOffset - accountsTopInset
     }
 
     private var accountingVisibleTopOffset: CGFloat {
         accountsTopOffset + accountsFrameHeight + accountingSpacing
     }
 
+    private var lowerAccountingVisibleTopOffset: CGFloat {
+        lowerAccountsTopOffset + accountsFrameHeight + accountingSpacing
+    }
+
     private var accountingTopOffset: CGFloat {
         accountingVisibleTopOffset
+    }
+
+    private var lowerAccountingTopOffset: CGFloat {
+        lowerAccountingVisibleTopOffset
     }
 
     private var contentHeight: CGFloat {
@@ -337,7 +412,8 @@ struct ContentView: View {
     }
 
     private var loadingContentHeight: CGFloat {
-        placeholderHeight +
+        loadingLowerContentPlaceholderTopOffset +
+            placeholderHeight +
             totalSpacing +
             totalHeight +
             actionsSpacing +
@@ -370,6 +446,8 @@ struct ContentView: View {
         style.footerVariant = currentNotificationMetrics.footerVariant
         style.buttonSize = PlaceholderMultipleView.Layout.bellSize
         style.buttonCenter = currentNotificationBellCenter
+        style.surfaceStartAnchor = initialNotificationBellCenterOverride
+        style.anchorsSurfaceStartToBell = initialNotificationBellCenterOverride != nil
         style.glassContainerSpacing = 50
         style.splitStartProgress = 0.95
         style.preTearStartProgress = 0.968
@@ -395,6 +473,10 @@ struct ContentView: View {
         isVisible ? 0 : sectionRevealOffset
     }
 
+    private func lowerContentRevealOffset(for isVisible: Bool) -> CGFloat {
+        revealOffset(for: isVisible)
+    }
+
     private func startInitialLoadIfNeeded() {
         guard !didStartInitialLoad else { return }
         didStartInitialLoad = true
@@ -407,7 +489,13 @@ struct ContentView: View {
             isOperationsVisible = false
             isAccountsVisible = false
             isAccountingVisible = false
+            keepsInitialLowerContentInPlace = true
+            isInitialHomeContentRevealed = false
+            didPlayInitialHomeNotification = false
+            toastLayoutProgress = 0
+            initialNotificationBellCenterOverride = nil
             notificationController.reset()
+            showsLoadingContent = true
             loadingOpacity = 0
             prewarmCurrentNotificationContentIfNeeded()
 
@@ -425,7 +513,23 @@ struct ContentView: View {
 
             isLoading = false
 
-            try? await revealLoadedContent()
+            let revealTask = Task { @MainActor in
+                try? await revealLoadedContent()
+            }
+
+            try? await Task.sleep(nanoseconds: 120_000_000)
+
+            withAnimation(.easeInOut(duration: loadingFadeOutDuration)) {
+                loadingOpacity = 0
+            }
+
+            try? await Task.sleep(
+                nanoseconds: UInt64(loadingFadeOutDuration * 1_000_000_000)
+            )
+
+            showsLoadingContent = false
+            await revealTask.value
+            isInitialHomeContentRevealed = true
             handlePendingHomePlaybackIfNeeded()
         }
     }
@@ -435,42 +539,56 @@ struct ContentView: View {
             isHeaderVisible = true
         }
 
-        try await Task.sleep(nanoseconds: 70_000_000)
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        syncToastLayout(with: true)
+        let notificationContentTask = Task { @MainActor in
+            await waitForCurrentNotificationContentIfNeeded()
+        }
+        presentInitialHomeNotificationIfNeeded()
 
         withAnimation(.easeOut(duration: 0.3)) {
             isTotalVisible = true
-        }
-
-        try await Task.sleep(nanoseconds: 60_000_000)
-
-        withAnimation(.easeOut(duration: 0.3)) {
             isActionsVisible = true
         }
-
-        try await Task.sleep(nanoseconds: 60_000_000)
 
         withAnimation(.easeOut(duration: 0.32)) {
             isOperationsVisible = true
         }
 
-        try await Task.sleep(nanoseconds: 170_000_000)
-
         withAnimation(.easeOut(duration: 0.34)) {
             isAccountsVisible = true
         }
-
-        try await Task.sleep(nanoseconds: 70_000_000)
 
         withAnimation(.easeOut(duration: accountingRevealAnimationDuration)) {
             isAccountingVisible = true
         }
 
+        try await Task.sleep(nanoseconds: 500_000_000)
+        await notificationContentTask.value
+
+        let lowerContentRevealDuration = max(0.34, accountingRevealAnimationDuration)
         try await Task.sleep(
-            nanoseconds: UInt64(accountingRevealAnimationDuration * 1_000_000_000)
+            nanoseconds: UInt64(lowerContentRevealDuration * 1_000_000_000)
         )
+        keepsInitialLowerContentInPlace = false
+    }
+
+    private func presentInitialHomeNotificationIfNeeded() {
+        guard activeTab == .home else { return }
+        guard !didPlayInitialHomeNotification else { return }
+        guard !notificationController.isPresented else { return }
+
+        didPlayInitialHomeNotification = true
+        lastHandledHomePlaybackRequestID = demoHomeBridge.homePlaybackRequestID
+        initialNotificationBellCenterOverride = initialNotificationBellCenter
+        notificationController.setSourceBellFilled(false, isCritical: false)
+        notificationController.present()
+        scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
     }
 
     private func restoreToast() {
+        initialNotificationBellCenterOverride = nil
         notificationController.setSourceBellFilled(false, isCritical: false)
         notificationController.present()
         scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
@@ -485,6 +603,7 @@ struct ContentView: View {
     }
     private func handlePendingHomePlaybackIfNeeded() {
         guard activeTab == .home, !isLoading else { return }
+        guard isInitialHomeContentRevealed else { return }
         guard let requestID = demoHomeBridge.homePlaybackRequestID else { return }
         guard lastHandledHomePlaybackRequestID != requestID else { return }
 
@@ -512,6 +631,7 @@ struct ContentView: View {
 
             guard !Task.isCancelled else { return }
             guard activeTab == .home else { return }
+            guard !didPlayInitialHomeNotification else { return }
 
             demoHomeBridge.requestPlayback(force: true)
             handlePendingHomePlaybackIfNeeded()
@@ -520,6 +640,7 @@ struct ContentView: View {
 
     private func playSelectedScenarioOnHome(for requestID: UUID) {
         homePlaybackTask?.cancel()
+        initialNotificationBellCenterOverride = nil
         resetHomeNotificationState()
 
         homePlaybackTask = Task { @MainActor in
@@ -543,6 +664,8 @@ struct ContentView: View {
         homePlaybackTask?.cancel()
         homeAutoDismissTask?.cancel()
         shouldDismissEventOnCommunicationReturn = false
+        keepsInitialLowerContentInPlace = false
+        initialNotificationBellCenterOverride = nil
         notificationPresenterResetID = UUID()
 
         let showsSourceBell = preserveBellVisualState ? notificationController.showsSourceBell : true
@@ -561,6 +684,7 @@ struct ContentView: View {
         homeAutoDismissTask?.cancel()
 
         guard scenario.kind != .event else { return }
+        guard !isNotificationInteractionActive else { return }
 
         homeAutoDismissTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 3_000_000_000)
@@ -569,8 +693,23 @@ struct ContentView: View {
             guard activeTab == .home else { return }
             guard currentNotificationScenario.id == scenario.id else { return }
             guard notificationController.isPresented else { return }
+            guard !isNotificationInteractionActive else {
+                scheduleHomeDismissIfNeeded(for: scenario)
+                return
+            }
 
             notificationController.dismiss()
+        }
+    }
+
+    private func handleNotificationInteractionChanged(_ isActive: Bool) {
+        guard isNotificationInteractionActive != isActive else { return }
+        isNotificationInteractionActive = isActive
+
+        if isActive {
+            homeAutoDismissTask?.cancel()
+        } else if notificationController.isPresented {
+            scheduleHomeDismissIfNeeded(for: currentNotificationScenario)
         }
     }
 
@@ -616,6 +755,7 @@ struct ContentView: View {
 
     private func scheduleToastCollapseFromDismissMorphStart() {
         toastLayoutTask?.cancel()
+        initialNotificationBellCenterOverride = nil
         notificationController.setSourceBellFilled(
             true,
             isCritical: currentNotificationScenario.isCriticalAttention
@@ -865,40 +1005,56 @@ private struct PageLoadingView: View {
     let operationsSpacing: CGFloat
     let accountsSpacing: CGFloat
     let accountingSpacing: CGFloat
+    let lowerContentTopOffset: CGFloat
     let contentBottomPadding: CGFloat
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .topLeading) {
             ShimmerBlockView(height: placeholderHeight)
-
-            Spacer()
-                .frame(height: totalSpacing)
+                .offset(y: 0)
 
             ShimmerBlockView(height: totalHeight)
-
-            Spacer()
-                .frame(height: actionsSpacing)
+                .offset(y: totalTopOffset)
 
             ShimmerBlockView(height: actionsHeight)
-
-            Spacer()
-                .frame(height: operationsSpacing)
+                .offset(y: actionsTopOffset)
 
             ShimmerBlockView(height: operationsHeight)
-
-            Spacer()
-                .frame(height: accountsSpacing)
+                .offset(y: operationsTopOffset)
 
             ShimmerBlockView(height: accountsHeight)
-
-            Spacer()
-                .frame(height: accountingSpacing)
+                .offset(y: accountsTopOffset)
 
             ShimmerBlockView(height: accountingHeight)
+                .offset(y: accountingTopOffset)
         }
-        .padding(.bottom, contentBottomPadding)
+        .frame(height: contentHeight, alignment: .topLeading)
         .frame(width: 375, alignment: .topLeading)
         .frame(maxWidth: .infinity, alignment: .top)
+    }
+
+    private var totalTopOffset: CGFloat {
+        lowerContentTopOffset + placeholderHeight + totalSpacing
+    }
+
+    private var actionsTopOffset: CGFloat {
+        totalTopOffset + totalHeight + actionsSpacing
+    }
+
+    private var operationsTopOffset: CGFloat {
+        actionsTopOffset + actionsHeight + operationsSpacing
+    }
+
+    private var accountsTopOffset: CGFloat {
+        operationsTopOffset + operationsHeight + accountsSpacing
+    }
+
+    private var accountingTopOffset: CGFloat {
+        accountsTopOffset + accountsHeight + accountingSpacing
+    }
+
+    private var contentHeight: CGFloat {
+        accountingTopOffset + accountingHeight + contentBottomPadding
     }
 }
 
@@ -918,42 +1074,82 @@ private struct CompanyHeaderMinYPreferenceKey: PreferenceKey {
 private struct ShimmerBlockView: View {
     let height: CGFloat
 
-    @State private var shimmerOffset: CGFloat = -180
+    @State private var shimmerStartDate = Date()
     private let blockWidth: CGFloat = 343
+    private let shimmerDuration: TimeInterval = 1.45
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 24, style: .continuous)
 
-        shape
-            .fill(Color.white.opacity(0.15))
-            .frame(width: blockWidth, height: height)
-            .overlay {
-                LinearGradient(
-                    colors: [
-                        .clear,
-                        Color.white.opacity(0.16),
-                        .clear
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(width: 120, height: height * 1.6)
-                .rotationEffect(.degrees(18))
-                .offset(x: shimmerOffset, y: -height * 0.1)
-                .blendMode(.screen)
-                .mask {
-                    shape
-                        .frame(width: blockWidth, height: height)
-                }
-            }
-            .frame(width: 375, height: height, alignment: .center)
-            .onAppear {
-                shimmerOffset = -180
+        TimelineView(.animation) { timeline in
+            let phase = shimmerPhase(at: timeline.date)
 
-                withAnimation(.linear(duration: 1.15).repeatForever(autoreverses: false)) {
-                    shimmerOffset = 180
+            shape
+                .fill(Color.white.opacity(0.14))
+                .opacity(blockOpacity(at: timeline.date))
+                .frame(width: blockWidth, height: height)
+                .overlay {
+                    LinearGradient(
+                        colors: [
+                            .clear,
+                            Color.white.opacity(0.04),
+                            Color.white.opacity(0.18),
+                            Color.white.opacity(0.04),
+                            .clear
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: 230, height: height * 1.45)
+                    .rotationEffect(.degrees(12))
+                    .offset(x: shimmerOffset(for: phase), y: -height * 0.1)
+                    .opacity(shimmerOpacity(for: phase))
+                    .blendMode(.screen)
+                    .mask {
+                        shape
+                            .frame(width: blockWidth, height: height)
+                    }
                 }
-            }
+                .frame(width: 375, height: height, alignment: .center)
+        }
+        .onAppear {
+            shimmerStartDate = Date()
+        }
+    }
+
+    private func shimmerPhase(at date: Date) -> CGFloat {
+        let elapsed = date.timeIntervalSince(shimmerStartDate)
+        let phase = elapsed.truncatingRemainder(dividingBy: shimmerDuration) / shimmerDuration
+        return CGFloat(phase)
+    }
+
+    private func shimmerOffset(for phase: CGFloat) -> CGFloat {
+        let easedProgress = acceleratingProgress(for: phase)
+        return -blockWidth * 0.72 + blockWidth * 1.44 * easedProgress
+    }
+
+    private func shimmerOpacity(for phase: CGFloat) -> Double {
+        let easedProgress = acceleratingProgress(for: phase)
+        let linearOpacity = max(0, 1 - abs(easedProgress - 0.5) * 2)
+        let smoothOpacity = linearOpacity * linearOpacity * (3 - 2 * linearOpacity)
+        return Double(smoothOpacity)
+    }
+
+    private func blockOpacity(at date: Date) -> Double {
+        let elapsed = date.timeIntervalSince(shimmerStartDate)
+        let phase = CGFloat(
+            elapsed.truncatingRemainder(dividingBy: shimmerDuration * 1.35) /
+            (shimmerDuration * 1.35)
+        )
+        let pulse = (1 - cos(phase * .pi * 2)) / 2
+        let softenedPulse = pulse * pulse * (3 - 2 * pulse)
+        return 0.7 + Double(softenedPulse) * 0.18
+    }
+
+    private func acceleratingProgress(for phase: CGFloat) -> CGFloat {
+        let eased = phase * phase * (3 - 2 * phase)
+        let endGlide = pow(phase, 2.2) * 0.08
+        return min(max(eased + endGlide, 0), 1)
     }
 }
 

@@ -22,41 +22,105 @@ struct NotificationFooterView: View {
 
             ZStack(alignment: .topLeading) {
                 FooterHighlightShape(variant: style.variant)
-                    .fill(style.cardTint)
+                    .fill(tailTint)
                     .scaleEffect(x: scaleX, y: scaleY, anchor: .topLeading)
-
-                Circle()
-                    .fill(style.cardTint)
-                    .frame(
-                        width: FooterLayout.indicatorDiameter * scaleX,
-                        height: FooterLayout.indicatorDiameter * scaleY
-                    )
-                    .position(
-                        x: FooterLayout.indicatorCenter(for: style.variant).x * scaleX,
-                        y: FooterLayout.indicatorCenter.y * scaleY
-                    )
             }
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
         }
         .frame(width: style.size.width, height: style.size.height, alignment: .leading)
     }
+
+    private var tailTint: Color {
+        switch style.variant {
+        case .event:
+            return Color(red: 39 / 255, green: 28 / 255, blue: 30 / 255)
+        case .inApp, .push:
+            return style.cardTint
+        }
+    }
+}
+
+struct NotificationUnifiedSurfaceShape: Shape {
+    let cornerRadius: CGFloat
+    let footerHeight: CGFloat
+    let variant: NotificationFooterView.Variant
+
+    func path(in rect: CGRect) -> Path {
+        let bodyHeight = max(rect.height - footerHeight, 0)
+        let bodyRect = CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: bodyHeight)
+
+        guard footerHeight > 0.1 else {
+            return RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .path(in: bodyRect)
+        }
+
+        let radius = min(cornerRadius, min(bodyRect.width, bodyRect.height) / 2)
+        let scaleX = rect.width / FooterLayout.canvasSize.width
+        let scaleY = footerHeight / FooterLayout.canvasSize.height
+        let shiftX = horizontalShift(for: variant)
+
+        let tailLeft = rect.minX + (291 + shiftX) * scaleX
+        let tailShoulderLeft = rect.minX + (307.388 + shiftX) * scaleX
+        let tailNotchLeft = rect.minX + (312.426 + shiftX) * scaleX
+        let tailNotchRight = rect.minX + (319.017 + shiftX) * scaleX
+        let tailShoulderRight = rect.minX + min(319, 326 + shiftX) * scaleX
+        let tailBottomY = bodyRect.maxY + 8.59135 * scaleY
+        let tailJoinY = bodyRect.maxY
+
+        var path = Path()
+        path.move(to: CGPoint(x: bodyRect.minX + radius, y: bodyRect.minY))
+        path.addLine(to: CGPoint(x: bodyRect.maxX - radius, y: bodyRect.minY))
+        path.addQuadCurve(
+            to: CGPoint(x: bodyRect.maxX, y: bodyRect.minY + radius),
+            control: CGPoint(x: bodyRect.maxX, y: bodyRect.minY)
+        )
+        path.addLine(to: CGPoint(x: bodyRect.maxX, y: bodyRect.maxY - radius))
+        path.addQuadCurve(
+            to: CGPoint(x: bodyRect.maxX - radius, y: bodyRect.maxY),
+            control: CGPoint(x: bodyRect.maxX, y: bodyRect.maxY)
+        )
+        path.addLine(to: CGPoint(x: tailShoulderRight, y: tailJoinY))
+        path.addCurve(
+            to: CGPoint(x: tailNotchRight, y: bodyRect.maxY + 6.23681 * scaleY),
+            control1: CGPoint(x: tailShoulderRight - 3.073 * scaleX, y: tailJoinY),
+            control2: CGPoint(x: tailNotchRight + 1.208 * scaleX, y: bodyRect.maxY + 2.03425 * scaleY)
+        )
+        path.addCurve(
+            to: CGPoint(x: tailNotchLeft, y: tailBottomY),
+            control1: CGPoint(x: tailNotchRight - 0.814 * scaleX, y: bodyRect.maxY + 9.06856 * scaleY),
+            control2: CGPoint(x: tailNotchLeft + 2.424 * scaleX, y: bodyRect.maxY + 10.2662 * scaleY)
+        )
+        path.addLine(to: CGPoint(x: tailShoulderLeft, y: bodyRect.maxY + 5.11047 * scaleY))
+        path.addCurve(
+            to: CGPoint(x: tailLeft, y: tailJoinY),
+            control1: CGPoint(x: tailShoulderLeft - 4.817 * scaleX, y: bodyRect.maxY + 1.78253 * scaleY),
+            control2: CGPoint(x: tailLeft + 5.855 * scaleX, y: tailJoinY)
+        )
+        path.addLine(to: CGPoint(x: bodyRect.minX + radius, y: bodyRect.maxY))
+        path.addQuadCurve(
+            to: CGPoint(x: bodyRect.minX, y: bodyRect.maxY - radius),
+            control: CGPoint(x: bodyRect.minX, y: bodyRect.maxY)
+        )
+        path.addLine(to: CGPoint(x: bodyRect.minX, y: bodyRect.minY + radius))
+        path.addQuadCurve(
+            to: CGPoint(x: bodyRect.minX + radius, y: bodyRect.minY),
+            control: CGPoint(x: bodyRect.minX, y: bodyRect.minY)
+        )
+        path.closeSubpath()
+
+        return path
+    }
+
+    private func horizontalShift(for variant: NotificationFooterView.Variant) -> CGFloat {
+        switch variant {
+        case .inApp, .push, .event:
+            return -4
+        }
+    }
 }
 
 private enum FooterLayout {
     static let canvasSize = CGSize(width: 351, height: 20)
-    static let indicatorCenter = CGPoint(x: 319, y: 16)
-    static let indicatorDiameter: CGFloat = 10
-
-    static func indicatorCenter(for variant: NotificationFooterView.Variant) -> CGPoint {
-        switch variant {
-        case .inApp:
-            return indicatorCenter
-        case .push:
-            return CGPoint(x: 315, y: 16)
-        case .event:
-            return CGPoint(x: 315, y: 16)
-        }
-    }
 }
 
 private struct FooterHighlightShape: Shape {
@@ -68,11 +132,7 @@ private struct FooterHighlightShape: Shape {
 
     private func horizontalShift(for variant: NotificationFooterView.Variant) -> CGFloat {
         switch variant {
-        case .inApp:
-            return 0
-        case .push:
-            return -4
-        case .event:
+        case .inApp, .push, .event:
             return -4
         }
     }

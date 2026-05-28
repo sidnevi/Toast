@@ -52,6 +52,8 @@ struct GlassMorphNotificationStyle {
     var splitStartProgress: CGFloat = 0.95
     var preTearStartProgress: CGFloat = 0.968
     var tearProgress: CGFloat = 0.992
+    var anchorsSurfaceStartToBell = false
+    var surfaceStartAnchor: CGPoint?
     // Общая длина morph-анимации появления.
     var animationDuration: Double = NotificationGlassMotionPreset.animationDuration
     // Через сколько после старта morph начинает раскрываться контент.
@@ -75,6 +77,7 @@ struct GlassMorphNotificationStyle {
     var finalExpansionEndProgress: CGFloat = NotificationGlassMotionPreset.finalExpansionEndProgress
     var swipeDismissThreshold: CGFloat = 50
     var swipeDismissPredictedThreshold: CGFloat = 120
+    var swipeDismissIslandTopContactDistance: CGFloat = 112
     var bounceLift: CGFloat = 24
     var bounceHoldDuration: Double = 0.2
     // "Пружинистость" основного morph.
@@ -109,6 +112,10 @@ struct GlassMorphNotificationStyle {
 
     var notificationCenter: CGPoint {
         CGPoint(x: notificationFrame.midX, y: notificationFrame.midY)
+    }
+
+    var notificationContainerCenter: CGPoint {
+        CGPoint(x: notificationFrame.midX, y: notificationFrame.minY + containerSize.height / 2)
     }
 
     var footerFrame: CGRect {
@@ -169,6 +176,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     let allowsInteractiveDismiss: Bool
     let style: GlassMorphNotificationStyle
     let onDismissMorphStart: (() -> Void)?
+    let onInteractionChanged: (Bool) -> Void
     @ViewBuilder let notificationContent: () -> NotificationContent
 
     @State private var progress: CGFloat = 0
@@ -177,6 +185,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     @State private var animationTask: Task<Void, Never>?
     @State private var bounceDismissTask: Task<Void, Never>?
     @State private var interactiveDismissOffset: CGFloat = 0
+    @State private var isBlockedSwipeShaking = false
+    @State private var blockedSwipeShakeOffset: CGFloat = 0
     @State private var dismissSurfaceLift: CGFloat = 0
     @State private var isBounceDismissing = false
     @State private var isBellHandedOff = false
@@ -187,26 +197,24 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     @State private var bellRingDurationState: Double = 0
     @State private var presentationSettleProgress: CGFloat = 0
     @State private var presentationSettleTask: Task<Void, Never>?
+    @State private var interactiveBubbleAnchorX: CGFloat = 0.86
+    @State private var interactiveBubblePressProgress: CGFloat = 0
+    @State private var isUserInteracting = false
+    @State private var dismissAnimationDurationScale: Double = 1
 
     var body: some View {
         ZStack {
-            GlassEffectContainer(spacing: style.glassContainerSpacing) {
-                notificationSurface
-                    .position(seedCenter)
-                    .offset(y: surfaceVerticalOffset)
-                    .opacity(notificationSurfaceOpacity)
-                    .frame(width: style.containerSize.width, height: style.containerSize.height)
-            }
+            notificationSurfaceLayer
 
             bellStaticLayer
             bellBubbleLayer
             bellGlyphLayer
-            notificationFooterLayer
             notificationContentLayer
         }
         .frame(width: style.containerSize.width, height: style.containerSize.height)
         .contentShape(Rectangle())
         .highPriorityGesture(swipeUpToDismissGesture, including: .gesture)
+        .simultaneousGesture(interactiveBubblePressGesture, including: .gesture)
         .onAppear {
             syncImmediately(with: isPresented)
         }
@@ -222,27 +230,95 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             bellRingStartDate = nil
             bellRingDurationState = 0
             presentationSettleProgress = 0
+            isBlockedSwipeShaking = false
+            blockedSwipeShakeOffset = 0
+            interactiveBubbleAnchorX = 0.86
+            interactiveBubblePressProgress = 0
+            setUserInteractionActive(false)
         }
         .onChange(of: isPresented) { _, newValue in
             scheduleAnimation(for: newValue)
         }
     }
 
-    private var notificationSurface: some View {
-        let shape = RoundedRectangle(cornerRadius: notificationCornerRadius, style: .continuous)
-
-        return ZStack {
-            // Keep a stable dark base under the glass to avoid sporadic white flashes.
-            shape
-                .fill(Color.black.opacity(0.32))
-
-            shape
-                .fill(.clear)
-                .glassEffect(in: shape)
+    @ViewBuilder
+    private var notificationSurfaceLayer: some View {
+        if style.anchorsSurfaceStartToBell {
+            notificationSurface
+                .offset(x: initialSurfaceOrigin.x + blockedSwipeShakeOffset)
+                .offset(y: initialSurfaceOrigin.y + notificationSurfaceVerticalOffset)
+                .opacity(notificationSurfaceOpacity)
+                .frame(
+                    width: style.containerSize.width,
+                    height: style.containerSize.height,
+                    alignment: .topLeading
+                )
+        } else {
+            notificationSurface
+                .position(surfaceCenter)
+                .offset(x: blockedSwipeShakeOffset)
+                .offset(y: notificationSurfaceVerticalOffset)
+                .opacity(notificationSurfaceOpacity)
+                .frame(width: style.containerSize.width, height: style.containerSize.height)
         }
-        .clipShape(shape)
-            .frame(width: notificationWidth, height: notificationHeight)
-            .scaleEffect(x: notificationSurfaceScaleX, y: notificationSurfaceScaleY)
+    }
+
+    private var notificationSurface: some View {
+        let shape = NotificationUnifiedSurfaceShape(
+            cornerRadius: notificationCornerRadius,
+            footerHeight: footerHeight,
+            variant: style.footerVariant
+        )
+
+        return notificationSurfaceFill(in: shape)
+            .overlay {
+                shape
+                    .stroke(Color.white.opacity(0.1), lineWidth: 1.068)
+            }
+            .frame(width: surfaceWidth, height: notificationSurfaceHeight)
+            .scaleEffect(
+                x: notificationSurfaceScaleX,
+                y: notificationSurfaceScaleY,
+                anchor: notificationSurfaceScaleAnchor
+            )
+    }
+
+    @ViewBuilder
+    private func notificationSurfaceFill(in shape: NotificationUnifiedSurfaceShape) -> some View {
+        switch style.footerVariant {
+        case .event:
+            ZStack {
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 39 / 255, green: 33 / 255, blue: 35 / 255),
+                                Color(red: 51 / 255, green: 30 / 255, blue: 33 / 255),
+                                Color(red: 61 / 255, green: 32 / 255, blue: 35 / 255)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+
+                shape
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.14),
+                                Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.06),
+                                Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.0)
+                            ],
+                            center: UnitPoint(x: 251 / 351, y: 38 / 94),
+                            startRadius: 0,
+                            endRadius: 190
+                        )
+                    )
+            }
+        case .inApp, .push:
+            shape
+                .fill(Color.white.opacity(0.1))
+        }
     }
 
     private var bellStaticLayer: some View {
@@ -297,71 +373,175 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             .frame(width: style.notificationFrame.width, height: style.notificationFrame.height)
             .opacity(contentOpacity)
             .scaleEffect(
-                x: contentScale * presentationSettleScaleX,
-                y: contentScale * presentationSettleScaleY,
-                anchor: .center
+                x: contentScale * presentationSettleScaleX * interactiveContentBubbleScale,
+                y: contentScale * presentationSettleScaleY * interactiveContentBubbleScale,
+                anchor: contentScaleAnchor
             )
             .offset(x: contentHorizontalOffset)
             .offset(y: contentVerticalOffset)
             .blur(radius: contentBlurRadius, opaque: false)
             .position(seedCenter)
-            .offset(y: surfaceVerticalOffset)
+            .offset(x: blockedSwipeShakeOffset)
+            .offset(y: contentLayerVerticalOffset)
             .mask {
                 RoundedRectangle(cornerRadius: notificationCornerRadius, style: .continuous)
-                    .frame(width: notificationWidth, height: notificationHeight)
-                    .position(seedCenter)
+                    .frame(width: notificationWidth, height: notificationContentMaskHeight)
+                    .position(contentMaskCenter)
             }
             .allowsHitTesting(showsContent && isPresented)
-    }
-
-    private var notificationFooterLayer: some View {
-        Group {
-            if style.footerFrame.height > 0 {
-                NotificationFooterView(
-                    style: .init(
-                        size: style.footerFrame.size,
-                        variant: style.footerVariant
-                    )
-                )
-                .opacity(footerOpacity * footerInteractionOpacity)
-                .scaleEffect(
-                    x: footerScale * presentationSettleScaleX,
-                    y: footerScale * presentationSettleScaleY,
-                    anchor: .center
-                )
-                .position(style.footerCenter)
-                .offset(y: surfaceVerticalOffset + footerVerticalOffset)
-                .blur(radius: footerBlurRadius, opaque: false)
-                .animation(.easeOut(duration: 0.12), value: footerInteractionOpacity)
-                .allowsHitTesting(false)
-            }
-        }
     }
 
     private var swipeUpToDismissGesture: some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
-                interactiveDismissOffset = max(-style.bounceLift, min(0, value.translation.height))
+                guard progress > 0.98, !isAnimating, !isBounceDismissing else {
+                    stopBlockedSwipeShake()
+                    return
+                }
+
+                setUserInteractionActive(true)
+                updateInteractiveBubbleAnchor(from: value)
+                startInteractiveBubblePress()
+
+                guard allowsInteractiveDismiss else {
+                    interactiveDismissOffset = 0
+                    guard value.translation.height < 0 else {
+                        stopBlockedSwipeShake()
+                        return
+                    }
+                    startBlockedSwipeShake()
+                    return
+                }
+
+                stopBlockedSwipeShake()
+                interactiveDismissOffset = max(
+                    -style.swipeDismissIslandTopContactDistance,
+                    min(0, value.translation.height)
+                )
             }
             .onEnded { value in
-                guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
-                let shouldDismiss =
-                    value.translation.height < -style.swipeDismissThreshold ||
-                    value.predictedEndTranslation.height < -style.swipeDismissPredictedThreshold
+                guard progress > 0.98, !isAnimating, !isBounceDismissing else {
+                    stopBlockedSwipeShake()
+                    return
+                }
+                let isVerticalSwipe = abs(value.translation.height) > abs(value.translation.width) * 1.15
+                let upwardTranslation = max(-value.translation.height, 0)
+                let upwardPrediction = max(-value.predictedEndTranslation.height, 0)
+                let passedSwipeDistance = upwardTranslation >= style.swipeDismissThreshold
+                let passedSwipeVelocity = upwardPrediction >= style.swipeDismissPredictedThreshold
+                let canDismissInteractively = style.footerVariant != .event
+                let shouldDismiss = canDismissInteractively &&
+                    isVerticalSwipe &&
+                    (passedSwipeDistance || passedSwipeVelocity)
 
                 if allowsInteractiveDismiss && shouldDismiss {
-                    startBounceDismissal()
+                    stopBlockedSwipeShake()
+                    setUserInteractionActive(false)
+                    startBounceDismissal(durationScale: dismissDurationScale(for: value))
                 } else {
-                    withAnimation(.spring(response: 0.34, dampingFraction: 0.88)) {
+                    withAnimation(.interpolatingSpring(stiffness: 220, damping: 15, initialVelocity: 5)) {
                         interactiveDismissOffset = 0
                     }
+                    stopBlockedSwipeShake()
+                    releaseInteractiveBubblePress()
+                    setUserInteractionActive(false)
                 }
             }
     }
 
-    private var surfaceVerticalOffset: CGFloat {
-        interactiveDismissOffset + dismissSurfaceLift
+    private var interactiveBubblePressGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                guard progress > 0.98, !isAnimating, !isBounceDismissing else { return }
+                setUserInteractionActive(true)
+                updateInteractiveBubbleAnchor(from: value)
+                startInteractiveBubblePress()
+            }
+            .onEnded { _ in
+                guard progress > 0.98, !isAnimating, !isBounceDismissing else {
+                    interactiveBubblePressProgress = 0
+                    setUserInteractionActive(false)
+                    return
+                }
+
+                releaseInteractiveBubblePress()
+                setUserInteractionActive(false)
+            }
+    }
+
+    private var contentLayerVerticalOffset: CGFloat {
+        guard allowsInteractiveDismiss else { return dismissSurfaceLift }
+        return visualInteractiveDismissOffset + dismissSurfaceLift
+    }
+
+    private var notificationSurfaceVerticalOffset: CGFloat {
+        dismissSurfaceLift - interactiveStretchAmount / 2
+    }
+
+    private var interactiveStretchAmount: CGFloat {
+        guard allowsInteractiveDismiss, !isBounceDismissing else { return 0 }
+
+        switch style.footerVariant {
+        case .inApp, .push, .event:
+            let rawStretch = max(-interactiveDismissOffset, 0)
+            let maxStretch: CGFloat = 12
+            return maxStretch * (1 - exp(-rawStretch / (maxStretch * 2.4)))
+        }
+    }
+
+    private var visualInteractiveDismissOffset: CGFloat {
+        guard allowsInteractiveDismiss, !isBounceDismissing else { return 0 }
+
+        switch style.footerVariant {
+        case .inApp, .push, .event:
+            return -interactiveStretchAmount
+        }
+    }
+
+    private func setUserInteractionActive(_ isActive: Bool) {
+        guard isUserInteracting != isActive else { return }
+        isUserInteracting = isActive
+        onInteractionChanged(isActive)
+    }
+
+    private func startBlockedSwipeShake() {
+        guard !isBlockedSwipeShaking else { return }
+
+        isBlockedSwipeShaking = true
+        blockedSwipeShakeOffset = -8
+
+        withAnimation(.easeInOut(duration: 0.07).repeatForever(autoreverses: true)) {
+            blockedSwipeShakeOffset = 8
+        }
+    }
+
+    private func stopBlockedSwipeShake() {
+        guard isBlockedSwipeShaking || blockedSwipeShakeOffset != 0 else { return }
+
+        isBlockedSwipeShaking = false
+        withAnimation(.spring(response: 0.24, dampingFraction: 0.72)) {
+            blockedSwipeShakeOffset = 0
+        }
+    }
+
+    private func updateInteractiveBubbleAnchor(from value: DragGesture.Value) {
+        let width = max(style.containerSize.width, 1)
+        let normalizedX = value.location.x / width
+        interactiveBubbleAnchorX = min(max(normalizedX, 0.08), 0.94)
+    }
+
+    private func startInteractiveBubblePress() {
+        guard interactiveBubblePressProgress < 0.98 else { return }
+
+        withAnimation(.interactiveSpring(response: 0.18, dampingFraction: 0.48, blendDuration: 0)) {
+            interactiveBubblePressProgress = 1
+        }
+    }
+
+    private func releaseInteractiveBubblePress() {
+        withAnimation(.interpolatingSpring(stiffness: 230, damping: 14, initialVelocity: 8)) {
+            interactiveBubblePressProgress = 0
+        }
     }
 
     private var seedCenter: CGPoint {
@@ -371,6 +551,66 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             x: lerp(style.buttonCenter.x, style.notificationCenter.x, seedTravel),
             y: lerp(style.buttonCenter.y, style.notificationCenter.y, seedTravel) + anticipationLift
         )
+    }
+
+    private var surfaceCenter: CGPoint {
+        let finalCenter = CGPoint(
+            x: style.notificationContainerCenter.x,
+            y: style.notificationContainerCenter.y
+        )
+        let seedTravel = softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.5,
+            end: style.anchorsSurfaceStartToBell ? style.finalExpansionEndProgress : 0.88
+        )
+        let anticipationLift = lerp(0, -style.anticipationLift, anticipationProgress) * (1 - seedTravel)
+
+        if style.anchorsSurfaceStartToBell {
+            let surfaceAnchor = style.surfaceStartAnchor ?? style.buttonCenter
+            let edgeTravel = softenedSegment(
+                progress,
+                start: style.finalExpansionStartProgress,
+                end: style.finalExpansionEndProgress
+            )
+            let rightEdge = lerp(
+                surfaceAnchor.x + style.buttonSize / 2,
+                style.notificationFrame.maxX,
+                edgeTravel
+            )
+
+            return CGPoint(
+                x: rightEdge - surfaceWidth / 2,
+                y: lerp(surfaceAnchor.y, finalCenter.y, seedTravel) + anticipationLift
+            )
+        }
+
+        return CGPoint(
+            x: lerp(style.buttonCenter.x, finalCenter.x, seedTravel),
+            y: lerp(style.buttonCenter.y, finalCenter.y, seedTravel) + anticipationLift
+        )
+    }
+
+    private var initialSurfaceOrigin: CGPoint {
+        CGPoint(
+            x: surfaceCenter.x - surfaceWidth / 2,
+            y: surfaceCenter.y - notificationSurfaceHeight / 2
+        )
+    }
+
+    private var surfaceWidth: CGFloat {
+        return notificationWidth
+    }
+
+    private var notificationSurfaceScaleAnchor: UnitPoint {
+        if interactiveBubbleVisualProgress != 0 {
+            return .center
+        }
+
+        return style.anchorsSurfaceStartToBell ? .trailing : .center
+    }
+
+    private var contentScaleAnchor: UnitPoint {
+        .center
     }
 
     private var notificationWidth: CGFloat {
@@ -406,6 +646,33 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             style.midStageHeight,
             style.notificationFrame.height,
             softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
+        )
+    }
+
+    private var footerHeight: CGFloat {
+        lerp(
+            0,
+            style.footerFrame.height,
+            softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
+        )
+    }
+
+    private var notificationTotalHeight: CGFloat {
+        notificationHeight + footerHeight
+    }
+
+    private var notificationSurfaceHeight: CGFloat {
+        notificationTotalHeight + interactiveStretchAmount
+    }
+
+    private var notificationContentMaskHeight: CGFloat {
+        notificationHeight + interactiveStretchAmount
+    }
+
+    private var contentMaskCenter: CGPoint {
+        CGPoint(
+            x: seedCenter.x,
+            y: seedCenter.y - interactiveStretchAmount / 2
         )
     }
 
@@ -465,26 +732,6 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         showsContent ? 0 : style.contentEntryBlurRadius
     }
 
-    private var footerOpacity: CGFloat {
-        showsContent ? 1 : 0
-    }
-
-    private var footerInteractionOpacity: CGFloat {
-        interactiveDismissOffset < -0.5 ? 0 : 1
-    }
-
-    private var footerScale: CGFloat {
-        showsContent ? 1 : 0.992
-    }
-
-    private var footerVerticalOffset: CGFloat {
-        showsContent ? 0 : style.footerEntryOffset
-    }
-
-    private var footerBlurRadius: CGFloat {
-        showsContent ? 0 : style.contentEntryBlurRadius * 0.55
-    }
-
     private var sourceBellIsStatic: Bool {
         showsSourceBell && !isPresented
     }
@@ -512,11 +759,52 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var notificationSurfaceScaleX: CGFloat {
-        lerp(1, 1.01, bellLandingHandoffProgress) * presentationSettleScaleX
+        lerp(1, 1.01, bellLandingHandoffProgress) *
+            presentationSettleScaleX *
+            interactiveBubbleScaleX
     }
 
     private var notificationSurfaceScaleY: CGFloat {
-        lerp(1, 0.99, bellLandingHandoffProgress) * presentationSettleScaleY
+        lerp(1, 0.99, bellLandingHandoffProgress) *
+            presentationSettleScaleY *
+            interactiveBubbleScaleY
+    }
+
+    private var interactiveBubbleProgress: CGFloat {
+        guard progress > 0.98, !isAnimating else { return 0 }
+
+        let pressProgress = interactiveBubblePressProgress
+
+        if allowsInteractiveDismiss {
+            let dragProgress = min(
+                max(-interactiveDismissOffset / max(style.swipeDismissIslandTopContactDistance, 1), 0),
+                1
+            )
+            return max(pressProgress, dragProgress)
+        }
+
+        return max(pressProgress, isBlockedSwipeShaking ? 0.88 : 0)
+    }
+
+    private var interactiveBubbleVisualProgress: CGFloat {
+        min(max(interactiveBubbleProgress, -0.32), 1.18)
+    }
+
+    private var interactiveBubbleScaleX: CGFloat {
+        let progress = interactiveBubbleVisualProgress
+        let cappedStretchProgress = min(progress, 1)
+        let maxHorizontalCompression = 4 / max(surfaceWidth, 1)
+        return 1 - maxHorizontalCompression * cappedStretchProgress
+    }
+
+    private var interactiveBubbleScaleY: CGFloat {
+        let progress = interactiveBubbleVisualProgress
+        return 1 - 0.06 * progress
+    }
+
+    private var interactiveContentBubbleScale: CGFloat {
+        let progress = interactiveBubbleVisualProgress
+        return 1 - 0.024 * progress
     }
 
     private var presentationSettleScaleX: CGFloat {
@@ -598,8 +886,16 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         .easeOut(duration: style.contentRevealDuration)
     }
 
-    private var contentHideAnimation: Animation {
-        .easeInOut(duration: max(style.contentRevealDuration * 0.82, 0.12))
+    private func morphAnimation(durationScale: Double) -> Animation {
+        .spring(
+            response: style.morphResponse * durationScale,
+            dampingFraction: style.morphDampingFraction,
+            blendDuration: 0
+        )
+    }
+
+    private func contentHideAnimation(durationScale: Double) -> Animation {
+        .easeInOut(duration: max(style.contentRevealDuration * 0.82 * durationScale, 0.08))
     }
 
     @MainActor
@@ -609,6 +905,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         bellRingTask?.cancel()
         presentationSettleTask?.cancel()
         interactiveDismissOffset = 0
+        isBlockedSwipeShaking = false
+        blockedSwipeShakeOffset = 0
         dismissSurfaceLift = 0
         isBounceDismissing = false
         isReturningSourceBell = false
@@ -616,6 +914,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         bellRingStartDate = nil
         bellRingDurationState = 0
         presentationSettleProgress = 0
+        interactiveBubbleAnchorX = 0.86
+        interactiveBubblePressProgress = 0
+        dismissAnimationDurationScale = 1
+        setUserInteractionActive(false)
 
         if presented {
             progress = 1
@@ -638,6 +940,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
         isAnimating = true
         interactiveDismissOffset = 0
+        isBlockedSwipeShaking = false
+        blockedSwipeShakeOffset = 0
         dismissSurfaceLift = 0
         isBounceDismissing = false
         isReturningSourceBell = false
@@ -645,6 +949,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         bellRingStartDate = nil
         bellRingDurationState = 0
         presentationSettleProgress = 0
+        interactiveBubbleAnchorX = 0.86
+        interactiveBubblePressProgress = 0
+        dismissAnimationDurationScale = 1
+        setUserInteractionActive(false)
         isBellHandedOff = true
         showsSourceBell = false
         showsContent = false
@@ -684,6 +992,10 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     @MainActor
     private func playDismissal() async {
+        let durationScale = dismissAnimationDurationScale
+        let dismissalDuration = style.animationDuration * durationScale
+        let contentHideDelay = min(dismissalDuration * 0.18, 0.08)
+
         isAnimating = true
         isBellHandedOff = false
         bellRingTask?.cancel()
@@ -693,43 +1005,66 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         presentationSettleTask?.cancel()
         presentationSettleProgress = 0
         isReturningSourceBell = true
+        setUserInteractionActive(false)
 
-        withAnimation(contentHideAnimation) {
-            showsContent = false
+        Task { @MainActor in
+            if contentHideDelay > 0 {
+                try? await Task.sleep(nanoseconds: UInt64(contentHideDelay * 1_000_000_000))
+            }
+
+            guard !Task.isCancelled, isReturningSourceBell else { return }
+            withAnimation(contentHideAnimation(durationScale: durationScale)) {
+                showsContent = false
+            }
         }
 
         showsSourceBell = false
         onDismissMorphStart?()
 
-        withAnimation(morphAnimation) {
+        withAnimation(morphAnimation(durationScale: durationScale)) {
             progress = 0
             interactiveDismissOffset = 0
+            isBlockedSwipeShaking = false
+            blockedSwipeShakeOffset = 0
             dismissSurfaceLift = 0
+            interactiveBubblePressProgress = 0
         }
 
-        scheduleBellRing(after: max(style.animationDuration - style.bellRingLeadTime, 0))
+        scheduleBellRing(after: max(dismissalDuration - style.bellRingLeadTime * durationScale, 0))
 
-        try? await Task.sleep(nanoseconds: UInt64(style.animationDuration * 1_000_000_000))
+        try? await Task.sleep(nanoseconds: UInt64(dismissalDuration * 1_000_000_000))
         guard !Task.isCancelled else { return }
         isReturningSourceBell = false
         showsSourceBell = true
         isBellHandedOff = false
         isBounceDismissing = false
+        dismissAnimationDurationScale = 1
         isAnimating = false
     }
 
-    private func startBounceDismissal() {
+    private func startBounceDismissal(durationScale: Double = 1) {
         bounceDismissTask?.cancel()
         bounceDismissTask = Task { @MainActor in
             isBounceDismissing = true
+            dismissAnimationDurationScale = durationScale
 
-            withAnimation(.spring(response: 0.34, dampingFraction: 0.88)) {
+            withAnimation(.spring(response: 0.34 * durationScale, dampingFraction: 0.88)) {
                 interactiveDismissOffset = 0
                 dismissSurfaceLift = -style.bounceLift
             }
 
             isPresented = false
         }
+    }
+
+    private func dismissDurationScale(for value: DragGesture.Value) -> Double {
+        let upwardTranslation = max(-value.translation.height, 0)
+        let upwardPrediction = max(-value.predictedEndTranslation.height, 0)
+        let predictedImpulse = max(upwardPrediction - upwardTranslation, 0)
+        let impulseProgress = min(max(Double(predictedImpulse / 260), 0), 1)
+        let distanceProgress = min(max(Double(upwardTranslation / 180), 0), 1)
+        let speedProgress = max(impulseProgress, distanceProgress * 0.45)
+        return 1 - (0.48 * speedProgress)
     }
 
     private func scheduleBellRing(after delay: Double = 0) {

@@ -29,5 +29,13 @@ struct NotificationStaticCardView: View {
             }
         }
         .frame(width: presentationMetrics.contentWidth, height: presentationMetrics.containerHeight)
+        .overlay {
+            NotificationUnifiedSurfaceShape(
+                cornerRadius: 32,
+                footerHeight: presentationMetrics.footerHeight,
+                variant: presentationMetrics.footerVariant
+            )
+            .stroke(Color.white.opacity(0.1), lineWidth: 1.068)
+        }
     }
 }

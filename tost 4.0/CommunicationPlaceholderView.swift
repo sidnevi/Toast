@@ -73,20 +73,13 @@ private struct CommunicationBackBubbleButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                if #available(iOS 26.0, *) {
-                    Circle()
-                        .fill(.clear)
-                        .frame(width: 44, height: 44)
-                        .glassEffect(in: Circle())
-                } else {
-                    Circle()
-                        .fill(Color.white.opacity(0.12))
-                        .overlay {
-                            Circle()
-                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
-                        }
-                        .frame(width: 44, height: 44)
-                }
+                Circle()
+                    .fill(Color.white.opacity(0.12))
+                    .overlay {
+                        Circle()
+                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                    }
+                    .frame(width: 44, height: 44)
 
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))

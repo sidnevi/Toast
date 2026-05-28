@@ -1,0 +1,417 @@
+{
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationCenterView.swift": {
+    "mtime": 1779717617.9781258,
+    "ast_hash": "060a9afcc53f9a95df3b4ba028c76cb1",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/AccountingSectionView.swift": {
+    "mtime": 1779717617.9763672,
+    "ast_hash": "7edf027c241ba205dba4a04b12f52274",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/CompactCompanyHeaderView.swift": {
+    "mtime": 1779717617.977469,
+    "ast_hash": "60c170dc9a9a20ea953bfdd140857d01",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/ContentView.swift": {
+    "mtime": 1779976916.5050166,
+    "ast_hash": "a62d9842b9e930a27583709d5f789eae",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/CommunicationPlaceholderView.swift": {
+    "mtime": 1779789098.9247403,
+    "ast_hash": "7d312706ec22d32b57c806872c7dc2d0",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/tost_4_0App.swift": {
+    "mtime": 1779717617.993501,
+    "ast_hash": "d3e4a1536e304dc1976ebe45786732b6",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Assets.xcassets/Contents.json": {
+    "mtime": 1779717617.976894,
+    "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+    "mtime": 1779717617.976781,
+    "ast_hash": "cbe75704b2680422c4156009a528e292",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Assets.xcassets/AccentColor.colorset/Contents.json": {
+    "mtime": 1779717617.9766078,
+    "ast_hash": "55019f7265dde0a78318b0807f98e847",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift": {
+    "mtime": 1779717617.9809573,
+    "ast_hash": "9e87403ea00111861af5247ef422892d",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationSelectionSummaryView.swift": {
+    "mtime": 1779717617.982075,
+    "ast_hash": "ffe360ebd30c1b2615bbc46e6ffa6314",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationDemoView.swift": {
+    "mtime": 1779717617.981366,
+    "ast_hash": "1a189b87a9718530f50ccd37320d96ec",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationCandidateCardView.swift": {
+    "mtime": 1779717617.9808478,
+    "ast_hash": "d4d167323230b2fa3aaa1059a6f13130",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationMultiplePreviewSection.swift": {
+    "mtime": 1779717617.9817252,
+    "ast_hash": "3756cc0d3a34ff63382f40ef9d80aa43",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationDemoViewModel.swift": {
+    "mtime": 1779717617.9814904,
+    "ast_hash": "97f4deb2d692348eca643f7d219864d2",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/AppRootTab.swift": {
+    "mtime": 1779717617.9806201,
+    "ast_hash": "ae297b6d70ef881ae624af936e38e5f7",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationDemoState.swift": {
+    "mtime": 1779717617.981072,
+    "ast_hash": "0b5e620aac03d98cd682499b5258372c",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/NotificationPreviewMode.swift": {
+    "mtime": 1779717617.9819622,
+    "ast_hash": "5a3c39a28f0a97c29827f0d83f7c6b69",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Demo/AppRootView.swift": {
+    "mtime": 1779717617.980733,
+    "ast_hash": "70c4abc2799467c178fcb69b1f484400",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/NotificationResourceLoader.swift": {
+    "mtime": 1779717617.9846852,
+    "ast_hash": "3f4899aec2edbf29d7ca04705ab7a6ed",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/PushStatusSVGs.swift": {
+    "mtime": 1779717617.9849224,
+    "ast_hash": "f8ad6e26fa88cfa8cd4f07dd0ce24adb",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/PrewarmedSVGView.swift": {
+    "mtime": 1779717617.984808,
+    "ast_hash": "d51b3e2ee8b7015a61ad6149fc7783bc",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/HomeAssetLoader.swift": {
+    "mtime": 1779717617.9844463,
+    "ast_hash": "f7fbe2863a81cf649e57a61560169b40",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/NotificationCenterAssetLoader.swift": {
+    "mtime": 1779717617.9845588,
+    "ast_hash": "e8a75a267787696d09eb2513b8c5d7ae",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Resources/EventStatusSVGs.swift": {
+    "mtime": 1779921684.7328706,
+    "ast_hash": "44b40d6f72f407c958539068f5e0fbc5",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/NotificationPresenter.swift": {
+    "mtime": 1779912943.6401281,
+    "ast_hash": "0a5a20ba24295f3490f83aca04782485",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift": {
+    "mtime": 1779978942.8624659,
+    "ast_hash": "960321c106040feda72e21a952adb342",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift": {
+    "mtime": 1779717617.9790537,
+    "ast_hash": "1956f9f4bce730b36ace16ccb55ac5ff",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Content/InAppNotificationView.swift": {
+    "mtime": 1779717617.9801807,
+    "ast_hash": "562c5b15669310b0f78997a84387dcf5",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Content/NotificationContentFactory.swift": {
+    "mtime": 1779809115.920213,
+    "ast_hash": "b87d302a3776b4ba04709673dd9322a6",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Content/EventNotificationView.swift": {
+    "mtime": 1779809115.9174151,
+    "ast_hash": "5f583d6e6336f162ee4f3d917e3a6a08",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Content/PushNotificationView.swift": {
+    "mtime": 1779717617.980441,
+    "ast_hash": "fc1ac0acfaf3d4b62c2520c593d485bc",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationDisplayMode.swift": {
+    "mtime": 1779717617.9828587,
+    "ast_hash": "0d4f0d4c6af3e0f7bb4aed8c146288a0",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationKind.swift": {
+    "mtime": 1779717617.9829805,
+    "ast_hash": "bf61cc94ab96ea1d265f9848d4e4b309",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationSelectionResult.swift": {
+    "mtime": 1779717617.9839451,
+    "ast_hash": "674b868004f86890fa00d7519d1b2c07",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationSelectionEngine.swift": {
+    "mtime": 1779717617.9835832,
+    "ast_hash": "2254e2cf169bc49df9f811a405724ebd",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationPayload.swift": {
+    "mtime": 1779717617.983103,
+    "ast_hash": "b4ff9e71f592ae012d2e815c5ca283ef",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationScenarioCatalog.swift": {
+    "mtime": 1779809115.9209106,
+    "ast_hash": "519e970209a4c5de16cc4860bb94b609",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationCandidateCatalog.swift": {
+    "mtime": 1779717617.9827552,
+    "ast_hash": "31ccec45d8e3378325713d46b3558b26",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift": {
+    "mtime": 1779717617.9840856,
+    "ast_hash": "3a60ef739351c17dafcff7c02036e0d2",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationCandidate.swift": {
+    "mtime": 1779717617.982616,
+    "ast_hash": "61c4598bd15c2d5cf654047dc7504bac",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationAction.swift": {
+    "mtime": 1779717617.9823842,
+    "ast_hash": "b894ad6721b61bc56a761e8789978852",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationScenario.swift": {
+    "mtime": 1779717617.9832084,
+    "ast_hash": "c378eadf0b7cc21b602f6ad0c579c6c5",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Models/NotificationSelectionExplanation.swift": {
+    "mtime": 1779717617.983828,
+    "ast_hash": "d02552b72417b79e539215d376478ce2",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Components/NotificationActionRow.swift": {
+    "mtime": 1779717617.9793437,
+    "ast_hash": "9b1c87267761bf59dd8832bf11cc23f8",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Components/NotificationFooterView.swift": {
+    "mtime": 1779872937.3550138,
+    "ast_hash": "7e0bc25fd1bc418f0742bd6d0c01af35",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift": {
+    "mtime": 1779717617.9795904,
+    "ast_hash": "e838a2d93407cb368d3c1e880f882728",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Components/NotificationStaticCardView.swift": {
+    "mtime": 1779812506.3923795,
+    "ast_hash": "a365ba3a11794ac00e8fdd0c449a0574",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-error.svg": {
+    "mtime": 1779717617.9855947,
+    "ast_hash": "06805d1265ccc49542d9fa0addd16340",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-pending.svg": {
+    "mtime": 1779717617.9858944,
+    "ast_hash": "ee6a29eccfce937b8af05e71cb03a264",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-action-required.svg": {
+    "mtime": 1779717617.9852798,
+    "ast_hash": "736ae6ec99380dca3415a495cdd9af7b",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-long-running.svg": {
+    "mtime": 1779717617.9857876,
+    "ast_hash": "b9a9a7df7c013d0c077ea16842b987b6",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-success.svg": {
+    "mtime": 1779717617.9860144,
+    "ast_hash": "da01e393986c08d02c0894e7a3c5ee0c",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/EventStatus/event-error-alert.svg": {
+    "mtime": 1779717617.9854436,
+    "ast_hash": "b9c9862dd09e17a1f0e5b6629d72cb72",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/PushStatus/push-critical-info.svg": {
+    "mtime": 1779717617.9932132,
+    "ast_hash": "5f261628663a3bb2ba19a230bc1c354d",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/PushStatus/push-info.svg": {
+    "mtime": 1779717617.9933686,
+    "ast_hash": "d93b9f1fcad48c54095e03b3e28e0d93",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-wallet.svg": {
+    "mtime": 1779717617.9929976,
+    "ast_hash": "86883348b09c7fb59c5f87e93cdc8304",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-box.svg": {
+    "mtime": 1779717617.9914706,
+    "ast_hash": "a4240c0d0bfb6bde7b274285ec0d8f0b",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-info.svg": {
+    "mtime": 1779717617.9915779,
+    "ast_hash": "c965966da1884bb55450f8d8cea94dde",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-marketplace.svg": {
+    "mtime": 1779717617.9916856,
+    "ast_hash": "667d70a03710a804ecb033394396d57d",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-back-button.svg": {
+    "mtime": 1779717617.9913657,
+    "ast_hash": "7708f9cab5e00315e0624cb78e9bf384",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-progress-circle.svg": {
+    "mtime": 1779717617.9918544,
+    "ast_hash": "9f69ac751c622b78d1396df2df55c3ee",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-stack-expanded.svg": {
+    "mtime": 1779717617.992724,
+    "ast_hash": "5f0e89c6fa891d53377723ffdc7cb598",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-stack-collapsed.svg": {
+    "mtime": 1779717617.992318,
+    "ast_hash": "1352ed208c15535232648674cb0a1ebe",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-arrow.svg": {
+    "mtime": 1779717617.9910967,
+    "ast_hash": "d9e6c33fcfb47b837c135420e13e02f4",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-question.svg": {
+    "mtime": 1779717617.992008,
+    "ast_hash": "61e0404e0fa8fd045d87069260cf5e72",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-stack-layer.svg": {
+    "mtime": 1779717617.9928858,
+    "ast_hash": "122e9b7f1ddc6eda3c8ff98dcebd42e3",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/NotificationCenterAssets/notification-center-ruble.svg": {
+    "mtime": 1779717617.992136,
+    "ast_hash": "3461acc304ac04082b35ed0dbe0c5322",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/bell-filled.svg": {
+    "mtime": 1779717617.98707,
+    "ast_hash": "0b254c65d41ea637774ee059bdeaa7aa",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/bell.svg": {
+    "mtime": 1779717617.9871745,
+    "ast_hash": "e03a4d597bbccdd3083001909788f903",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/tui-badge.svg": {
+    "mtime": 1779717617.9907737,
+    "ast_hash": "2f701943a0197f36c1e736414b4d63d4",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/container.svg": {
+    "mtime": 1779717617.9875615,
+    "ast_hash": "21fd53efe7426fa1cd08a51e2009e47d",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/background.png": {
+    "mtime": 1779717617.986804,
+    "ast_hash": "5096d3bc6c08d5079cf9bd1b4bc0420d",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/container-1.svg": {
+    "mtime": 1779717617.9873395,
+    "ast_hash": "0dc068527aefc94465315b1d85068e56",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/container-2.svg": {
+    "mtime": 1779717617.98745,
+    "ast_hash": "d47f95aba0537669001e6c2399cd5cfa",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/placeholder-multiple.svg": {
+    "mtime": 1779717617.9879348,
+    "ast_hash": "3fce38cba17b76a001d543bd6384fa6e",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/operations.svg": {
+    "mtime": 1779717617.9877183,
+    "ast_hash": "897ed464b4e9863bb1279dfa9b3d9ddb",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/tui-badge-3.svg": {
+    "mtime": 1779717617.9887314,
+    "ast_hash": "c4ac7cdbf7bcac2642ba1eb5eabf1d60",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/accounts.svg": {
+    "mtime": 1779717617.9863925,
+    "ast_hash": "5a2d1eab760e6ae4bf668cf0939e5666",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/tui-badge-2.svg": {
+    "mtime": 1779717617.9884872,
+    "ast_hash": "d03a306aa473c8fe681113483aaaa0e3",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/total.svg": {
+    "mtime": 1779717617.9882214,
+    "ast_hash": "dc4aa474a38eb4ad79777a7e36322051",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/Resources/Notifications/HomeAssets/tui-badge-1.svg": {
+    "mtime": 1779717617.9883606,
+    "ast_hash": "b5a8d79dc63448d11250f12009cf6b2a",
+    "semantic_hash": ""
+  },
+  "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/LiquidNotificationButton.swift": {
+    "mtime": 1779809115.9022062,
+    "ast_hash": "c28310a5d2a4990092d033917d05f336",
+    "semantic_hash": ""
+  }
+}

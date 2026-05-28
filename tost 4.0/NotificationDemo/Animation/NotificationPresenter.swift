@@ -12,6 +12,7 @@ struct NotificationPresenter<NotificationContent: View>: View {
     let liquidNotificationText: String
     let liquidOffset: CGSize
     let onDismissMorphStart: (() -> Void)?
+    let onInteractionChanged: (Bool) -> Void
     @ViewBuilder let notificationContent: () -> NotificationContent
 
     var body: some View {
@@ -25,6 +26,7 @@ struct NotificationPresenter<NotificationContent: View>: View {
                     allowsInteractiveDismiss: allowsInteractiveDismiss,
                     style: glassStyle,
                     onDismissMorphStart: onDismissMorphStart,
+                    onInteractionChanged: onInteractionChanged,
                     notificationContent: notificationContent
                 )
                 .allowsHitTesting(isPresented)
