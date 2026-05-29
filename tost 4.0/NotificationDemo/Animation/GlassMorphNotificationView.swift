@@ -708,12 +708,16 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     private var sourceBellOpacity: CGFloat {
         let persistedOpacity: CGFloat = showsSourceBell ? 1 : 0
         let handoffOpacity: CGFloat = isBellHandedOff ? 1 : 0
-        let returningOpacity: CGFloat = isReturningSourceBell ? bellLandingHandoffProgress : 0
+        let returningOpacity: CGFloat = isReturningSourceBell ? 1 : 0
         return max(persistedOpacity, max(handoffOpacity, returningOpacity))
     }
 
     private var contentOpacity: CGFloat {
-        showsContent ? 1 : 0
+        if isReturningSourceBell {
+            return min(max(progress, 0), 1)
+        }
+
+        return showsContent ? 1 : 0
     }
 
     private var contentScale: CGFloat {
@@ -729,7 +733,11 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var contentBlurRadius: CGFloat {
-        showsContent ? 0 : style.contentEntryBlurRadius
+        if isReturningSourceBell {
+            return style.contentEntryBlurRadius * (1 - min(max(progress, 0), 1))
+        }
+
+        return showsContent ? 0 : style.contentEntryBlurRadius
     }
 
     private var sourceBellIsStatic: Bool {

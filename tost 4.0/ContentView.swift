@@ -239,8 +239,20 @@ struct ContentView: View {
 
     @ViewBuilder
     private var currentNotificationContentView: some View {
-        NotificationContentFactory.makeView(for: currentNotificationScenario)
+        switch currentNotificationScenario.payload {
+        case .inApp(let model) where !notificationController.isPresented:
+            PrewarmedSVGView(
+                svg: model.foregroundSVG,
+                size: CGSize(
+                    width: currentNotificationMetrics.contentWidth,
+                    height: currentNotificationMetrics.contentHeight
+                )
+            )
             .id(currentNotificationScenario.id)
+        default:
+            NotificationContentFactory.makeView(for: currentNotificationScenario)
+                .id(currentNotificationScenario.id)
+        }
     }
 
     private var currentNotificationScenario: NotificationScenario {
@@ -698,6 +710,7 @@ struct ContentView: View {
                 return
             }
 
+            initialNotificationBellCenterOverride = nil
             notificationController.dismiss()
         }
     }

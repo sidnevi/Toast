@@ -1,16 +1,16 @@
 # Graph Report - Toast  (2026-05-28)
 
 ## Corpus Check
-- 49 files · ~51,070 words
+- 49 files · ~51,094 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 469 nodes · 680 edges · 37 communities (26 shown, 11 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.8)
+- 472 nodes · 686 edges · 40 communities (28 shown, 12 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `18f34a91`
+- Built from commit: `afdc55d9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -40,11 +40,14 @@
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
@@ -54,15 +57,15 @@
 - [[_COMMUNITY_Community 41|Community 41]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `GlassMorphNotificationView` - 27 edges
+1. `GlassMorphNotificationView` - 29 edges
 2. `ContentView` - 26 edges
 3. `NotificationDemoViewModel` - 21 edges
 4. `LoadID` - 14 edges
 5. `NotificationCandidatePreset` - 12 edges
 6. `NotificationSelectionEngine` - 10 edges
-7. `Coordinator` - 9 edges
-8. `NotificationContentFactory` - 9 edges
-9. `ShimmerBlockView` - 8 edges
+7. `ShimmerBlockView` - 9 edges
+8. `Coordinator` - 9 edges
+9. `NotificationContentFactory` - 9 edges
 10. `NotificationAnimationController` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -77,11 +80,11 @@
 - `loadHomeImage()` --calls--> `loadNotificationImage()`  [INFERRED]
   tost 4.0/NotificationDemo/Resources/HomeAssetLoader.swift → tost 4.0/NotificationDemo/Resources/NotificationResourceLoader.swift
 
-## Communities (37 total, 11 thin omitted)
+## Communities (40 total, 12 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.07
-Nodes (19): BottomPinchedMask, NotificationBellFilledShape, NotificationBellOutlineShape, FooterHighlightShape, FooterLayout, NotificationEventTailSideStrokeShape, NotificationFooterView, NotificationSurfaceAccent (+11 more)
+Nodes (18): NotificationBellFilledShape, NotificationBellOutlineShape, FooterHighlightShape, FooterLayout, NotificationEventTailSideStrokeShape, NotificationFooterView, NotificationSurfaceAccent, NotificationSurfaceShape (+10 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.07
@@ -105,47 +108,47 @@ Nodes (9): EventNotificationLayout, EventNotificationView, InAppNotificationView
 
 ### Community 7 - "Community 7"
 Cohesion: 0.08
-Nodes (4): GlassMorphNotificationStyle, GlassMorphNotificationView, NotificationGlassMotionPreset, NotificationCandidateCatalog
+Nodes (5): BottomPinchedMask, GlassMorphNotificationStyle, GlassMorphNotificationView, NotificationGlassMotionPreset, NotificationCandidateCatalog
 
 ### Community 8 - "Community 8"
 Cohesion: 0.10
 Nodes (5): NotificationAnimationController, NotificationDemoHomeBridge, NotificationSelectionStore, ObservableObject, InlineSVGSnapshotStore
 
 ### Community 10 - "Community 10"
-Cohesion: 0.07
-Nodes (25): Identifiable, PreferenceKey, CompanyHeaderMinYPreferenceKey, Direction, down, up, extractEmbeddedNotificationCenterImage(), NotificationCenterAnchorTarget (+17 more)
+Cohesion: 0.11
+Nodes (18): Direction, down, up, extractEmbeddedNotificationCenterImage(), NotificationCenterAnchorTarget, important, useful, NotificationCenterBackButtonVisual (+10 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.29
-Nodes (11): AccountsView, ActionItemView, ActionsView, BackgroundGlowView, Layout, NotificationBellButton, OperationsView, PageLoadingView (+3 more)
+Cohesion: 0.17
+Nodes (18): NotificationBellBubbleBackgroundVisual, NotificationBellBubbleVisual, NotificationBellCriticalGlyphVisual, NotificationBellFilledGlyphVisual, NotificationBellGlyphVisual, NotificationBellOutlineGlyphVisual, NotificationBellVisual, AccountsView (+10 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.25
-Nodes (7): NotificationBellBubbleBackgroundVisual, NotificationBellBubbleVisual, NotificationBellCriticalGlyphVisual, NotificationBellFilledGlyphVisual, NotificationBellGlyphVisual, NotificationBellOutlineGlyphVisual, NotificationBellVisual
+Cohesion: 0.50
+Nodes (3): CommunicationBackBubbleButton, CommunicationPlaceholderBlock, CommunicationPlaceholderView
 
 ### Community 14 - "Community 14"
 Cohesion: 0.17
 Nodes (12): LoadID, accounts, actionCreate, actionInvoice, actionUpload, badge0, badge1, badge2 (+4 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.15
-Nodes (12): CaseIterable, NotificationPreviewMode, homeContext, isolated, NotificationDisplayMode, multiple, single, NotificationKind (+4 more)
+Cohesion: 0.22
+Nodes (7): CaseIterable, NotificationPreviewMode, homeContext, isolated, NotificationDisplayMode, multiple, single
 
 ### Community 16 - "Community 16"
-Cohesion: 0.18
-Nodes (6): Animatable, LiquidBackgroundView, LiquidNotificationButton, LiquidNotificationButton_Previews, LiquidNotificationConfig, PreviewHost
+Cohesion: 0.13
+Nodes (10): Animatable, LiquidBackgroundView, LiquidNotificationButton, LiquidNotificationButton_Previews, LiquidNotificationConfig, PreviewHost, NotificationFooterView_Previews, PreviewProvider (+2 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.25
 Nodes (8): NotificationCandidatePreset, multipleInApp, multiplePush, multipleStack, onlyStack, pushAndInApp, stackAndPush, stackPushInApp
 
 ### Community 19 - "Community 19"
-Cohesion: 0.15
-Nodes (12): Hashable, Detail, EventNotificationContent, InAppNotificationContent, NotificationPayload, event, inApp, push (+4 more)
+Cohesion: 0.18
+Nodes (11): Hashable, Detail, EventNotificationContent, InAppNotificationContent, NotificationPayload, event, inApp, push (+3 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.33
-Nodes (5): NotificationCandidate, NotificationCandidateSource, criticalPush, inApp, stackEvent
+Cohesion: 0.29
+Nodes (6): NotificationCandidate, NotificationCandidateSource, criticalPush, inApp, stackEvent, String
 
 ### Community 21 - "Community 21"
 Cohesion: 0.40
@@ -156,20 +159,28 @@ Cohesion: 0.40
 Nodes (4): images, info, author, version
 
 ### Community 23 - "Community 23"
-Cohesion: 0.50
-Nodes (3): CommunicationBackBubbleButton, CommunicationPlaceholderBlock, CommunicationPlaceholderView
+Cohesion: 0.40
+Nodes (4): Identifiable, NotificationScenario, NotificationCenterCardModel, NotificationCenterSummaryCardModel
 
 ### Community 24 - "Community 24"
 Cohesion: 0.40
 Nodes (4): NotificationAction, Style, primary, secondary
+
+### Community 25 - "Community 25"
+Cohesion: 0.40
+Nodes (4): NotificationKind, event, inApp, push
+
+### Community 27 - "Community 27"
+Cohesion: 0.40
+Nodes (3): PreferenceKey, CompanyHeaderMinYPreferenceKey, NotificationCenterSectionContentOffsetPreferenceKey
 
 ### Community 28 - "Community 28"
 Cohesion: 0.40
 Nodes (4): AccountingInsightCard, AccountingSectionTitleView, AccountingSectionView, Layout
 
 ### Community 29 - "Community 29"
-Cohesion: 0.22
-Nodes (8): NotificationFooterView_Previews, PreviewProvider, AccountingSectionView_Previews, CompactAvatarView, CompactBellView, CompactCompanyHeaderView, CompactCompanyHeaderView_Previews, Layout
+Cohesion: 0.40
+Nodes (4): CompactAvatarView, CompactBellView, CompactCompanyHeaderView, Layout
 
 ### Community 30 - "Community 30"
 Cohesion: 0.50
@@ -186,21 +197,21 @@ Nodes (3): CompanyHeaderDisplayMode, compact, regular
 ## Knowledge Gaps
 - **72 isolated node(s):** `important`, `useful`, `up`, `down`, `pill` (+67 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `LoadID` connect `Community 14` to `Community 11`, `Community 15`?**
-  _High betweenness centrality (0.188) - this node is a cross-community bridge._
+- **Why does `LoadID` connect `Community 14` to `Community 11`, `Community 20`, `Community 15`?**
+  _High betweenness centrality (0.187) - this node is a cross-community bridge._
 - **Why does `GlassMorphNotificationView` connect `Community 7` to `Community 11`?**
-  _High betweenness centrality (0.124) - this node is a cross-community bridge._
+  _High betweenness centrality (0.130) - this node is a cross-community bridge._
 - **Why does `NotificationDemoView` connect `Community 5` to `Community 11`?**
   _High betweenness centrality (0.119) - this node is a cross-community bridge._
 - **What connects `important`, `useful`, `up` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06976744186046512 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0743321718931475 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.06882591093117409 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
