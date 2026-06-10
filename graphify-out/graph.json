@@ -565,7 +565,7 @@
       "label": ".revealOffset()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L484",
+      "source_location": "L513",
       "id": "tost_4_0_contentview_contentview_revealoffset",
       "community": 2,
       "norm_label": ".revealoffset()"
@@ -574,7 +574,7 @@
       "label": ".lowerContentRevealOffset()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L488",
+      "source_location": "L517",
       "id": "tost_4_0_contentview_contentview_lowercontentrevealoffset",
       "community": 2,
       "norm_label": ".lowercontentrevealoffset()"
@@ -583,7 +583,7 @@
       "label": ".startInitialLoadIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L492",
+      "source_location": "L521",
       "id": "tost_4_0_contentview_contentview_startinitialloadifneeded",
       "community": 2,
       "norm_label": ".startinitialloadifneeded()"
@@ -592,7 +592,7 @@
       "label": ".revealLoadedContent()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L550",
+      "source_location": "L581",
       "id": "tost_4_0_contentview_contentview_revealloadedcontent",
       "community": 2,
       "norm_label": ".revealloadedcontent()"
@@ -601,7 +601,7 @@
       "label": ".presentInitialHomeNotificationIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L590",
+      "source_location": "L634",
       "id": "tost_4_0_contentview_contentview_presentinitialhomenotificationifneeded",
       "community": 2,
       "norm_label": ".presentinitialhomenotificationifneeded()"
@@ -610,7 +610,7 @@
       "label": ".restoreToast()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L603",
+      "source_location": "L647",
       "id": "tost_4_0_contentview_contentview_restoretoast",
       "community": 2,
       "norm_label": ".restoretoast()"
@@ -619,7 +619,7 @@
       "label": ".handleBellTap()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L610",
+      "source_location": "L654",
       "id": "tost_4_0_contentview_contentview_handlebelltap",
       "community": 2,
       "norm_label": ".handlebelltap()"
@@ -628,7 +628,7 @@
       "label": ".handlePendingHomePlaybackIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L617",
+      "source_location": "L661",
       "id": "tost_4_0_contentview_contentview_handlependinghomeplaybackifneeded",
       "community": 2,
       "norm_label": ".handlependinghomeplaybackifneeded()"
@@ -637,7 +637,7 @@
       "label": ".handleActiveTabChange()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L627",
+      "source_location": "L671",
       "id": "tost_4_0_contentview_contentview_handleactivetabchange",
       "community": 2,
       "norm_label": ".handleactivetabchange()"
@@ -646,7 +646,7 @@
       "label": ".scheduleInitialHomeAutoplayIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L636",
+      "source_location": "L680",
       "id": "tost_4_0_contentview_contentview_scheduleinitialhomeautoplayifneeded",
       "community": 2,
       "norm_label": ".scheduleinitialhomeautoplayifneeded()"
@@ -655,7 +655,7 @@
       "label": ".playSelectedScenarioOnHome()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L654",
+      "source_location": "L698",
       "id": "tost_4_0_contentview_contentview_playselectedscenarioonhome",
       "community": 2,
       "norm_label": ".playselectedscenarioonhome()"
@@ -664,7 +664,7 @@
       "label": ".resetHomeNotificationState()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L676",
+      "source_location": "L720",
       "id": "tost_4_0_contentview_contentview_resethomenotificationstate",
       "community": 2,
       "norm_label": ".resethomenotificationstate()"
@@ -673,7 +673,7 @@
       "label": ".scheduleHomeDismissIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L696",
+      "source_location": "L740",
       "id": "tost_4_0_contentview_contentview_schedulehomedismissifneeded",
       "community": 2,
       "norm_label": ".schedulehomedismissifneeded()"
@@ -682,7 +682,7 @@
       "label": ".handleNotificationInteractionChanged()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L719",
+      "source_location": "L763",
       "id": "tost_4_0_contentview_contentview_handlenotificationinteractionchanged",
       "community": 2,
       "norm_label": ".handlenotificationinteractionchanged()"
@@ -691,7 +691,7 @@
       "label": ".openCommunicationPageForCurrentEvent()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L730",
+      "source_location": "L774",
       "id": "tost_4_0_contentview_contentview_opencommunicationpageforcurrentevent",
       "community": 2,
       "norm_label": ".opencommunicationpageforcurrentevent()"
@@ -700,7 +700,7 @@
       "label": ".handleCommunicationPageDismiss()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L738",
+      "source_location": "L782",
       "id": "tost_4_0_contentview_contentview_handlecommunicationpagedismiss",
       "community": 2,
       "norm_label": ".handlecommunicationpagedismiss()"
@@ -709,7 +709,7 @@
       "label": ".scheduleToastLayoutSync()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L748",
+      "source_location": "L792",
       "id": "tost_4_0_contentview_contentview_scheduletoastlayoutsync",
       "community": 2,
       "norm_label": ".scheduletoastlayoutsync()"
@@ -718,7 +718,7 @@
       "label": ".scheduleToastCollapseFromDismissMorphStart()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L770",
+      "source_location": "L814",
       "id": "tost_4_0_contentview_contentview_scheduletoastcollapsefromdismissmorphstart",
       "community": 2,
       "norm_label": ".scheduletoastcollapsefromdismissmorphstart()"
@@ -727,7 +727,7 @@
       "label": ".syncToastLayout()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L788",
+      "source_location": "L832",
       "id": "tost_4_0_contentview_contentview_synctoastlayout",
       "community": 2,
       "norm_label": ".synctoastlayout()"
@@ -736,7 +736,7 @@
       "label": ".openNotificationCenter()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L794",
+      "source_location": "L838",
       "id": "tost_4_0_contentview_contentview_opennotificationcenter",
       "community": 2,
       "norm_label": ".opennotificationcenter()"
@@ -745,7 +745,7 @@
       "label": ".updateCompanyHeaderMode()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L802",
+      "source_location": "L846",
       "id": "tost_4_0_contentview_contentview_updatecompanyheadermode",
       "community": 2,
       "norm_label": ".updatecompanyheadermode()"
@@ -754,7 +754,7 @@
       "label": ".prewarmCurrentNotificationContentIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L812",
+      "source_location": "L856",
       "id": "tost_4_0_contentview_contentview_prewarmcurrentnotificationcontentifneeded",
       "community": 2,
       "norm_label": ".prewarmcurrentnotificationcontentifneeded()"
@@ -763,7 +763,7 @@
       "label": ".waitForCurrentNotificationContentIfNeeded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L817",
+      "source_location": "L861",
       "id": "tost_4_0_contentview_contentview_waitforcurrentnotificationcontentifneeded",
       "community": 2,
       "norm_label": ".waitforcurrentnotificationcontentifneeded()"
@@ -772,7 +772,7 @@
       "label": "BackgroundGlowView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L826",
+      "source_location": "L870",
       "id": "tost_4_0_contentview_backgroundglowview",
       "community": 11,
       "norm_label": "backgroundglowview"
@@ -781,7 +781,7 @@
       "label": "PlaceholderMultipleView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L865",
+      "source_location": "L909",
       "id": "tost_4_0_contentview_placeholdermultipleview",
       "community": 11,
       "norm_label": "placeholdermultipleview"
@@ -790,7 +790,7 @@
       "label": "Layout",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L866",
+      "source_location": "L910",
       "id": "tost_4_0_contentview_layout",
       "community": 11,
       "norm_label": "layout"
@@ -799,7 +799,7 @@
       "label": "NotificationBellButton",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L917",
+      "source_location": "L953",
       "id": "tost_4_0_contentview_notificationbellbutton",
       "community": 11,
       "norm_label": "notificationbellbutton"
@@ -808,7 +808,7 @@
       "label": "TotalView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L930",
+      "source_location": "L966",
       "id": "tost_4_0_contentview_totalview",
       "community": 11,
       "norm_label": "totalview"
@@ -817,7 +817,7 @@
       "label": "ActionsView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L950",
+      "source_location": "L986",
       "id": "tost_4_0_contentview_actionsview",
       "community": 11,
       "norm_label": "actionsview"
@@ -826,7 +826,7 @@
       "label": "PageLoadingView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1010",
+      "source_location": "L1046",
       "id": "tost_4_0_contentview_pageloadingview",
       "community": 11,
       "norm_label": "pageloadingview"
@@ -835,7 +835,7 @@
       "label": "CompanyHeaderDisplayMode",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1075",
+      "source_location": "L1115",
       "id": "tost_4_0_contentview_companyheaderdisplaymode",
       "community": 34,
       "norm_label": "companyheaderdisplaymode"
@@ -844,7 +844,7 @@
       "label": "regular",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1076",
+      "source_location": "L1116",
       "id": "tost_4_0_contentview_companyheaderdisplaymode_regular",
       "community": 34,
       "norm_label": "regular"
@@ -853,7 +853,7 @@
       "label": "compact",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1077",
+      "source_location": "L1117",
       "id": "tost_4_0_contentview_companyheaderdisplaymode_compact",
       "community": 34,
       "norm_label": "compact"
@@ -862,7 +862,7 @@
       "label": "CompanyHeaderMinYPreferenceKey",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1080",
+      "source_location": "L1120",
       "id": "tost_4_0_contentview_companyheaderminypreferencekey",
       "community": 27,
       "norm_label": "companyheaderminypreferencekey"
@@ -871,7 +871,7 @@
       "label": ".reduce()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1083",
+      "source_location": "L1123",
       "id": "tost_4_0_contentview_companyheaderminypreferencekey_reduce",
       "community": 27,
       "norm_label": ".reduce()"
@@ -880,25 +880,16 @@
       "label": "ShimmerBlockView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1088",
+      "source_location": "L1128",
       "id": "tost_4_0_contentview_shimmerblockview",
       "community": 12,
       "norm_label": "shimmerblockview"
     },
     {
-      "label": ".init()",
-      "file_type": "code",
-      "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1095",
-      "id": "tost_4_0_contentview_shimmerblockview_init",
-      "community": 12,
-      "norm_label": ".init()"
-    },
-    {
       "label": ".shimmerPhase()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1139",
+      "source_location": "L1174",
       "id": "tost_4_0_contentview_shimmerblockview_shimmerphase",
       "community": 12,
       "norm_label": ".shimmerphase()"
@@ -907,7 +898,7 @@
       "label": ".shimmerOffset()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1145",
+      "source_location": "L1180",
       "id": "tost_4_0_contentview_shimmerblockview_shimmeroffset",
       "community": 12,
       "norm_label": ".shimmeroffset()"
@@ -916,7 +907,7 @@
       "label": ".shimmerOpacity()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1150",
+      "source_location": "L1185",
       "id": "tost_4_0_contentview_shimmerblockview_shimmeropacity",
       "community": 12,
       "norm_label": ".shimmeropacity()"
@@ -925,7 +916,7 @@
       "label": ".blockOpacity()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1157",
+      "source_location": "L1192",
       "id": "tost_4_0_contentview_shimmerblockview_blockopacity",
       "community": 12,
       "norm_label": ".blockopacity()"
@@ -934,7 +925,7 @@
       "label": ".acceleratingProgress()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1168",
+      "source_location": "L1203",
       "id": "tost_4_0_contentview_shimmerblockview_acceleratingprogress",
       "community": 12,
       "norm_label": ".acceleratingprogress()"
@@ -943,7 +934,7 @@
       "label": "ActionItemView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1175",
+      "source_location": "L1210",
       "id": "tost_4_0_contentview_actionitemview",
       "community": 11,
       "norm_label": "actionitemview"
@@ -952,7 +943,7 @@
       "label": "AllActionsIconView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1195",
+      "source_location": "L1230",
       "id": "tost_4_0_contentview_allactionsiconview",
       "community": 1,
       "norm_label": "allactionsiconview"
@@ -961,7 +952,7 @@
       "label": ".badgeView()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1225",
+      "source_location": "L1260",
       "id": "tost_4_0_contentview_allactionsiconview_badgeview",
       "community": 1,
       "norm_label": ".badgeview()"
@@ -970,7 +961,7 @@
       "label": ".badgeLoadID()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1234",
+      "source_location": "L1269",
       "id": "tost_4_0_contentview_allactionsiconview_badgeloadid",
       "community": 1,
       "norm_label": ".badgeloadid()"
@@ -979,7 +970,7 @@
       "label": "OperationsView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1248",
+      "source_location": "L1283",
       "id": "tost_4_0_contentview_operationsview",
       "community": 11,
       "norm_label": "operationsview"
@@ -988,7 +979,7 @@
       "label": "AccountsView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1262",
+      "source_location": "L1297",
       "id": "tost_4_0_contentview_accountsview",
       "community": 11,
       "norm_label": "accountsview"
@@ -997,7 +988,7 @@
       "label": "InlineSVGWebView",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1276",
+      "source_location": "L1311",
       "id": "tost_4_0_contentview_inlinesvgwebview",
       "community": 1,
       "norm_label": "inlinesvgwebview"
@@ -1006,7 +997,7 @@
       "label": ".makeCoordinator()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1281",
+      "source_location": "L1316",
       "id": "tost_4_0_contentview_inlinesvgwebview_makecoordinator",
       "community": 1,
       "norm_label": ".makecoordinator()"
@@ -1015,7 +1006,7 @@
       "label": ".makeUIView()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1285",
+      "source_location": "L1320",
       "id": "tost_4_0_contentview_inlinesvgwebview_makeuiview",
       "community": 1,
       "norm_label": ".makeuiview()"
@@ -1024,7 +1015,7 @@
       "label": ".updateUIView()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1302",
+      "source_location": "L1337",
       "id": "tost_4_0_contentview_inlinesvgwebview_updateuiview",
       "community": 1,
       "norm_label": ".updateuiview()"
@@ -1033,7 +1024,7 @@
       "label": "Coordinator",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1320",
+      "source_location": "L1355",
       "id": "tost_4_0_contentview_coordinator",
       "community": 1,
       "norm_label": "coordinator"
@@ -1060,7 +1051,7 @@
       "label": ".webView()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1326",
+      "source_location": "L1361",
       "id": "tost_4_0_contentview_coordinator_webview",
       "community": 1,
       "norm_label": ".webview()"
@@ -1069,7 +1060,7 @@
       "label": "InitialHomeContentLoadTracker",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1335",
+      "source_location": "L1370",
       "id": "tost_4_0_contentview_initialhomecontentloadtracker",
       "community": 2,
       "norm_label": "initialhomecontentloadtracker"
@@ -1078,7 +1069,7 @@
       "label": "LoadID",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1337",
+      "source_location": "L1372",
       "id": "tost_4_0_contentview_loadid",
       "community": 14,
       "norm_label": "loadid"
@@ -1105,7 +1096,7 @@
       "label": "placeholder",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1338",
+      "source_location": "L1373",
       "id": "tost_4_0_contentview_loadid_placeholder",
       "community": 14,
       "norm_label": "placeholder"
@@ -1114,7 +1105,7 @@
       "label": "total",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1339",
+      "source_location": "L1374",
       "id": "tost_4_0_contentview_loadid_total",
       "community": 14,
       "norm_label": "total"
@@ -1123,7 +1114,7 @@
       "label": "actionCreate",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1340",
+      "source_location": "L1375",
       "id": "tost_4_0_contentview_loadid_actioncreate",
       "community": 14,
       "norm_label": "actioncreate"
@@ -1132,7 +1123,7 @@
       "label": "actionInvoice",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1341",
+      "source_location": "L1376",
       "id": "tost_4_0_contentview_loadid_actioninvoice",
       "community": 14,
       "norm_label": "actioninvoice"
@@ -1141,7 +1132,7 @@
       "label": "actionUpload",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1342",
+      "source_location": "L1377",
       "id": "tost_4_0_contentview_loadid_actionupload",
       "community": 14,
       "norm_label": "actionupload"
@@ -1150,7 +1141,7 @@
       "label": "badge0",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1343",
+      "source_location": "L1378",
       "id": "tost_4_0_contentview_loadid_badge0",
       "community": 14,
       "norm_label": "badge0"
@@ -1159,7 +1150,7 @@
       "label": "badge1",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1344",
+      "source_location": "L1379",
       "id": "tost_4_0_contentview_loadid_badge1",
       "community": 14,
       "norm_label": "badge1"
@@ -1168,7 +1159,7 @@
       "label": "badge2",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1345",
+      "source_location": "L1380",
       "id": "tost_4_0_contentview_loadid_badge2",
       "community": 14,
       "norm_label": "badge2"
@@ -1177,7 +1168,7 @@
       "label": "badge3",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1346",
+      "source_location": "L1381",
       "id": "tost_4_0_contentview_loadid_badge3",
       "community": 14,
       "norm_label": "badge3"
@@ -1186,7 +1177,7 @@
       "label": "operations",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1347",
+      "source_location": "L1382",
       "id": "tost_4_0_contentview_loadid_operations",
       "community": 14,
       "norm_label": "operations"
@@ -1195,7 +1186,7 @@
       "label": "accounts",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1348",
+      "source_location": "L1383",
       "id": "tost_4_0_contentview_loadid_accounts",
       "community": 14,
       "norm_label": "accounts"
@@ -1204,7 +1195,7 @@
       "label": ".markLoaded()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1354",
+      "source_location": "L1389",
       "id": "tost_4_0_contentview_initialhomecontentloadtracker_markloaded",
       "community": 2,
       "norm_label": ".markloaded()"
@@ -1213,7 +1204,7 @@
       "label": ".waitUntilReady()",
       "file_type": "code",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1358",
+      "source_location": "L1393",
       "id": "tost_4_0_contentview_initialhomecontentloadtracker_waituntilready",
       "community": 2,
       "norm_label": ".waituntilready()"
@@ -1422,7 +1413,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_demo_notificationdemohomebridge_swift",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationdemohomebridge.swift"
     },
     {
@@ -1431,7 +1422,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift",
       "source_location": "L4",
       "id": "demo_notificationdemohomebridge_notificationdemohomebridge",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationdemohomebridge"
     },
     {
@@ -1440,7 +1431,7 @@
       "source_file": "",
       "source_location": "",
       "id": "observableobject",
-      "community": 8,
+      "community": 3,
       "norm_label": "observableobject"
     },
     {
@@ -1449,7 +1440,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift",
       "source_location": "L10",
       "id": "demo_notificationdemohomebridge_notificationdemohomebridge_init",
-      "community": 8,
+      "community": 3,
       "norm_label": ".init()"
     },
     {
@@ -1458,7 +1449,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift",
       "source_location": "L19",
       "id": "demo_notificationdemohomebridge_notificationdemohomebridge_setselectedscenario",
-      "community": 8,
+      "community": 3,
       "norm_label": ".setselectedscenario()"
     },
     {
@@ -1467,7 +1458,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationDemoHomeBridge.swift",
       "source_location": "L27",
       "id": "demo_notificationdemohomebridge_notificationdemohomebridge_requestplayback",
-      "community": 8,
+      "community": 3,
       "norm_label": ".requestplayback()"
     },
     {
@@ -1674,7 +1665,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationMultiplePreviewSection.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_demo_notificationmultiplepreviewsection_swift",
-      "community": 40,
+      "community": 17,
       "norm_label": "notificationmultiplepreviewsection.swift"
     },
     {
@@ -1683,7 +1674,7 @@
       "source_file": "tost 4.0/NotificationDemo/Demo/NotificationMultiplePreviewSection.swift",
       "source_location": "L3",
       "id": "demo_notificationmultiplepreviewsection_notificationmultiplepreviewsection",
-      "community": 40,
+      "community": 17,
       "norm_label": "notificationmultiplepreviewsection"
     },
     {
@@ -2133,7 +2124,7 @@
       "source_file": "tost 4.0/NotificationDemo/Resources/PrewarmedSVGView.swift",
       "source_location": "L28",
       "id": "resources_prewarmedsvgview_inlinesvgsnapshotstore",
-      "community": 8,
+      "community": 1,
       "norm_label": "inlinesvgsnapshotstore"
     },
     {
@@ -2142,7 +2133,7 @@
       "source_file": "tost 4.0/NotificationDemo/Resources/PrewarmedSVGView.swift",
       "source_location": "L36",
       "id": "resources_prewarmedsvgview_inlinesvgsnapshotstore_init",
-      "community": 8,
+      "community": 1,
       "norm_label": ".init()"
     },
     {
@@ -2151,7 +2142,7 @@
       "source_file": "tost 4.0/NotificationDemo/Resources/PrewarmedSVGView.swift",
       "source_location": "L38",
       "id": "resources_prewarmedsvgview_inlinesvgsnapshotstore_image",
-      "community": 8,
+      "community": 1,
       "norm_label": ".image()"
     },
     {
@@ -2169,7 +2160,7 @@
       "source_file": "tost 4.0/NotificationDemo/Resources/PrewarmedSVGView.swift",
       "source_location": "L70",
       "id": "resources_prewarmedsvgview_inlinesvgsnapshotstore_waituntilready",
-      "community": 7,
+      "community": 1,
       "norm_label": ".waituntilready()"
     },
     {
@@ -2295,7 +2286,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationPresenter.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_animation_notificationpresenter_swift",
-      "community": 37,
+      "community": 36,
       "norm_label": "notificationpresenter.swift"
     },
     {
@@ -2304,7 +2295,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationPresenter.swift",
       "source_location": "L3",
       "id": "animation_notificationpresenter_notificationpresenter",
-      "community": 37,
+      "community": 36,
       "norm_label": "notificationpresenter"
     },
     {
@@ -2412,50 +2403,59 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
-      "community": 7,
+      "community": 8,
       "norm_label": "glassmorphnotificationview.swift"
     },
     {
       "label": "NotificationGlassMotionPreset",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L4",
+      "source_location": "L7",
       "id": "animation_glassmorphnotificationview_notificationglassmotionpreset",
-      "community": 7,
+      "community": 8,
       "norm_label": "notificationglassmotionpreset"
     },
     {
       "label": "GlassMorphNotificationStyle",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L44",
+      "source_location": "L47",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationstyle",
-      "community": 7,
+      "community": 8,
       "norm_label": "glassmorphnotificationstyle"
     },
     {
       "label": ".applySharedMotionPreset()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L134",
+      "source_location": "L137",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationstyle_applysharedmotionpreset",
-      "community": 7,
+      "community": 8,
       "norm_label": ".applysharedmotionpreset()"
     },
     {
       "label": "GlassMorphNotificationView",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L169",
+      "source_location": "L172",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview",
       "community": 7,
       "norm_label": "glassmorphnotificationview"
     },
     {
+      "label": ".notificationLiquidFill()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L303",
+      "id": "animation_glassmorphnotificationview_glassmorphnotificationview_notificationliquidfill",
+      "community": 7,
+      "norm_label": ".notificationliquidfill()"
+    },
+    {
       "label": ".notificationSurfaceFill()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L286",
+      "source_location": "L356",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_notificationsurfacefill",
       "community": 7,
       "norm_label": ".notificationsurfacefill()"
@@ -2464,7 +2464,7 @@
       "label": ".setUserInteractionActive()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L501",
+      "source_location": "L582",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_setuserinteractionactive",
       "community": 7,
       "norm_label": ".setuserinteractionactive()"
@@ -2473,7 +2473,7 @@
       "label": ".startBlockedSwipeShake()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L507",
+      "source_location": "L588",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_startblockedswipeshake",
       "community": 7,
       "norm_label": ".startblockedswipeshake()"
@@ -2482,7 +2482,7 @@
       "label": ".stopBlockedSwipeShake()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L518",
+      "source_location": "L599",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_stopblockedswipeshake",
       "community": 7,
       "norm_label": ".stopblockedswipeshake()"
@@ -2491,7 +2491,7 @@
       "label": ".updateInteractiveBubbleAnchor()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L527",
+      "source_location": "L608",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_updateinteractivebubbleanchor",
       "community": 7,
       "norm_label": ".updateinteractivebubbleanchor()"
@@ -2500,7 +2500,7 @@
       "label": ".startInteractiveBubblePress()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L533",
+      "source_location": "L614",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_startinteractivebubblepress",
       "community": 7,
       "norm_label": ".startinteractivebubblepress()"
@@ -2509,16 +2509,25 @@
       "label": ".releaseInteractiveBubblePress()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L541",
+      "source_location": "L622",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_releaseinteractivebubblepress",
       "community": 7,
       "norm_label": ".releaseinteractivebubblepress()"
     },
     {
+      "label": ".tailAnchorLocal()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L804",
+      "id": "animation_glassmorphnotificationview_glassmorphnotificationview_tailanchorlocal",
+      "community": 7,
+      "norm_label": ".tailanchorlocal()"
+    },
+    {
       "label": ".bellRingProgress()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L831",
+      "source_location": "L1173",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_bellringprogress",
       "community": 7,
       "norm_label": ".bellringprogress()"
@@ -2527,7 +2536,7 @@
       "label": ".bellRingAngle()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L845",
+      "source_location": "L1187",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_bellringangle",
       "community": 7,
       "norm_label": ".bellringangle()"
@@ -2536,7 +2545,7 @@
       "label": ".bellRingOffsetX()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L854",
+      "source_location": "L1196",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_bellringoffsetx",
       "community": 7,
       "norm_label": ".bellringoffsetx()"
@@ -2545,7 +2554,7 @@
       "label": ".scheduleAnimation()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L863",
+      "source_location": "L1205",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_scheduleanimation",
       "community": 7,
       "norm_label": ".scheduleanimation()"
@@ -2554,7 +2563,7 @@
       "label": ".morphAnimation()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L897",
+      "source_location": "L1239",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_morphanimation",
       "community": 7,
       "norm_label": ".morphanimation()"
@@ -2563,7 +2572,7 @@
       "label": ".contentHideAnimation()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L905",
+      "source_location": "L1247",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_contenthideanimation",
       "community": 7,
       "norm_label": ".contenthideanimation()"
@@ -2572,7 +2581,7 @@
       "label": ".syncImmediately()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L909",
+      "source_location": "L1251",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_syncimmediately",
       "community": 7,
       "norm_label": ".syncimmediately()"
@@ -2581,7 +2590,7 @@
       "label": ".playPresentation()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L943",
+      "source_location": "L1285",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_playpresentation",
       "community": 7,
       "norm_label": ".playpresentation()"
@@ -2590,7 +2599,7 @@
       "label": ".playDismissal()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1001",
+      "source_location": "L1343",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_playdismissal",
       "community": 7,
       "norm_label": ".playdismissal()"
@@ -2599,7 +2608,7 @@
       "label": ".startBounceDismissal()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1053",
+      "source_location": "L1395",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_startbouncedismissal",
       "community": 7,
       "norm_label": ".startbouncedismissal()"
@@ -2608,7 +2617,7 @@
       "label": ".dismissDurationScale()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1068",
+      "source_location": "L1410",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_dismissdurationscale",
       "community": 7,
       "norm_label": ".dismissdurationscale()"
@@ -2617,7 +2626,7 @@
       "label": ".scheduleBellRing()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1078",
+      "source_location": "L1420",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_schedulebellring",
       "community": 7,
       "norm_label": ".schedulebellring()"
@@ -2626,7 +2635,7 @@
       "label": ".schedulePresentationSettleBounce()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1102",
+      "source_location": "L1444",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_schedulepresentationsettlebounce",
       "community": 7,
       "norm_label": ".schedulepresentationsettlebounce()"
@@ -2635,7 +2644,7 @@
       "label": ".segment()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1136",
+      "source_location": "L1478",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_segment",
       "community": 7,
       "norm_label": ".segment()"
@@ -2644,7 +2653,7 @@
       "label": ".softenedSegment()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1141",
+      "source_location": "L1483",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_softenedsegment",
       "community": 7,
       "norm_label": ".softenedsegment()"
@@ -2653,7 +2662,7 @@
       "label": ".smoothStep()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1145",
+      "source_location": "L1487",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_smoothstep",
       "community": 7,
       "norm_label": ".smoothstep()"
@@ -2662,7 +2671,7 @@
       "label": ".lerp()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1149",
+      "source_location": "L1491",
       "id": "animation_glassmorphnotificationview_glassmorphnotificationview_lerp",
       "community": 7,
       "norm_label": ".lerp()"
@@ -2671,9 +2680,9 @@
       "label": "BottomPinchedMask",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1154",
+      "source_location": "L1496",
       "id": "animation_glassmorphnotificationview_bottompinchedmask",
-      "community": 7,
+      "community": 8,
       "norm_label": "bottompinchedmask"
     },
     {
@@ -2682,16 +2691,97 @@
       "source_file": "",
       "source_location": "",
       "id": "shape",
-      "community": 0,
+      "community": 8,
       "norm_label": "shape"
     },
     {
       "label": ".path()",
       "file_type": "code",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
-      "source_location": "L1159",
+      "source_location": "L1501",
       "id": "animation_glassmorphnotificationview_bottompinchedmask_path",
-      "community": 7,
+      "community": 8,
+      "norm_label": ".path()"
+    },
+    {
+      "label": "StagedLiquidMetaballMask",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1550",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "community": 8,
+      "norm_label": "stagedliquidmetaballmask"
+    },
+    {
+      "label": ".drawBellBlob()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1583",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawbellblob",
+      "community": 8,
+      "norm_label": ".drawbellblob()"
+    },
+    {
+      "label": ".drawConnector()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1602",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawconnector",
+      "community": 8,
+      "norm_label": ".drawconnector()"
+    },
+    {
+      "label": ".drawDropletBridge()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1671",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawdropletbridge",
+      "community": 8,
+      "norm_label": ".drawdropletbridge()"
+    },
+    {
+      "label": ".circlePath()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1693",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask_circlepath",
+      "community": 8,
+      "norm_label": ".circlepath()"
+    },
+    {
+      "label": ".unitVector()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1706",
+      "id": "animation_glassmorphnotificationview_stagedliquidmetaballmask_unitvector",
+      "community": 8,
+      "norm_label": ".unitvector()"
+    },
+    {
+      "label": "LiquidUnifiedSurfaceMask",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1715",
+      "id": "animation_glassmorphnotificationview_liquidunifiedsurfacemask",
+      "community": 8,
+      "norm_label": "liquidunifiedsurfacemask"
+    },
+    {
+      "label": "LiquidUnifiedSurfaceStroke",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1725",
+      "id": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke",
+      "community": 8,
+      "norm_label": "liquidunifiedsurfacestroke"
+    },
+    {
+      "label": ".path()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1728",
+      "id": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke_path",
+      "community": 8,
       "norm_label": ".path()"
     },
     {
@@ -2700,7 +2790,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_animation_notificationanimationcontroller_swift",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationanimationcontroller.swift"
     },
     {
@@ -2709,7 +2799,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L4",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationanimationcontroller"
     },
     {
@@ -2718,7 +2808,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L11",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller_setshowssourcebell",
-      "community": 8,
+      "community": 3,
       "norm_label": ".setshowssourcebell()"
     },
     {
@@ -2727,7 +2817,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L15",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller_setsourcebellfilled",
-      "community": 8,
+      "community": 3,
       "norm_label": ".setsourcebellfilled()"
     },
     {
@@ -2736,7 +2826,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L20",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller_present",
-      "community": 8,
+      "community": 3,
       "norm_label": ".present()"
     },
     {
@@ -2745,7 +2835,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L27",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller_dismiss",
-      "community": 8,
+      "community": 3,
       "norm_label": ".dismiss()"
     },
     {
@@ -2754,7 +2844,7 @@
       "source_file": "tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift",
       "source_location": "L31",
       "id": "animation_notificationanimationcontroller_notificationanimationcontroller_reset",
-      "community": 8,
+      "community": 3,
       "norm_label": ".reset()"
     },
     {
@@ -2979,7 +3069,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationKind.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_models_notificationkind_swift",
-      "community": 25,
+      "community": 23,
       "norm_label": "notificationkind.swift"
     },
     {
@@ -2988,7 +3078,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationKind.swift",
       "source_location": "L3",
       "id": "models_notificationkind_notificationkind",
-      "community": 25,
+      "community": 23,
       "norm_label": "notificationkind"
     },
     {
@@ -2997,7 +3087,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationKind.swift",
       "source_location": "L4",
       "id": "models_notificationkind_notificationkind_inapp",
-      "community": 25,
+      "community": 23,
       "norm_label": "inapp"
     },
     {
@@ -3006,7 +3096,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationKind.swift",
       "source_location": "L5",
       "id": "models_notificationkind_notificationkind_push",
-      "community": 25,
+      "community": 23,
       "norm_label": "push"
     },
     {
@@ -3015,7 +3105,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationKind.swift",
       "source_location": "L6",
       "id": "models_notificationkind_notificationkind_event",
-      "community": 25,
+      "community": 23,
       "norm_label": "event"
     },
     {
@@ -3402,7 +3492,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_models_notificationselectionstore_swift",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationselectionstore.swift"
     },
     {
@@ -3411,7 +3501,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift",
       "source_location": "L4",
       "id": "models_notificationselectionstore_notificationselectionstore",
-      "community": 8,
+      "community": 3,
       "norm_label": "notificationselectionstore"
     },
     {
@@ -3420,7 +3510,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift",
       "source_location": "L9",
       "id": "models_notificationselectionstore_notificationselectionstore_init",
-      "community": 8,
+      "community": 3,
       "norm_label": ".init()"
     },
     {
@@ -3429,7 +3519,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift",
       "source_location": "L27",
       "id": "models_notificationselectionstore_notificationselectionstore_selectkind",
-      "community": 8,
+      "community": 3,
       "norm_label": ".selectkind()"
     },
     {
@@ -3438,7 +3528,7 @@
       "source_file": "tost 4.0/NotificationDemo/Models/NotificationSelectionStore.swift",
       "source_location": "L33",
       "id": "models_notificationselectionstore_notificationselectionstore_selectscenario",
-      "community": 8,
+      "community": 3,
       "norm_label": ".selectscenario()"
     },
     {
@@ -3681,7 +3771,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L43",
       "id": "components_notificationfooterview_notificationunifiedsurfaceshape",
-      "community": 0,
+      "community": 8,
       "norm_label": "notificationunifiedsurfaceshape"
     },
     {
@@ -3690,7 +3780,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L48",
       "id": "components_notificationfooterview_notificationunifiedsurfaceshape_path",
-      "community": 0,
+      "community": 8,
       "norm_label": ".path()"
     },
     {
@@ -3699,7 +3789,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L114",
       "id": "components_notificationfooterview_notificationunifiedsurfaceshape_horizontalshift",
-      "community": 0,
+      "community": 8,
       "norm_label": ".horizontalshift()"
     },
     {
@@ -3717,7 +3807,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L126",
       "id": "components_notificationfooterview_footerhighlightshape",
-      "community": 0,
+      "community": 8,
       "norm_label": "footerhighlightshape"
     },
     {
@@ -3726,7 +3816,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L129",
       "id": "components_notificationfooterview_footerhighlightshape_path",
-      "community": 0,
+      "community": 8,
       "norm_label": ".path()"
     },
     {
@@ -3735,7 +3825,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L133",
       "id": "components_notificationfooterview_footerhighlightshape_horizontalshift",
-      "community": 0,
+      "community": 8,
       "norm_label": ".horizontalshift()"
     },
     {
@@ -3744,7 +3834,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L140",
       "id": "components_notificationfooterview_footerhighlightshape_basepath",
-      "community": 0,
+      "community": 8,
       "norm_label": ".basepath()"
     },
     {
@@ -3834,7 +3924,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L88",
       "id": "components_notificationbellvisual_notificationbelloutlineshape",
-      "community": 0,
+      "community": 8,
       "norm_label": "notificationbelloutlineshape"
     },
     {
@@ -3843,7 +3933,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L89",
       "id": "components_notificationbellvisual_notificationbelloutlineshape_path",
-      "community": 0,
+      "community": 8,
       "norm_label": ".path()"
     },
     {
@@ -3852,7 +3942,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L98",
       "id": "components_notificationbellvisual_notificationbelloutlineshape_makebellfootpath",
-      "community": 0,
+      "community": 8,
       "norm_label": ".makebellfootpath()"
     },
     {
@@ -3861,7 +3951,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L120",
       "id": "components_notificationbellvisual_notificationbelloutlineshape_makebelloutlinebodypath",
-      "community": 0,
+      "community": 8,
       "norm_label": ".makebelloutlinebodypath()"
     },
     {
@@ -3870,7 +3960,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L195",
       "id": "components_notificationbellvisual_notificationbellfilledshape",
-      "community": 0,
+      "community": 8,
       "norm_label": "notificationbellfilledshape"
     },
     {
@@ -3879,7 +3969,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationBellVisual.swift",
       "source_location": "L196",
       "id": "components_notificationbellvisual_notificationbellfilledshape_path",
-      "community": 0,
+      "community": 8,
       "norm_label": ".path()"
     },
     {
@@ -3888,7 +3978,7 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationStaticCardView.swift",
       "source_location": "L1",
       "id": "tost_4_0_notificationdemo_components_notificationstaticcardview_swift",
-      "community": 17,
+      "community": 25,
       "norm_label": "notificationstaticcardview.swift"
     },
     {
@@ -3897,8 +3987,62 @@
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationStaticCardView.swift",
       "source_location": "L3",
       "id": "components_notificationstaticcardview_notificationstaticcardview",
-      "community": 17,
+      "community": 25,
       "norm_label": "notificationstaticcardview"
+    },
+    {
+      "label": "LiquidMetaballMask",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1407",
+      "community": 8,
+      "norm_label": "liquidmetaballmask",
+      "id": "animation_glassmorphnotificationview_liquidmetaballmask"
+    },
+    {
+      "label": ".circlePath()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1442",
+      "community": 8,
+      "norm_label": ".circlepath()",
+      "id": "animation_glassmorphnotificationview_liquidmetaballmask_circlepath"
+    },
+    {
+      "label": ".notificationBridgeFill()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L287",
+      "community": 7,
+      "norm_label": ".notificationbridgefill()",
+      "id": "animation_glassmorphnotificationview_glassmorphnotificationview_notificationbridgefill"
+    },
+    {
+      "label": "BellToTailBridgeShape",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1367",
+      "community": 8,
+      "norm_label": "belltotailbridgeshape",
+      "id": "animation_glassmorphnotificationview_belltotailbridgeshape"
+    },
+    {
+      "label": ".path()",
+      "file_type": "code",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1375",
+      "community": 8,
+      "norm_label": ".path()",
+      "id": "animation_glassmorphnotificationview_belltotailbridgeshape_path"
+    },
+    {
+      "label": ".init()",
+      "file_type": "code",
+      "source_file": "tost 4.0/ContentView.swift",
+      "source_location": "L1095",
+      "community": 12,
+      "norm_label": ".init()",
+      "id": "tost_4_0_contentview_shimmerblockview_init"
     },
     {
       "label": ".dismissalMorphAnimation()",
@@ -4946,6 +5090,26 @@
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1512",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "view"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1701",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_liquidunifiedsurfacemask",
+      "target": "view"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
       "source_file": "tost 4.0/NotificationDemo/Content/InAppNotificationView.swift",
       "source_location": "L3",
       "weight": 1.0,
@@ -5071,6 +5235,16 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_notificationstaticcardview_notificationstaticcardview",
+      "target": "view"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1394",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_liquidmetaballmask",
       "target": "view"
     },
     {
@@ -6465,16 +6639,6 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "tost 4.0/ContentView.swift",
-      "source_location": "L1102",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tost_4_0_contentview_shimmerblockview",
-      "target": "tost_4_0_contentview_shimmerblockview_init"
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "tost 4.0/ContentView.swift",
       "source_location": "L964",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -6520,6 +6684,16 @@
       "confidence_score": 1.0,
       "source": "tost_4_0_contentview_shimmerblockview",
       "target": "tost_4_0_contentview_shimmerblockview_acceleratingprogress"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/ContentView.swift",
+      "source_location": "L1102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_contentview_shimmerblockview",
+      "target": "tost_4_0_contentview_shimmerblockview_init"
     },
     {
       "relation": "method",
@@ -8745,6 +8919,56 @@
       "target": "animation_glassmorphnotificationview_bottompinchedmask"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1512",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1701",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
+      "target": "animation_glassmorphnotificationview_liquidunifiedsurfacemask"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1711",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
+      "target": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1394",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
+      "target": "animation_glassmorphnotificationview_liquidmetaballmask"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1367",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tost_4_0_notificationdemo_animation_glassmorphnotificationview_swift",
+      "target": "animation_glassmorphnotificationview_belltotailbridgeshape"
+    },
+    {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
@@ -8753,6 +8977,16 @@
       "confidence_score": 1.0,
       "source": "animation_glassmorphnotificationview_glassmorphnotificationstyle",
       "target": "animation_glassmorphnotificationview_glassmorphnotificationstyle_applysharedmotionpreset"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L303",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_glassmorphnotificationview",
+      "target": "animation_glassmorphnotificationview_glassmorphnotificationview_notificationliquidfill"
     },
     {
       "relation": "method",
@@ -8823,6 +9057,16 @@
       "confidence_score": 1.0,
       "source": "animation_glassmorphnotificationview_glassmorphnotificationview",
       "target": "animation_glassmorphnotificationview_glassmorphnotificationview_releaseinteractivebubblepress"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L695",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_glassmorphnotificationview",
+      "target": "animation_glassmorphnotificationview_glassmorphnotificationview_tailanchorlocal"
     },
     {
       "relation": "method",
@@ -8993,6 +9237,16 @@
       "confidence_score": 1.0,
       "source": "animation_glassmorphnotificationview_glassmorphnotificationview",
       "target": "animation_glassmorphnotificationview_glassmorphnotificationview_lerp"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L287",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_glassmorphnotificationview",
+      "target": "animation_glassmorphnotificationview_glassmorphnotificationview_notificationbridgefill"
     },
     {
       "relation": "method",
@@ -9234,6 +9488,16 @@
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1711",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke",
+      "target": "shape"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L43",
       "weight": 1.0,
@@ -9274,6 +9538,16 @@
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1367",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_belltotailbridgeshape",
+      "target": "shape"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
       "source_file": "tost 4.0/NotificationDemo/Components/NotificationFooterView.swift",
       "source_location": "L54",
       "weight": 1.0,
@@ -9300,6 +9574,121 @@
       "confidence_score": 1.0,
       "source": "components_notificationfooterview_notificationeventtailsidestrokeshape",
       "target": "shape"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1541",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawbellblob"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1586",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawconnector"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1560",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawdropletbridge"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1582",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_circlepath"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1595",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_unitvector"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1545",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawbellblob",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_circlepath"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1549",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawbellblob",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_unitvector"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1589",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawconnector",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_unitvector"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1651",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawconnector",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_circlepath"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1575",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_stagedliquidmetaballmask_drawdropletbridge",
+      "target": "animation_glassmorphnotificationview_stagedliquidmetaballmask_circlepath"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1714",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke",
+      "target": "animation_glassmorphnotificationview_liquidunifiedsurfacestroke_path"
     },
     {
       "relation": "contains",
@@ -10873,6 +11262,26 @@
       "target": "components_notificationstaticcardview_notificationstaticcardview"
     },
     {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1429",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_liquidmetaballmask",
+      "target": "animation_glassmorphnotificationview_liquidmetaballmask_circlepath"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift",
+      "source_location": "L1375",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "animation_glassmorphnotificationview_belltotailbridgeshape",
+      "target": "animation_glassmorphnotificationview_belltotailbridgeshape_path"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -11263,5 +11672,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "afdc55d9dbc2e36c98c9c28a8f6a36c6e242a39e"
+  "built_at_commit": "334753c73ee2aba2d4b32d8f1f90588a5e07c00b"
 }

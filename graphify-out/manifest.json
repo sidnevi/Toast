@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "/Users/ilya/Documents/GitHub/Toast/tost 4.0/ContentView.swift": {
-    "mtime": 1779991653.458536,
-    "ast_hash": "068c28309fa60d30c5d779d208efb39a",
+    "mtime": 1780573347.4028761,
+    "ast_hash": "be07d850ff2b72f5cc1ad68cc21d071c",
     "semantic_hash": ""
   },
   "/Users/ilya/Documents/GitHub/Toast/tost 4.0/CommunicationPlaceholderView.swift": {
@@ -125,13 +125,13 @@
     "semantic_hash": ""
   },
   "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/NotificationPresenter.swift": {
-    "mtime": 1779990558.3382459,
-    "ast_hash": "0a5a20ba24295f3490f83aca04782485",
+    "mtime": 1780348658.0560827,
+    "ast_hash": "423e8384845d8de457da3327e3fa3604",
     "semantic_hash": ""
   },
   "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/GlassMorphNotificationView.swift": {
-    "mtime": 1779990558.3829277,
-    "ast_hash": "dab04a656603b10fb413df2951074f04",
+    "mtime": 1780348772.2329125,
+    "ast_hash": "0be108995fd702f2683baa88d45ace51",
     "semantic_hash": ""
   },
   "/Users/ilya/Documents/GitHub/Toast/tost 4.0/NotificationDemo/Animation/NotificationAnimationController.swift": {

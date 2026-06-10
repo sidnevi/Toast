@@ -11,6 +11,7 @@ struct NotificationPresenter<NotificationContent: View>: View {
     let liquidConfig: LiquidNotificationConfig
     let liquidNotificationText: String
     let liquidOffset: CGSize
+    let sourceBellRevealProgress: CGFloat
     let onDismissMorphStart: (() -> Void)?
     let onInteractionChanged: (Bool) -> Void
     @ViewBuilder let notificationContent: () -> NotificationContent
@@ -25,6 +26,7 @@ struct NotificationPresenter<NotificationContent: View>: View {
                     isSourceBellCritical: $isSourceBellCritical,
                     allowsInteractiveDismiss: allowsInteractiveDismiss,
                     style: glassStyle,
+                    sourceBellRevealProgress: sourceBellRevealProgress,
                     onDismissMorphStart: onDismissMorphStart,
                     onInteractionChanged: onInteractionChanged,
                     notificationContent: notificationContent

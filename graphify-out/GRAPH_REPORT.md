@@ -1,16 +1,16 @@
-# Graph Report - Toast  (2026-05-28)
+# Graph Report - Toast  (2026-06-04)
 
 ## Corpus Check
-- 49 files · ~51,094 words
+- 49 files · ~52,999 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 472 nodes · 686 edges · 40 communities (28 shown, 12 thin omitted)
+- 488 nodes · 712 edges · 39 communities (26 shown, 13 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `afdc55d9`
+- Built from commit: `334753c7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -51,13 +51,12 @@
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
-- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 39|Community 39]]
-- [[_COMMUNITY_Community 40|Community 40]]
 - [[_COMMUNITY_Community 41|Community 41]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `GlassMorphNotificationView` - 29 edges
+1. `GlassMorphNotificationView` - 32 edges
 2. `ContentView` - 26 edges
 3. `NotificationDemoViewModel` - 21 edges
 4. `LoadID` - 14 edges
@@ -80,19 +79,19 @@
 - `loadHomeImage()` --calls--> `loadNotificationImage()`  [INFERRED]
   tost 4.0/NotificationDemo/Resources/HomeAssetLoader.swift → tost 4.0/NotificationDemo/Resources/NotificationResourceLoader.swift
 
-## Communities (40 total, 12 thin omitted)
+## Communities (39 total, 13 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (18): NotificationBellFilledShape, NotificationBellOutlineShape, FooterHighlightShape, FooterLayout, NotificationEventTailSideStrokeShape, NotificationFooterView, NotificationSurfaceAccent, NotificationSurfaceShape (+10 more)
+Cohesion: 0.11
+Nodes (13): FooterLayout, NotificationEventTailSideStrokeShape, NotificationFooterView, NotificationSurfaceAccent, NotificationSurfaceShape, NotificationSurfaceView, NotificationTailGeometry, NotificationTailShape (+5 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.07
-Nodes (15): NSObject, Loader, makeInlineSVGHTML(), PrewarmedSVGView, AllActionsIconView, Coordinator, InlineSVGWebView, PassThroughOverlayWindow (+7 more)
+Cohesion: 0.06
+Nodes (16): NSObject, InlineSVGSnapshotStore, Loader, makeInlineSVGHTML(), PrewarmedSVGView, AllActionsIconView, Coordinator, InlineSVGWebView (+8 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.14
-Nodes (3): NotificationDemoState, NotificationDemoViewModel, Equatable
+Cohesion: 0.07
+Nodes (7): NotificationAnimationController, NotificationDemoHomeBridge, NotificationDemoState, NotificationDemoViewModel, Equatable, NotificationSelectionStore, ObservableObject
 
 ### Community 4 - "Community 4"
 Cohesion: 0.12
@@ -106,13 +105,9 @@ Nodes (15): ButtonStyle, NotificationCandidateCardView, DemoPanelBackground, Dem
 Cohesion: 0.14
 Nodes (9): EventNotificationLayout, EventNotificationView, InAppNotificationView, Layout, Layout, NotificationContentFactory, NotificationPresentationMetrics, PushNotificationLayout (+1 more)
 
-### Community 7 - "Community 7"
-Cohesion: 0.08
-Nodes (5): BottomPinchedMask, GlassMorphNotificationStyle, GlassMorphNotificationView, NotificationGlassMotionPreset, NotificationCandidateCatalog
-
 ### Community 8 - "Community 8"
-Cohesion: 0.10
-Nodes (5): NotificationAnimationController, NotificationDemoHomeBridge, NotificationSelectionStore, ObservableObject, InlineSVGSnapshotStore
+Cohesion: 0.09
+Nodes (13): BellToTailBridgeShape, BottomPinchedMask, GlassMorphNotificationStyle, LiquidMetaballMask, LiquidUnifiedSurfaceMask, LiquidUnifiedSurfaceStroke, NotificationGlassMotionPreset, StagedLiquidMetaballMask (+5 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.11
@@ -159,16 +154,12 @@ Cohesion: 0.40
 Nodes (4): images, info, author, version
 
 ### Community 23 - "Community 23"
-Cohesion: 0.40
-Nodes (4): Identifiable, NotificationScenario, NotificationCenterCardModel, NotificationCenterSummaryCardModel
+Cohesion: 0.20
+Nodes (8): Identifiable, NotificationKind, event, inApp, push, NotificationScenario, NotificationCenterCardModel, NotificationCenterSummaryCardModel
 
 ### Community 24 - "Community 24"
 Cohesion: 0.40
 Nodes (4): NotificationAction, Style, primary, secondary
-
-### Community 25 - "Community 25"
-Cohesion: 0.40
-Nodes (4): NotificationKind, event, inApp, push
 
 ### Community 27 - "Community 27"
 Cohesion: 0.40
@@ -197,22 +188,22 @@ Nodes (3): CompanyHeaderDisplayMode, compact, regular
 ## Knowledge Gaps
 - **72 isolated node(s):** `important`, `useful`, `up`, `down`, `pill` (+67 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `LoadID` connect `Community 14` to `Community 11`, `Community 20`, `Community 15`?**
-  _High betweenness centrality (0.187) - this node is a cross-community bridge._
-- **Why does `GlassMorphNotificationView` connect `Community 7` to `Community 11`?**
-  _High betweenness centrality (0.130) - this node is a cross-community bridge._
+  _High betweenness centrality (0.182) - this node is a cross-community bridge._
+- **Why does `GlassMorphNotificationView` connect `Community 7` to `Community 8`, `Community 11`?**
+  _High betweenness centrality (0.128) - this node is a cross-community bridge._
 - **Why does `NotificationDemoView` connect `Community 5` to `Community 11`?**
-  _High betweenness centrality (0.119) - this node is a cross-community bridge._
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
 - **What connects `important`, `useful`, `up` to the rest of the system?**
   _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.0743321718931475 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10582010582010581 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.06882591093117409 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06201550387596899 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._

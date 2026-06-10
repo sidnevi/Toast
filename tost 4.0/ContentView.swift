@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var isOperationsVisible = false
     @State private var isAccountsVisible = false
     @State private var isAccountingVisible = false
+    @State private var backgroundGlowRevealProgress: CGFloat = 0
     @State private var keepsInitialLowerContentInPlace = false
     @State private var toastLayoutProgress: CGFloat = 0
     @State private var toastLayoutTask: Task<Void, Never>?
@@ -38,6 +39,7 @@ struct ContentView: View {
     @State private var isInitialHomeContentRevealed = false
     @State private var didPlayInitialHomeNotification = false
     @State private var initialNotificationBellCenterOverride: CGPoint?
+    @State private var initialSourceBellRevealProgress: CGFloat = 0
     @State private var lastHandledHomePlaybackRequestID: UUID?
     @StateObject private var notificationController = NotificationAnimationController()
     @State private var initialContentLoadTracker = InitialHomeContentLoadTracker()
@@ -134,7 +136,7 @@ struct ContentView: View {
     private var loadedContent: some View {
         ZStack(alignment: .topLeading) {
             PlaceholderMultipleView(
-                showsBellVisual: showsInlineHeaderBellVisual,
+                showsBellVisual: false,
                 showsBellButton: notificationController.showsSourceBell,
                 isBellFilled: notificationController.isSourceBellFilled,
                 isBellCritical: notificationController.isSourceBellCritical,
@@ -173,6 +175,7 @@ struct ContentView: View {
                 .offset(y: lowerAccountingTopOffset + lowerContentRevealOffset(for: isAccountingVisible))
 
             notificationMorphView
+                .opacity(notificationMorphLayerOpacity)
                 .zIndex(1)
         }
         .frame(maxWidth: .infinity, minHeight: contentHeight, alignment: .top)
@@ -180,6 +183,7 @@ struct ContentView: View {
 
     private var loadingContent: some View {
         PageLoadingView(
+            notificationHeight: loadingNotificationSkeletonHeight,
             placeholderHeight: placeholderHeight,
             totalHeight: totalHeight,
             actionsHeight: actionsHeight,
@@ -224,6 +228,7 @@ struct ContentView: View {
             liquidConfig: liquidNotificationConfig,
             liquidNotificationText: "Новое уведомление",
             liquidOffset: CGSize(width: liquidNotificationOffsetX, height: liquidNotificationOffsetY),
+            sourceBellRevealProgress: sourceBellRevealProgress,
             onDismissMorphStart: scheduleToastCollapseFromDismissMorphStart,
             onInteractionChanged: handleNotificationInteractionChanged
         ) {
@@ -235,6 +240,18 @@ struct ContentView: View {
             openCommunicationPageForCurrentEvent()
         }
         .id(notificationPresenterIdentity)
+    }
+
+    private var notificationMorphLayerOpacity: CGFloat {
+        if isInitialHomeContentRevealed || isHeaderVisible {
+            return 1
+        }
+
+        return notificationController.isPresented ? 1 : 0
+    }
+
+    private var sourceBellRevealProgress: CGFloat {
+        isInitialHomeContentRevealed ? 1 : initialSourceBellRevealProgress
     }
 
     @ViewBuilder
@@ -302,7 +319,11 @@ struct ContentView: View {
     }
 
     private var placeholderTopOffset: CGFloat {
-        max(animatedToastLayoutHeight - placeholderLiftOffset, 0)
+        if keepsInitialLowerContentInPlace {
+            return loadingLowerContentPlaceholderTopOffset
+        }
+
+        return max(animatedToastLayoutHeight - placeholderLiftOffset, 0)
     }
 
     private var lowerContentPlaceholderTopOffset: CGFloat {
@@ -313,6 +334,10 @@ struct ContentView: View {
 
     private var loadingLowerContentPlaceholderTopOffset: CGFloat {
         max(toastHeight - placeholderLiftOffset, 0)
+    }
+
+    private var loadingNotificationSkeletonHeight: CGFloat {
+        max(loadingLowerContentPlaceholderTopOffset - totalSpacing, 0)
     }
 
     private var showsInlineHeaderBellVisual: Bool {
@@ -328,7 +353,7 @@ struct ContentView: View {
             x: PlaceholderMultipleView.Layout.bellCenter.x,
             y: PlaceholderMultipleView.Layout.bellCenter.y +
                 placeholderTopOffset +
-                revealOffset(for: isHeaderVisible) -
+                notificationBellRevealOffset -
                 notificationBellGapReduction
         )
     }
@@ -346,9 +371,13 @@ struct ContentView: View {
         CGPoint(
             x: PlaceholderMultipleView.Layout.bellCenter.x,
             y: PlaceholderMultipleView.Layout.bellCenter.y +
-                revealOffset(for: isHeaderVisible) -
+                loadingLowerContentPlaceholderTopOffset -
                 notificationBellGapReduction
         )
+    }
+
+    private var notificationBellRevealOffset: CGFloat {
+        isInitialHomeContentRevealed ? revealOffset(for: isHeaderVisible) : 0
     }
 
     private var totalTopOffset: CGFloat {
@@ -501,9 +530,11 @@ struct ContentView: View {
             isOperationsVisible = false
             isAccountsVisible = false
             isAccountingVisible = false
+            backgroundGlowRevealProgress = 0
             keepsInitialLowerContentInPlace = true
             isInitialHomeContentRevealed = false
             didPlayInitialHomeNotification = false
+            initialSourceBellRevealProgress = 0
             toastLayoutProgress = 0
             initialNotificationBellCenterOverride = nil
             notificationController.reset()
@@ -529,8 +560,6 @@ struct ContentView: View {
                 try? await revealLoadedContent()
             }
 
-            try? await Task.sleep(nanoseconds: 120_000_000)
-
             withAnimation(.easeInOut(duration: loadingFadeOutDuration)) {
                 loadingOpacity = 0
             }
@@ -540,6 +569,9 @@ struct ContentView: View {
             )
 
             showsLoadingContent = false
+            withAnimation(.spring(response: 0.54, dampingFraction: 0.82, blendDuration: 0)) {
+                backgroundGlowRevealProgress = 1
+            }
             await revealTask.value
             isInitialHomeContentRevealed = true
             handlePendingHomePlaybackIfNeeded()
@@ -550,6 +582,9 @@ struct ContentView: View {
         withAnimation(.easeOut(duration: 0.3)) {
             isHeaderVisible = true
         }
+        withAnimation(.spring(response: 0.36, dampingFraction: 0.72, blendDuration: 0)) {
+            initialSourceBellRevealProgress = 1
+        }
 
         try await Task.sleep(nanoseconds: 300_000_000)
 
@@ -557,29 +592,39 @@ struct ContentView: View {
         let notificationContentTask = Task { @MainActor in
             await waitForCurrentNotificationContentIfNeeded()
         }
-        presentInitialHomeNotificationIfNeeded()
+        let lowerRevealAnimation = Animation.timingCurve(
+            0.22,
+            1,
+            0.36,
+            1,
+            duration: toastAnimationDuration
+        )
+        let primaryRevealStepDelay: UInt64 = 180_000_000
 
-        withAnimation(.easeOut(duration: 0.3)) {
+        withAnimation(lowerRevealAnimation) {
             isTotalVisible = true
+        }
+
+        try await Task.sleep(nanoseconds: primaryRevealStepDelay)
+
+        withAnimation(lowerRevealAnimation) {
             isActionsVisible = true
         }
 
-        withAnimation(.easeOut(duration: 0.32)) {
+        try await Task.sleep(nanoseconds: primaryRevealStepDelay)
+
+        presentInitialHomeNotificationIfNeeded()
+
+        withAnimation(lowerRevealAnimation) {
             isOperationsVisible = true
-        }
-
-        withAnimation(.easeOut(duration: 0.34)) {
             isAccountsVisible = true
-        }
-
-        withAnimation(.easeOut(duration: accountingRevealAnimationDuration)) {
             isAccountingVisible = true
         }
 
         try await Task.sleep(nanoseconds: 500_000_000)
         await notificationContentTask.value
 
-        let lowerContentRevealDuration = max(0.34, accountingRevealAnimationDuration)
+        let lowerContentRevealDuration = max(toastAnimationDuration, accountingRevealAnimationDuration)
         try await Task.sleep(
             nanoseconds: UInt64(lowerContentRevealDuration * 1_000_000_000)
         )
@@ -868,8 +913,6 @@ private struct PlaceholderMultipleView: View {
         static let bellSize: CGFloat = 40
         static let bellOrigin = CGPoint(x: 319, y: 16)
         static let bellCenter = CGPoint(x: bellOrigin.x + (bellSize / 2), y: bellOrigin.y + (bellSize / 2))
-        static let bellMaskSize: CGFloat = 48
-        static let bellMaskOrigin = CGPoint(x: 315, y: 12)
         static let bellHitSize: CGFloat = 56
         static let bellHitOrigin = CGPoint(x: bellCenter.x - (bellHitSize / 2), y: bellCenter.y - (bellHitSize / 2))
     }
@@ -888,12 +931,6 @@ private struct PlaceholderMultipleView: View {
             onLoad: onSVGReady
         )
             .frame(width: Layout.width, height: Layout.height)
-            .overlay(alignment: .topLeading) {
-                Circle()
-                    .fill(Color.black)
-                    .frame(width: Layout.bellMaskSize, height: Layout.bellMaskSize)
-                    .offset(x: Layout.bellMaskOrigin.x, y: Layout.bellMaskOrigin.y)
-            }
             .overlay(alignment: .topLeading) {
                 if showsBellVisual {
                     NotificationBellVisual(
@@ -1007,6 +1044,7 @@ private struct ActionsView: View {
 }
 
 private struct PageLoadingView: View {
+    let notificationHeight: CGFloat
     let placeholderHeight: CGFloat
     let totalHeight: CGFloat
     let actionsHeight: CGFloat
@@ -1023,8 +1061,11 @@ private struct PageLoadingView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            ShimmerBlockView(height: placeholderHeight)
+            ShimmerBlockView(height: notificationHeight)
                 .offset(y: 0)
+
+            ShimmerBlockView(height: placeholderHeight)
+                .offset(y: lowerContentTopOffset)
 
             ShimmerBlockView(height: totalHeight)
                 .offset(y: totalTopOffset)
@@ -1426,7 +1467,20 @@ let toastForegroundSVG = #"""
 </svg>
 """#
 
-private let placeholderMultipleSVG = loadHomeSVG(named: "placeholder-multiple")
+private let placeholderMultipleSVG = {
+    var svg = loadHomeSVG(named: "placeholder-multiple")
+    let bellStart = #"<rect x="319" y="16" width="40" height="40" rx="20" fill="white" fill-opacity="0.1"/>"#
+    let defsStart = "<defs>"
+
+    if
+        let startRange = svg.range(of: bellStart),
+        let defsRange = svg.range(of: defsStart, range: startRange.lowerBound..<svg.endIndex)
+    {
+        svg.removeSubrange(startRange.lowerBound..<defsRange.lowerBound)
+    }
+
+    return svg
+}()
 
 private let totalSVG = loadHomeSVG(named: "total")
 

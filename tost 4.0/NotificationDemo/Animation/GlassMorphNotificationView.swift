@@ -1,6 +1,9 @@
 import SwiftUI
 import UIKit
 
+private let notificationTailCanvasSize = CGSize(width: 351, height: 20)
+private let notificationTailHorizontalShift: CGFloat = -4
+
 enum NotificationGlassMotionPreset {
     static let timingScale: Double = 1.2
 
@@ -175,6 +178,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     let allowsInteractiveDismiss: Bool
     let style: GlassMorphNotificationStyle
+    let sourceBellRevealProgress: CGFloat
     let onDismissMorphStart: (() -> Void)?
     let onInteractionChanged: (Bool) -> Void
     @ViewBuilder let notificationContent: () -> NotificationContent
@@ -207,6 +211,8 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             notificationSurfaceLayer
 
             bellStaticLayer
+            liquidMorphLayer
+            bellLiquidGlyphLayer
             bellBubbleLayer
             bellGlyphLayer
             notificationContentLayer
@@ -242,6 +248,37 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     @ViewBuilder
+    private var liquidMorphLayer: some View {
+        if liquidMorphOpacity > 0.001 {
+            let shape = NotificationUnifiedSurfaceShape(
+                cornerRadius: notificationCornerRadius,
+                footerHeight: footerHeight,
+                variant: style.footerVariant
+            )
+            let surfaceRect = CGRect(
+                x: surfaceCenter.x - surfaceWidth / 2 + blockedSwipeShakeOffset,
+                y: surfaceCenter.y - notificationSurfaceHeight / 2 + notificationSurfaceVerticalOffset,
+                width: surfaceWidth,
+                height: notificationSurfaceHeight
+            )
+            let surfacePath = shape.path(in: surfaceRect)
+
+            notificationLiquidFill()
+                .mask {
+                    LiquidUnifiedSurfaceMask(path: surfacePath)
+                        .frame(width: style.containerSize.width, height: style.containerSize.height)
+                }
+                .overlay {
+                    LiquidUnifiedSurfaceStroke(path: surfacePath)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1.068)
+                        .frame(width: style.containerSize.width, height: style.containerSize.height)
+                }
+                .opacity(liquidMorphOpacity)
+                .allowsHitTesting(false)
+        }
+    }
+
+    @ViewBuilder
     private var notificationSurfaceLayer: some View {
         if style.anchorsSurfaceStartToBell {
             notificationSurface
@@ -259,6 +296,39 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                 .offset(x: blockedSwipeShakeOffset)
                 .offset(y: notificationSurfaceVerticalOffset)
                 .opacity(notificationSurfaceOpacity)
+                .frame(width: style.containerSize.width, height: style.containerSize.height)
+        }
+    }
+
+    @ViewBuilder
+    private func notificationLiquidFill() -> some View {
+        switch style.footerVariant {
+        case .event:
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(red: 39 / 255, green: 33 / 255, blue: 35 / 255),
+                        Color(red: 51 / 255, green: 30 / 255, blue: 33 / 255),
+                        Color(red: 61 / 255, green: 32 / 255, blue: 35 / 255)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+
+                RadialGradient(
+                    colors: [
+                        Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.14),
+                        Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.06),
+                        Color(red: 94 / 255, green: 20 / 255, blue: 25 / 255).opacity(0.0)
+                    ],
+                    center: UnitPoint(x: 0.7, y: 0.4),
+                    startRadius: 0,
+                    endRadius: 190
+                )
+            }
+            .frame(width: style.containerSize.width, height: style.containerSize.height)
+        case .inApp, .push:
+            Color.white.opacity(0.1)
                 .frame(width: style.containerSize.width, height: style.containerSize.height)
         }
     }
@@ -327,21 +397,32 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
             isFilled: isSourceBellFilled,
             isCritical: isSourceBellCritical
         )
+            .scaleEffect(sourceBellRevealScale)
             .position(style.buttonCenter)
-            .opacity(sourceBellOpacity * (isBellRinging ? 0 : 1))
+            .opacity(sourceBellRevealOpacity * sourceBellOpacity * (isBellRinging ? 0 : 1) * (1 - bellLiquidCoverageOpacity))
+            .allowsHitTesting(false)
+    }
+
+    private var bellLiquidGlyphLayer: some View {
+        ringingBellGlyph
+            .scaleEffect(sourceBellRevealScale)
+            .position(style.buttonCenter)
+            .opacity(sourceBellRevealOpacity * sourceBellOpacity * bellLiquidCoverageOpacity * (isBellRinging ? 0 : 1))
             .allowsHitTesting(false)
     }
 
     private var bellBubbleLayer: some View {
         NotificationBellBubbleVisual(size: style.buttonSize)
+            .scaleEffect(sourceBellRevealScale)
             .position(style.buttonCenter)
-            .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
+            .opacity(sourceBellRevealOpacity * sourceBellOpacity * (isBellRinging ? 1 : 0))
             .allowsHitTesting(false)
     }
 
     private var bellGlyphLayer: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !isBellRinging)) { timeline in
             ringingBellGlyph
+                .scaleEffect(sourceBellRevealScale)
                 .rotationEffect(
                     .degrees(Double(bellRingAngle(at: timeline.date))),
                     anchor: UnitPoint(x: 0.5, y: style.bellRingPivotY)
@@ -350,7 +431,7 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
                     x: style.buttonCenter.x + bellRingOffsetX(at: timeline.date),
                     y: style.buttonCenter.y
                 )
-                .opacity(sourceBellOpacity * (isBellRinging ? 1 : 0))
+                .opacity(sourceBellRevealOpacity * sourceBellOpacity * (isBellRinging ? 1 : 0))
         }
         .allowsHitTesting(false)
     }
@@ -554,39 +635,12 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
     }
 
     private var surfaceCenter: CGPoint {
-        let finalCenter = CGPoint(
-            x: style.notificationContainerCenter.x,
-            y: style.notificationContainerCenter.y
-        )
-        let seedTravel = softenedSegment(
-            progress,
-            start: style.anticipationEndProgress * 0.5,
-            end: style.anchorsSurfaceStartToBell ? style.finalExpansionEndProgress : 0.88
-        )
-        let anticipationLift = lerp(0, -style.anticipationLift, anticipationProgress) * (1 - seedTravel)
-
-        if style.anchorsSurfaceStartToBell {
-            let surfaceAnchor = style.surfaceStartAnchor ?? style.buttonCenter
-            let edgeTravel = softenedSegment(
-                progress,
-                start: style.finalExpansionStartProgress,
-                end: style.finalExpansionEndProgress
-            )
-            let rightEdge = lerp(
-                surfaceAnchor.x + style.buttonSize / 2,
-                style.notificationFrame.maxX,
-                edgeTravel
-            )
-
-            return CGPoint(
-                x: rightEdge - surfaceWidth / 2,
-                y: lerp(surfaceAnchor.y, finalCenter.y, seedTravel) + anticipationLift
-            )
-        }
+        let localAnchor = morphSurfaceAnchorLocal
+        let worldAnchor = morphSurfaceAnchorWorld
 
         return CGPoint(
-            x: lerp(style.buttonCenter.x, finalCenter.x, seedTravel),
-            y: lerp(style.buttonCenter.y, finalCenter.y, seedTravel) + anticipationLift
+            x: worldAnchor.x - localAnchor.x + surfaceWidth / 2,
+            y: worldAnchor.y - localAnchor.y + notificationSurfaceHeight / 2
         )
     }
 
@@ -594,6 +648,19 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         CGPoint(
             x: surfaceCenter.x - surfaceWidth / 2,
             y: surfaceCenter.y - notificationSurfaceHeight / 2
+        )
+    }
+
+    private var currentTailAnchorWorld: CGPoint {
+        let tail = tailAnchorLocal(
+            width: surfaceWidth,
+            bodyHeight: notificationHeight,
+            footerHeight: footerHeight
+        )
+
+        return CGPoint(
+            x: surfaceCenter.x - surfaceWidth / 2 + tail.x + blockedSwipeShakeOffset,
+            y: surfaceCenter.y - notificationSurfaceHeight / 2 + tail.y + notificationSurfaceVerticalOffset
         )
     }
 
@@ -653,8 +720,99 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         lerp(
             0,
             style.footerFrame.height,
-            softenedSegment(progress, start: style.finalExpansionStartProgress, end: style.finalExpansionEndProgress)
+            tailBridgeProgress
         )
+    }
+
+    private var tailBridgeProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.52,
+            end: style.finalExpansionStartProgress
+        )
+    }
+
+    private var morphSurfaceAnchorLocal: CGPoint {
+        let center = CGPoint(x: surfaceWidth / 2, y: notificationSurfaceHeight / 2)
+        let tail = tailAnchorLocal(
+            width: surfaceWidth,
+            bodyHeight: notificationHeight,
+            footerHeight: footerHeight
+        )
+        let tailBlend = softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.44,
+            end: style.finalExpansionStartProgress
+        )
+
+        return CGPoint(
+            x: lerp(center.x, tail.x, tailBlend),
+            y: lerp(center.y, tail.y, tailBlend)
+        )
+    }
+
+    private var morphSurfaceAnchorWorld: CGPoint {
+        let startAnchor = style.anchorsSurfaceStartToBell
+            ? surfaceStartLiquidAnchorWorld
+            : bellLiquidAnchorWorld
+        let finalTail = finalTailAnchorWorld
+        let anchorTravel = softenedSegment(
+            progress,
+            start: style.finalExpansionStartProgress,
+            end: style.finalExpansionEndProgress
+        )
+        let anticipationLift = lerp(0, -style.anticipationLift, anticipationProgress) * (1 - anchorTravel)
+
+        return CGPoint(
+            x: lerp(startAnchor.x, finalTail.x, anchorTravel),
+            y: lerp(startAnchor.y, finalTail.y, anchorTravel) + anticipationLift
+        )
+    }
+
+    private var bellLiquidAnchorWorld: CGPoint {
+        CGPoint(
+            x: style.buttonCenter.x,
+            y: style.buttonCenter.y - style.buttonSize * 0.08
+        )
+    }
+
+    private var surfaceStartLiquidAnchorWorld: CGPoint {
+        guard let surfaceStartAnchor = style.surfaceStartAnchor else {
+            return bellLiquidAnchorWorld
+        }
+
+        return CGPoint(
+            x: surfaceStartAnchor.x,
+            y: surfaceStartAnchor.y - style.buttonSize * 0.08
+        )
+    }
+
+    private var finalTailAnchorWorld: CGPoint {
+        let finalTail = tailAnchorLocal(
+            width: style.notificationFrame.width,
+            bodyHeight: style.notificationFrame.height,
+            footerHeight: style.footerFrame.height
+        )
+        let finalSurfaceHeight = style.notificationFrame.height + style.footerFrame.height
+
+        return CGPoint(
+            x: style.notificationContainerCenter.x - style.notificationFrame.width / 2 + finalTail.x,
+            y: style.notificationContainerCenter.y - finalSurfaceHeight / 2 + finalTail.y
+        )
+    }
+
+    private func tailAnchorLocal(width: CGFloat, bodyHeight: CGFloat, footerHeight: CGFloat) -> CGPoint {
+        guard footerHeight > 0.1 else {
+            return CGPoint(x: width / 2, y: bodyHeight / 2)
+        }
+
+        let shiftX = notificationTailHorizontalShift
+        let scaleX = width / notificationTailCanvasSize.width
+        let scaleY = footerHeight / notificationTailCanvasSize.height
+        let tailX = ((312.426 + 319.017) / 2 + shiftX) * scaleX
+        let tailY = bodyHeight + 8.59135 * scaleY
+
+        return CGPoint(x: tailX, y: tailY)
     }
 
     private var notificationTotalHeight: CGFloat {
@@ -702,7 +860,182 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
 
     private var notificationSurfaceOpacity: CGFloat {
         let baseOpacity = (isBellHandedOff || progress > 0.001) ? notificationOpacity : 0
-        return baseOpacity * (1 - bellLandingHandoffProgress)
+        let surfaceReveal = isLiquidMorphActive ? liquidSeparationProgress : 1
+        return baseOpacity * surfaceReveal * (1 - bellLandingHandoffProgress)
+    }
+
+    private var liquidMorphOpacity: CGFloat {
+        guard isLiquidMorphActive else { return 0 }
+        let appear = softenedSegment(progress, start: 0.015, end: style.anticipationEndProgress * 0.9)
+        let connectedMass = 1 - liquidSeparationProgress
+        return notificationOpacity * appear * connectedMass * (1 - bellLandingHandoffProgress)
+    }
+
+    private var isLiquidMorphActive: Bool {
+        isBellHandedOff || isReturningSourceBell
+    }
+
+    private var liquidSeparationProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.finalExpansionEndProgress * 0.96,
+            end: style.finalExpansionEndProgress
+        )
+    }
+
+    private var bellLiquidCoverageOpacity: CGFloat {
+        min(liquidMorphOpacity * 1.4, 1)
+    }
+
+    private var liquidBellRadius: CGFloat {
+        let tear = softenedSegment(progress, start: style.finalExpansionStartProgress * 0.72, end: style.finalExpansionEndProgress)
+        return lerp(style.buttonSize * 0.58, style.buttonSize * 0.2, tear)
+    }
+
+    private var liquidDropletRadius: CGFloat {
+        let tailBirth = liquidDropletBirthProgress
+        let tear = softenedSegment(progress, start: style.finalExpansionStartProgress * 0.76, end: style.finalExpansionEndProgress)
+        return lerp(style.buttonSize * 0.2, 16, tailBirth) * (1 - 0.28 * tear)
+    }
+
+    private var liquidBlurRadius: CGFloat {
+        let tear = softenedSegment(progress, start: style.finalExpansionStartProgress * 0.72, end: style.finalExpansionEndProgress)
+        return lerp(11, 5, tear)
+    }
+
+    private var liquidAlphaThreshold: CGFloat {
+        let tear = softenedSegment(progress, start: style.finalExpansionStartProgress * 0.72, end: style.finalExpansionEndProgress)
+        return lerp(0.36, 0.62, tear)
+    }
+
+    private var liquidBellDeformProgress: CGFloat {
+        softenedSegment(progress, start: 0, end: style.anticipationEndProgress)
+    }
+
+    private var liquidDropletBirthProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.22,
+            end: style.anticipationEndProgress * 0.92
+        )
+    }
+
+    private var liquidDropletTravelProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.42,
+            end: style.finalExpansionStartProgress * 0.96
+        )
+    }
+
+    private var liquidBridgeProgress: CGFloat {
+        let grow = softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.24,
+            end: style.anticipationEndProgress
+        )
+        let release = softenedSegment(
+            progress,
+            start: style.finalExpansionStartProgress * 0.66,
+            end: style.finalExpansionStartProgress
+        )
+
+        return grow * (1 - release)
+    }
+
+    private var liquidConnectionProgress: CGFloat {
+        let grow = softenedSegment(
+            progress,
+            start: style.anticipationEndProgress * 0.24,
+            end: style.finalExpansionStartProgress
+        )
+        let release = softenedSegment(
+            progress,
+            start: style.finalExpansionEndProgress * 0.86,
+            end: style.finalExpansionEndProgress
+        )
+
+        return grow * (1 - release)
+    }
+
+    private var liquidSeedCardProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.finalExpansionStartProgress * 0.72,
+            end: style.finalExpansionStartProgress
+        )
+    }
+
+    private var liquidCardExpansionProgress: CGFloat {
+        softenedSegment(
+            progress,
+            start: style.finalExpansionEndProgress * 0.5,
+            end: style.finalExpansionEndProgress
+        )
+    }
+
+    private var liquidDropletCenter: CGPoint {
+        let travel = liquidDropletTravelProgress
+
+        return CGPoint(
+            x: lerp(bellLiquidAnchorWorld.x, finalTailAnchorWorld.x, travel),
+            y: lerp(bellLiquidAnchorWorld.y, finalTailAnchorWorld.y, travel)
+        )
+    }
+
+    private var liquidSeedWidth: CGFloat {
+        if progress < style.finalExpansionStartProgress {
+            return lerp(style.buttonSize, style.midStageWidth, liquidSeedCardProgress)
+        }
+
+        return lerp(style.midStageWidth, style.notificationFrame.width, liquidCardExpansionProgress)
+    }
+
+    private var liquidSeedBodyHeight: CGFloat {
+        if progress < style.finalExpansionStartProgress {
+            return lerp(style.buttonSize, style.midStageHeight, liquidSeedCardProgress)
+        }
+
+        return lerp(style.midStageHeight, style.notificationFrame.height, liquidCardExpansionProgress)
+    }
+
+    private var liquidSeedFooterHeight: CGFloat {
+        if progress < style.finalExpansionStartProgress {
+            return lerp(0, style.footerFrame.height, liquidSeedCardProgress)
+        }
+
+        return style.footerFrame.height
+    }
+
+    private var liquidSeedCornerRadius: CGFloat {
+        if progress < style.finalExpansionStartProgress {
+            return lerp(style.buttonSize / 2, 22, liquidSeedCardProgress)
+        }
+
+        return lerp(22, style.finalCornerRadius, liquidCardExpansionProgress)
+    }
+
+    private var liquidSeedSurfaceRect: CGRect {
+        let width = liquidSeedWidth
+        let bodyHeight = liquidSeedBodyHeight
+        let footerHeight = liquidSeedFooterHeight
+        let height = bodyHeight + footerHeight
+        let tail = tailAnchorLocal(
+            width: width,
+            bodyHeight: bodyHeight,
+            footerHeight: footerHeight
+        )
+        let anchor = CGPoint(
+            x: lerp(liquidDropletCenter.x, currentTailAnchorWorld.x, liquidCardExpansionProgress),
+            y: lerp(liquidDropletCenter.y, currentTailAnchorWorld.y, liquidCardExpansionProgress)
+        )
+
+        return CGRect(
+            x: anchor.x - tail.x,
+            y: anchor.y - tail.y,
+            width: width,
+            height: height
+        )
     }
 
     private var sourceBellOpacity: CGFloat {
@@ -710,6 +1043,15 @@ struct GlassMorphNotificationView<NotificationContent: View>: View {
         let handoffOpacity: CGFloat = isBellHandedOff ? 1 : 0
         let returningOpacity: CGFloat = isReturningSourceBell ? 1 : 0
         return max(persistedOpacity, max(handoffOpacity, returningOpacity))
+    }
+
+    private var sourceBellRevealOpacity: CGFloat {
+        min(max(sourceBellRevealProgress, 0), 1)
+    }
+
+    private var sourceBellRevealScale: CGFloat {
+        let progress = min(max(sourceBellRevealProgress, 0), 1.12)
+        return 0.84 + 0.16 * progress
     }
 
     private var contentOpacity: CGFloat {
@@ -1202,5 +1544,188 @@ private struct BottomPinchedMask: Shape {
         )
         path.closeSubpath()
         return path
+    }
+}
+
+@available(iOS 26.0, *)
+private struct StagedLiquidMetaballMask: View {
+    let bellCenter: CGPoint
+    let dropletCenter: CGPoint
+    let seedSurfacePath: Path
+    let bellRadius: CGFloat
+    let protrusionProgress: CGFloat
+    let dropletRadius: CGFloat
+    let dropletProgress: CGFloat
+    let bridgeProgress: CGFloat
+    let connectorProgress: CGFloat
+    let seedProgress: CGFloat
+    let blurRadius: CGFloat
+    let threshold: CGFloat
+
+    var body: some View {
+        Canvas { context, _ in
+            context.drawLayer { layer in
+                if seedProgress > 0.001 {
+                    layer.fill(seedSurfacePath, with: .color(.white))
+                }
+
+                drawDropletBridge(in: &layer)
+                drawConnector(in: &layer)
+                drawBellBlob(in: &layer)
+
+                if seedProgress > 0.001 {
+                    layer.fill(seedSurfacePath, with: .color(.white))
+                }
+            }
+        }
+    }
+
+    private func drawBellBlob(in layer: inout GraphicsContext) {
+        let release = min(max(seedProgress, 0), 1)
+        let visibleRadius = max(bellRadius * (1 - release * 0.72), bellRadius * 0.22)
+
+        layer.fill(circlePath(center: bellCenter, radius: visibleRadius), with: .color(.white))
+
+        guard protrusionProgress > 0.001, release < 0.98 else { return }
+
+        let direction = unitVector(from: bellCenter, to: dropletCenter)
+        let bulgeDistance = visibleRadius * (0.34 + 0.42 * protrusionProgress)
+        let bulgeRadius = visibleRadius * (0.36 + 0.18 * protrusionProgress) * (1 - release * 0.42)
+        let bulgeCenter = CGPoint(
+            x: bellCenter.x + direction.dx * bulgeDistance,
+            y: bellCenter.y + direction.dy * bulgeDistance
+        )
+
+        layer.fill(circlePath(center: bulgeCenter, radius: bulgeRadius), with: .color(.white))
+    }
+
+    private func drawConnector(in layer: inout GraphicsContext) {
+        guard connectorProgress > 0.001 else { return }
+
+        let direction = unitVector(from: bellCenter, to: dropletCenter)
+        let normal = CGVector(dx: -direction.dy, dy: direction.dx)
+        let release = min(max(seedProgress, 0), 1)
+        let startHalfWidth = bellRadius * (0.58 + 0.16 * (1 - release)) * connectorProgress
+        let endHalfWidth = max(dropletRadius * 1.08, 13) * connectorProgress
+        let start = CGPoint(
+            x: bellCenter.x + direction.dx * bellRadius * 0.02,
+            y: bellCenter.y + direction.dy * bellRadius * 0.02
+        )
+        let end = CGPoint(
+            x: dropletCenter.x + direction.dx * max(dropletRadius * 0.36, 5),
+            y: dropletCenter.y + direction.dy * max(dropletRadius * 0.36, 5)
+        )
+
+        var path = Path()
+        path.move(to: CGPoint(
+            x: start.x + normal.dx * startHalfWidth,
+            y: start.y + normal.dy * startHalfWidth
+        ))
+        path.addCurve(
+            to: CGPoint(
+                x: end.x + normal.dx * endHalfWidth,
+                y: end.y + normal.dy * endHalfWidth
+            ),
+            control1: CGPoint(
+                x: start.x + direction.dx * bellRadius * 1.35 + normal.dx * startHalfWidth * 0.88,
+                y: start.y + direction.dy * bellRadius * 1.35 + normal.dy * startHalfWidth * 0.88
+            ),
+            control2: CGPoint(
+                x: end.x - direction.dx * max(dropletRadius * 1.35, 14) + normal.dx * endHalfWidth * 1.12,
+                y: end.y - direction.dy * max(dropletRadius * 1.35, 14) + normal.dy * endHalfWidth * 1.12
+            )
+        )
+        path.addLine(to: CGPoint(
+            x: end.x - normal.dx * endHalfWidth,
+            y: end.y - normal.dy * endHalfWidth
+        ))
+        path.addCurve(
+            to: CGPoint(
+                x: start.x - normal.dx * startHalfWidth,
+                y: start.y - normal.dy * startHalfWidth
+            ),
+            control1: CGPoint(
+                x: end.x - direction.dx * max(dropletRadius * 1.35, 14) - normal.dx * endHalfWidth * 1.12,
+                y: end.y - direction.dy * max(dropletRadius * 1.35, 14) - normal.dy * endHalfWidth * 1.12
+            ),
+            control2: CGPoint(
+                x: start.x + direction.dx * bellRadius * 1.35 - normal.dx * startHalfWidth * 0.88,
+                y: start.y + direction.dy * bellRadius * 1.35 - normal.dy * startHalfWidth * 0.88
+            )
+        )
+        path.closeSubpath()
+
+        layer.fill(path, with: .color(.white))
+
+        for index in 1...7 {
+            let t = CGFloat(index) / 8
+            let center = CGPoint(
+                x: start.x + (end.x - start.x) * t,
+                y: start.y + (end.y - start.y) * t
+            )
+            let radius = (startHalfWidth + (endHalfWidth - startHalfWidth) * t) * 1.05
+            layer.fill(circlePath(center: center, radius: radius), with: .color(.white))
+        }
+    }
+
+    private func drawDropletBridge(in layer: inout GraphicsContext) {
+        let bornRadius = dropletRadius * min(max(dropletProgress, 0), 1)
+
+        guard bornRadius > 0.1 else { return }
+
+        if bridgeProgress > 0.001 {
+            for index in 1...5 {
+                let t = CGFloat(index) / 6
+                let center = CGPoint(
+                    x: bellCenter.x + (dropletCenter.x - bellCenter.x) * t,
+                    y: bellCenter.y + (dropletCenter.y - bellCenter.y) * t
+                )
+                let taperedRadius = bellRadius * (1 - t) + bornRadius * t
+                let radius = max(taperedRadius * (0.24 + 0.42 * bridgeProgress), 0)
+
+                layer.fill(circlePath(center: center, radius: radius), with: .color(.white))
+            }
+        }
+
+        layer.fill(circlePath(center: dropletCenter, radius: bornRadius), with: .color(.white))
+    }
+
+    private func circlePath(center: CGPoint, radius: CGFloat) -> Path {
+        guard radius > 0 else { return Path() }
+
+        return Path(
+            ellipseIn: CGRect(
+                x: center.x - radius,
+                y: center.y - radius,
+                width: radius * 2,
+                height: radius * 2
+            )
+        )
+    }
+
+    private func unitVector(from start: CGPoint, to end: CGPoint) -> CGVector {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        let length = max(sqrt(dx * dx + dy * dy), 0.001)
+
+        return CGVector(dx: dx / length, dy: dy / length)
+    }
+}
+
+private struct LiquidUnifiedSurfaceMask: View {
+    let path: Path
+
+    var body: some View {
+        Canvas { context, _ in
+            context.fill(path, with: .color(.white))
+        }
+    }
+}
+
+private struct LiquidUnifiedSurfaceStroke: Shape {
+    let path: Path
+
+    func path(in rect: CGRect) -> Path {
+        path
     }
 }
